@@ -138,6 +138,7 @@ function WarfrontRareTracker:DelayedInitialize()
         WR.isTomTomloaded = true
     end
     WarfrontRareTracker:ScanForKnownItems()
+    WarfrontRareTracker:UpdateWorldMapIcons()
     WarfrontRareTracker:UpdateBrokerText()
 end
 
@@ -152,7 +153,6 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterEvent("PLAYER_MONEY", "OnEvent")
     self:RegisterEvent("SHOW_LOOT_TOAST", "OnEvent")
     self:RegisterEvent("SHOW_LOOT_TOAST_UPGRADE", "OnEvent")
-    WarfrontRareTracker:UpdateWorldMapIcons()
 end
 
 function WarfrontRareTracker:OnDisable()
@@ -177,7 +177,6 @@ end
 function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     WarfrontRareTracker:CheckFactionWarfrontControl()
-    WarfrontRareTracker:UpdateWorldMapIcons()
     self:ScheduleTimer("DelayedInitialize", 5)
 end
 
@@ -887,7 +886,7 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
     if rare and type(rare) == "table" and WarfrontRareTracker:IsNPCPlayerFaction(npcid) then
         if WR.db.profile.unitframe.showStaus then
             GameTooltip:AddLine(" ")
-            GameTooltip:AddLine(WarfrontRareTracker:ColorText("Arati Rare Tracker: ", WR.colors.yellow) .. WarfrontRareTracker:GetStatusText(npcid))
+            GameTooltip:AddLine(WarfrontRareTracker:ColorText("Warfront Rare Tracker: ", WR.colors.yellow) .. WarfrontRareTracker:GetStatusText(npcid))
         end
         if WR.db.profile.unitframe.showDrop and rare.itemID ~= 0 then
             local itemName, itemLink, itemRarity, _, _, itemType, _, _, _, _, _ = GetItemInfo(rare.itemID)
