@@ -225,7 +225,7 @@ function WarfrontRareTracker:UpdateBrokerText()
             brokerText = factionControlling
             local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
             if timeNextChange ~= nil then
-                local daysLeft, hoursLeft, minutesLeft, secondsLeft = A_Test_Mod:GetWarfrontTimeLeft(timeNextChange)
+                local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
                 if daysLeft > 0 then
                     brokerText = brokerText .. WarfrontRareTracker:ColorText(" Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sD %sH %sM Left", daysLeft, hoursLeft, minutesLeft), WR.colors.green)
                 else
@@ -243,7 +243,7 @@ function WarfrontRareTracker:UpdateBrokerText()
                 end
                 brokerText = brokerText .. WarfrontRareTracker:ColorText(" Gathering: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(progress .. " %", color)
             else -- opposite side cannot readout percentage
-                brokerText = brokerText .. WarfrontRareTracker:ColorText(" Gathering", WR.colors.turqoise)
+                brokerText = WarfrontRareTracker:ColorText(WR.warfrontControlledByFaction .. " Has Control", WR.colors.turqoise)
             end
             self:ScheduleTimer("UpdateBrokerText", WR.db.profile.broker.updateInterval * 60) -- update text at configured interval
         end
@@ -607,22 +607,24 @@ function WarfrontRareTracker:WarfrontStatusInfoTooltip(tooltip)
     local line = tooltip:AddHeader()
     tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Current control:", WR.colors.yellow))
     tooltip:SetCell(line, 2, factionControlling, nil, nil, 2)
-    tooltip:AddSeparator()
+    --tooltip:AddSeparator()
 
     local stromgardeState, stromgardePercentage, stromgardeNextChange, timeStarted = C_ContributionCollector.GetState(11)
     if stromgardeState == 1 or ststromgardeStateate == 2 then -- Alliance control
         local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
         if timeNextChange ~= nil then
+            tooltip:AddSeparator()
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Horde Status:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Attacking", WR.colors.red), nil, nil, 2)
 
-            local daysLeft, hoursLeft, minutesLeft, secondsLeft = A_Test_Mod:GetWarfrontTimeLeft(timeNextChange)
+            local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
             local timeLeft = string.format("%s Days %s Hours %s Minutes", daysLeft, hoursLeft, minutesLeft)
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Time Left:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(timeLeft, WR.colors.turqoise), nil, nil, 2)
         elseif percentage ~= nil then
+            tooltip:AddSeparator()
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Horde Status:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
@@ -631,24 +633,22 @@ function WarfrontRareTracker:WarfrontStatusInfoTooltip(tooltip)
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Progress:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(progress .. " %", WR.colors.turqoise), nil, nil, 2)
-        else -- opposite side cannot readout percentage
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Horde Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
         end
     elseif stromgardeState == 3 or stromgardeState == 4 then -- Horde control
         local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
         if timeNextChange ~= nil then
+            tooltip:AddSeparator()
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Alliance Status:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Attacking", WR.colors.red), nil, nil, 2)
 
-            local daysLeft, hoursLeft, minutesLeft, secondsLeft = A_Test_Mod:GetWarfrontTimeLeft(timeNextChange)
+            local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
             local timeLeft = string.format("%s Days %s Hours %s Minutes", daysLeft, hoursLeft, minutesLeft)
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Time Left:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(timeLeft, WR.colors.turqoise), nil, nil, 2)
         elseif percentage ~= nil then
+            tooltip:AddSeparator()
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Alliance Status:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
@@ -657,16 +657,13 @@ function WarfrontRareTracker:WarfrontStatusInfoTooltip(tooltip)
             local line = tooltip:AddLine()
             tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Progress:", WR.colors.yellow))
             tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(progress .. " %", WR.colors.turqoise), nil, nil, 2)
-        else -- opposite side cannot readout percentage
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Alliance Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
         end
     end
 end
 
 function WarfrontRareTracker:GetWarfrontInfo()
     local percentage
+    local time
     local contributionMapID
     if WR.warfrontControlledByFaction == "Horde" then
         contributionMapID = 876 -- Alliance
@@ -678,11 +675,13 @@ function WarfrontRareTracker:GetWarfrontInfo()
         local collectorCreatureID = C_ContributionCollector.GetManagedContributionsForCreatureID(contribution[1].collectorCreatureID)
         local contributionState, contributionPercentage, contributionTimeNextChange, contributionTimeStarted = C_ContributionCollector.GetState(collectorCreatureID)
         percentage = contributionPercentage
+        time = contributionTimeNextChange
     else
         percentage = nil
+        time = nil
     end
     local warfrontState, warfrontPercentage, warfrontTimeNextChange, warfrontTimeStarted = C_ContributionCollector.GetState(11)
-    return percentage, warfrontTimeNextChange
+    return percentage, time
 end
 
 -------------------
