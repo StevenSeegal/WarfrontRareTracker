@@ -4,6 +4,7 @@ local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
 local MinimapIcon = LibStub("LibDBIcon-1.0")
 
 local LibQTip = LibStub("LibQTip-1.0")
+local HBD = LibStub("HereBeDragons-2.0", true)
 local HBDPins = LibStub("HereBeDragons-Pins-2.0")
 
 local npcToolTip = CreateFrame("GameTooltip", "__WarfrontRareTracker_ScanTip", nil, "GameTooltipTemplate")
@@ -50,6 +51,7 @@ WR.rares = {
 
 WR.isTomTomloaded = false
 WR.warning = false
+WR.isDelayedInitDone = false
 WR.warfrontControlledByFaction = ""
 
 WR.colors = {
@@ -61,6 +63,7 @@ WR.colors = {
     yellow = { 1, 0.82, 0, 1 },
     blue = { 0, 0.44, 0.87, 1 },
     grey = { 0.6, 0.6, 0.6, 1 },
+    orange = { 1, 0.5, 0, 1 },
 }
 
 local defaults = {
@@ -138,8 +141,9 @@ function WarfrontRareTracker:DelayedInitialize()
         WR.isTomTomloaded = true
     end
     WarfrontRareTracker:ScanForKnownItems()
-    WarfrontRareTracker:UpdateWorldMapIcons()
-    WarfrontRareTracker:UpdateBrokerText()
+    WarfrontRareTracker:UpdateWorldMapIcons(true)
+    WR.isDelayedInitDone = true
+    self:ScheduleTimer("RefreshAllData", 10)
 end
 
 function WarfrontRareTracker:OnEnable()
@@ -170,8 +174,16 @@ end
 
 function WarfrontRareTracker:RefreshConfig()
     LibStub("LibDBIcon-1.0"):Refresh("WarfrontRareTracker", WR.db.profile.minimap)
+    WarfrontRareTracker:RefreshAllData()
+    WarfrontRareTracker:UpdateWorldMapIcons(true)
+end
+
+function WarfrontRareTracker:RefreshAllData()
+    if WR.isDelayedInitDone then
+        self:CancelAllTimers()
+    end
+    WarfrontRareTracker:CheckFactionWarfrontControl()
     WarfrontRareTracker:UpdateBrokerText()
-    WarfrontRareTracker:UpdateWorldMapIcons()
 end
 
 function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
@@ -188,10 +200,10 @@ function WarfrontRareTracker:OnEvent(event, ...)
     elseif event == "NEW_PET_ADDED" then
         self:ScheduleTimer("ScanForKnownItems", 5)
     elseif event == "CONTRIBUTION_CHANGED" then
-        WarfrontRareTracker:UpdateWorldMapIcons()
-        self:ScheduleTimer("UpdateWorldMapIcons", 10)
+        WarfrontRareTracker:UpdateWorldMapIcons(false)
+        --self:ScheduleTimer("UpdateWorldMapIcons", 10)
     elseif event == "LOOT_CLOSED" or event == "PLAYER_MONEY" or event == "SHOW_LOOT_TOAST" or event == "SHOW_LOOT_TOAST_UPGRADE" then
-        WarfrontRareTracker:UpdateWorldMapIcons()
+        WarfrontRareTracker:UpdateWorldMapIcons(false)
     end
 end
 
@@ -221,31 +233,42 @@ function WarfrontRareTracker:UpdateBrokerText()
         if WR.db.profile.broker.brokerText == "name" then
             brokerText = "Warfront Rare Tracker"
         else
-            local factionControlling = WR.warfrontControlledByFaction == "Horde" and WarfrontRareTracker:ColorText("(H)", WR.colors.red) or WarfrontRareTracker:ColorText("(A)", WR.colors.blue)
-            brokerText = factionControlling
+            local factionControlling = WR.warfrontControlledByFaction == "Horde" and WarfrontRareTracker:ColorText("Horde", WR.colors.red) or WarfrontRareTracker:ColorText("Alliance", WR.colors.blue)
+            local canSchedule = true
             local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
             if timeNextChange ~= nil then
                 local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
                 if daysLeft > 0 then
-                    brokerText = brokerText .. WarfrontRareTracker:ColorText(" Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sD %sH %sM Left", daysLeft, hoursLeft, minutesLeft), WR.colors.green)
+                    brokerText = WarfrontRareTracker:ColorText("Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sD %sH %sM Left", daysLeft, hoursLeft, minutesLeft), WR.colors.green)
                 else
-                    brokerText = brokerText .. WarfrontRareTracker:ColorText(" Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sH %sM Left", hoursLeft, minutesLeft), WR.colors.red)
+                    if hoursLeft < 1 then
+                        brokerText = WarfrontRareTracker:ColorText("Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sM Left", minutesLeft), WR.colors.red)
+                    elseif hoursLeft < 12 then
+                        brokerText = WarfrontRareTracker:ColorText("Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sH %sM Left", hoursLeft, minutesLeft), WR.colors.orange)
+                    else
+                        brokerText = WarfrontRareTracker:ColorText("Scenario: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(string.format("%sH %sM Left", hoursLeft, minutesLeft), WR.colors.yellow)
+                    end
                 end
             elseif percentage ~= nil then
                 local progress = math.floor(percentage * 100 + 0.5)
                 local color
-                if progress < 30 then
+                if progress < 25 then
                     color = WR.colors.red
-                elseif progress < 70 then
+                elseif progress < 50 then
+                    color = WR.colors.orange
+                elseif progress < 75 then
                     color = WR.colors.yellow
                 else
                     color = WR.colors.green
                 end
-                brokerText = brokerText .. WarfrontRareTracker:ColorText(" Gathering: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(progress .. " %", color)
-            else -- opposite side cannot readout percentage
-                brokerText = WarfrontRareTracker:ColorText(WR.warfrontControlledByFaction .. " Has Control", WR.colors.turqoise)
+                brokerText = WarfrontRareTracker:ColorText("Gathering: ", WR.colors.turqoise) .. WarfrontRareTracker:ColorText(progress .. " %", color)
+            else -- opposite side and lowlevel cannot readout info, they can see who's in control!
+                brokerText = factionControlling .. WarfrontRareTracker:ColorText(" Has Control", WR.colors.turqoise)
+                canSchedule = false
             end
-            self:ScheduleTimer("UpdateBrokerText", WR.db.profile.broker.updateInterval * 60) -- update text at configured interval
+            if canSchedule then
+                self:ScheduleTimer("UpdateBrokerText", WR.db.profile.broker.updateInterval * 60) -- update text at configured interval
+            end
         end
     else
         brokerText = ""
@@ -331,7 +354,7 @@ function WarfrontRareTracker:CheckFactionWarfrontControl()
     end
     if WR.warfrontControlledByFaction == "" then
         WR.warfrontControlledByFaction = factionControlling
-        self:ScheduleTimer("CheckFactionWarfrontControl", 2)
+        self:ScheduleTimer("CheckFactionWarfrontControl", 5)
         return
     end
 
@@ -367,7 +390,7 @@ end
 function WarfrontRareTracker:GetWarfrontTimeLeft(changeTime)
     local timeLeft = date("*t", changeTime - GetServerTime())
     local daysLeft = timeLeft.day - 1
-    local hoursLeft = timeLeft.hour - 1
+    local hoursLeft = timeLeft.hour
     return daysLeft, hoursLeft, timeLeft.min, timeLeft.sec
 end
 
@@ -604,60 +627,33 @@ end
 
 function WarfrontRareTracker:WarfrontStatusInfoTooltip(tooltip)
     local factionControlling = WR.warfrontControlledByFaction == "Horde" and WarfrontRareTracker:ColorText("Horde", WR.colors.red) or WarfrontRareTracker:ColorText("Alliance", WR.colors.blue)
+    local oppositeFaction = WR.warfrontControlledByFaction == "Horde" and "Alliance" or "Horde"
     local line = tooltip:AddHeader()
     tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Current control:", WR.colors.yellow))
     tooltip:SetCell(line, 2, factionControlling, nil, nil, 2)
-    --tooltip:AddSeparator()
 
-    local stromgardeState, stromgardePercentage, stromgardeNextChange, timeStarted = C_ContributionCollector.GetState(11)
-    if stromgardeState == 1 or ststromgardeStateate == 2 then -- Alliance control
-        local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
-        if timeNextChange ~= nil then
-            tooltip:AddSeparator()
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Horde Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Attacking", WR.colors.red), nil, nil, 2)
+    local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
+    if timeNextChange ~= nil then
+        tooltip:AddSeparator()
+        local line = tooltip:AddLine()
+        tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText(oppositeFaction.." Status:", WR.colors.yellow))
+        tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Battle for Stromgarde", WR.colors.turqoise), nil, nil, 2)
 
-            local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
-            local timeLeft = string.format("%s Days %s Hours %s Minutes", daysLeft, hoursLeft, minutesLeft)
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Time Left:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(timeLeft, WR.colors.turqoise), nil, nil, 2)
-        elseif percentage ~= nil then
-            tooltip:AddSeparator()
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Horde Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
+        local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
+        local timeLeft = string.format("%s Days %s Hours %s Minutes", daysLeft, hoursLeft, minutesLeft)
+        local line = tooltip:AddLine()
+        tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Time Left:", WR.colors.yellow))
+        tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(timeLeft, WR.colors.turqoise), nil, nil, 2)
+    elseif percentage ~= nil then
+        tooltip:AddSeparator()
+        local line = tooltip:AddLine()
+        tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText(oppositeFaction.." Status:", WR.colors.yellow))
+        tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
 
-            local progress = math.floor(percentage * 100 + 0.5)
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Progress:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(progress .. " %", WR.colors.turqoise), nil, nil, 2)
-        end
-    elseif stromgardeState == 3 or stromgardeState == 4 then -- Horde control
-        local percentage, timeNextChange = WarfrontRareTracker:GetWarfrontInfo()
-        if timeNextChange ~= nil then
-            tooltip:AddSeparator()
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Alliance Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Attacking", WR.colors.red), nil, nil, 2)
-
-            local daysLeft, hoursLeft, minutesLeft, secondsLeft = WarfrontRareTracker:GetWarfrontTimeLeft(timeNextChange)
-            local timeLeft = string.format("%s Days %s Hours %s Minutes", daysLeft, hoursLeft, minutesLeft)
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Time Left:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(timeLeft, WR.colors.turqoise), nil, nil, 2)
-        elseif percentage ~= nil then
-            tooltip:AddSeparator()
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Alliance Status:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText("Gathering Resources", WR.colors.turqoise), nil, nil, 2)
-
-            local progress = math.floor(percentage * 100 + 0.5)
-            local line = tooltip:AddLine()
-            tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Progress:", WR.colors.yellow))
-            tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(progress .. " %", WR.colors.turqoise), nil, nil, 2)
-        end
+        local progress = math.floor(percentage * 100 + 0.5)
+        local line = tooltip:AddLine()
+        tooltip:SetCell(line, 1, WarfrontRareTracker:ColorText("Progress:", WR.colors.yellow))
+        tooltip:SetCell(line, 2, WarfrontRareTracker:ColorText(progress .. " %", WR.colors.turqoise), nil, nil, 2)
     end
 end
 
@@ -785,20 +781,23 @@ local function getNewWorldmapPin()
 	return worldmapIcon
 end
 
-function WarfrontRareTracker:UpdateWorldMapIcons()
-    self:WipeWorldmapIcons()
-    if WR.db.profile.worldmapicons.showWorldmapIcons then
-        for k, rare in pairs(WR.rares) do
-            local npcid = rare.id
-            if WarfrontRareTracker:IsNPCPlayerFaction(npcid) then
-                if WR.db.profile.worldmapicons.hideIconWhenDefeated and WarfrontRareTracker:IsQuestCompleted(npcid) then
-                    -- do nothing
-                elseif WR.db.profile.worldmapicons.hideAlreadyKnown and rare.isKnown then
-                elseif WR.db.profile.worldmapicons.hideGoliaths and rare.type == "Goliath" then
-                else
-                    WarfrontRareTracker:PlaceWorldmapNPCIcon(npcid)
-                    if rare.cave then
-                        WarfrontRareTracker:PlaceWorldmapCaveIcon(npcid, rare.cave)
+function WarfrontRareTracker:UpdateWorldMapIcons(init)
+    local playerMapid = HBD:GetPlayerZone()
+    if init or playerMapid == 14 then
+        self:WipeWorldmapIcons()
+        if WR.db.profile.worldmapicons.showWorldmapIcons then
+            for k, rare in pairs(WR.rares) do
+                local npcid = rare.id
+                if WarfrontRareTracker:IsNPCPlayerFaction(npcid) then
+                    if WR.db.profile.worldmapicons.hideIconWhenDefeated and WarfrontRareTracker:IsQuestCompleted(npcid) then
+                        -- do nothing
+                    elseif WR.db.profile.worldmapicons.hideAlreadyKnown and rare.isKnown then
+                    elseif WR.db.profile.worldmapicons.hideGoliaths and rare.type == "Goliath" then
+                    else
+                        WarfrontRareTracker:PlaceWorldmapNPCIcon(npcid)
+                        if rare.cave then
+                            WarfrontRareTracker:PlaceWorldmapCaveIcon(npcid, rare.cave)
+                        end
                     end
                 end
             end
