@@ -316,6 +316,96 @@ configOptions = {
                         },
                     },
                 },
+                rares = {
+                    name = "Color Rare Names",
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        colorizeRares = {
+                            name = "Color Rare Names",
+                            desc = "Use colors for the Rare names based on their type. When disabled all names are white.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.WR.db.profile.colors.colorizeRares
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.WR.db.profile.colors.colorizeRares = value
+                                end,
+                        },
+                        worldboss = {
+                            name = "Color Of 'World Boss'",
+                            desc = "Set the color of the 'World Boss' Rare's.",
+                            type = "color",
+                            order = 2,
+                            hasAlpha = false,
+                            get = function(info)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.worldboss
+                                    return color[1], color[2], color[3], color[4]
+                                end,
+                            set = function(info, r, g, b, a)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.worldboss
+                                    color[1], color[2], color[3], color[4] = r, g, b, a
+                                end,
+                            disabled = function() return not WarfrontRareTracker.WR.db.profile.colors.colorizeRares end,
+                        },
+                        elite = {
+                            name = "Color Of 'Elite'",
+                            desc = "Set the color of the 'Elite' Rares.",
+                            type = "color",
+                            order = 3,
+                            hasAlpha = false,
+                            get = function(info)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.elite
+                                    return color[1], color[2], color[3], color[4]
+                                end,
+                            set = function(info, r, g, b, a)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.elite
+                                    color[1], color[2], color[3], color[4] = r, g, b, a
+                                end,
+                            disabled = function() return not WarfrontRareTracker.WR.db.profile.colors.colorizeRares end,
+                        },
+                        seperator = {
+                            name = "",
+                            type = "description",
+                            order = 4,
+                        },
+                        rare = {
+                            name = "Color Of 'Rare'",
+                            desc = "Set the color of the 'Rare' Rare's.",
+                            type = "color",
+                            order = 5,
+                            hasAlpha = false,
+                            get = function(info)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.rare
+                                    return color[1], color[2], color[3], color[4]
+                                end,
+                            set = function(info, r, g, b, a)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.rare
+                                    color[1], color[2], color[3], color[4] = r, g, b, a
+                                end,
+                            disabled = function() return not WarfrontRareTracker.WR.db.profile.colors.colorizeRares end,
+                        },
+                        goliath = {
+                            name = "Color Of 'Goliath'",
+                            desc = "Set the color of the 'Goliath' Rares.",
+                            type = "color",
+                            order = 6,
+                            hasAlpha = false,
+                            get = function(info)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.goliath
+                                    return color[1], color[2], color[3], color[4]
+                                end,
+                            set = function(info, r, g, b, a)
+                                    local color = WarfrontRareTracker.WR.db.profile.colors.goliath
+                                    color[1], color[2], color[3], color[4] = r, g, b, a
+                                end,
+                            disabled = function() return not WarfrontRareTracker.WR.db.profile.colors.colorizeRares end,
+                        },
+                    },
+                },
             },
         },
         unitframes = {
@@ -378,7 +468,7 @@ configOptions = {
             order = 6,
             args = {
                 worldmap = {
-                    name = "Worldmap Options",
+                    name = "Worldmap Icons",
                     order = 1,
                     type = "group",
                     inline = true,
@@ -394,7 +484,21 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.WR.db.profile.worldmapicons.showWorldmapIcons = value
-                                    WarfrontRareTracker:UpdateWorldMapIcons()
+                                    WarfrontRareTracker:UpdateWorldMapIcons(true)
+                                end,
+                        },
+                        showOnlyAtMaxLevel = {
+                            name = "Show Only At Level 120",
+                            desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.WR.db.profile.worldmapicons.showOnlyAtMaxLevel
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.WR.db.profile.worldmapicons.showOnlyAtMaxLevel = value
+                                    WarfrontRareTracker:UpdateWorldMapIcons(true)
                                 end,
                         },
                         clickToTomTom = {
@@ -402,7 +506,7 @@ configOptions = {
                             desc = "Click on the Rare's Icon to add a TomTom Waypoint.",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 3,
                             get = function(info)
                                     return WarfrontRareTracker.WR.db.profile.worldmapicons.clickToTomTom
                                 end,
@@ -414,7 +518,7 @@ configOptions = {
                     },
                 },
                 hide = {
-                    name = "Hide Options",
+                    name = "Hide Icons",
                     order = 2,
                     type = "group",
                     inline = true,
@@ -430,7 +534,7 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.WR.db.profile.worldmapicons.hideIconWhenDefeated = value
-                                    WarfrontRareTracker:UpdateWorldMapIcons()
+                                    WarfrontRareTracker:UpdateWorldMapIcons(true)
                                 end,
                         },
                         hideAlreadyKnown = {
@@ -444,7 +548,7 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.WR.db.profile.worldmapicons.hideAlreadyKnown = value
-                                    WarfrontRareTracker:UpdateWorldMapIcons()
+                                    WarfrontRareTracker:UpdateWorldMapIcons(true)
                                 end,
                         },
                         hideGoliaths = {
@@ -458,7 +562,7 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.WR.db.profile.worldmapicons.hideGoliaths = value
-                                    WarfrontRareTracker:UpdateWorldMapIcons()
+                                    WarfrontRareTracker:UpdateWorldMapIcons(true)
                                 end,
                         },
                     },

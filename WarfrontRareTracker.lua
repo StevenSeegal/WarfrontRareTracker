@@ -23,21 +23,21 @@ WR.rares = {
     [141615] = { name = L["burning_goliath"], id = 141615, questId = { 53017, 53506 }, type = "Goliath", drop = "Item", itemID = 163691, faction = "all", coord = { 30664478 }, sort = 4, isKnown = false },
     [141620] = { name = L["rumbling_goliath"], id = 141620, questId = { 53021, 53523 }, type = "Goliath", drop = "Item", itemID = 163701, faction = "all", coord = { 29885974 }, sort = 5, isKnown = false },
     [141616] = { name = L["thundering_goliath"], id = 141616, questId = { 53023, 53527 }, type = "Goliath", drop = "Item", itemID = 163698, faction = "all", coord = { 46325212 }, sort = 6, isKnown = false },
-    [142709] = { name = L["beastrider_kama"], id = 142709, questId = { 53083, 53504 }, type = "Rare", drop = "Mount", itemID = 163644, mountID = 1180, faction = "all", coord = { 65347116 }, sort = 7, isKnown = false },
-    [142692] = { name = L["nimar_the_slayer"], id = 142692, questId = { 53091, 53517 }, type = "Rare", drop = "Mount", itemID = 163706, mountID = 1185, faction = "all", coord = { 67616086 }, sort = 8, isKnown = false },
-    [142423] = { name = L["overseer_krix"], id = 142423, questId = { 53014, 53518 }, type = "Elite", drop = "Mount", itemID = 163646, mountID = 1182, faction = "all", coord = { 32923847, 27405722 }, cave = { 33693676, 27385601 }, note = "Inside cave", sort = 9, isKnown = false },
-    [142437] = { name = L["skullripper"], id = 142437, questId = { 53022, 53526 }, type = "Elite", drop = "Mount", itemID = 163645, mountID = 1183, faction = "all", coord = { 57154575 }, sort = 10, isKnown = false },
+    [142423] = { name = L["overseer_krix"], id = 142423, questId = { 53014, 53518 }, type = "Elite", drop = "Mount", itemID = 163646, mountID = 1182, faction = "all", coord = { 32923847, 27405722 }, cave = { 33693676, 27385601 }, note = "Inside cave", sort = 7, isKnown = false },
+    [142437] = { name = L["skullripper"], id = 142437, questId = { 53022, 53526 }, type = "Elite", drop = "Mount", itemID = 163645, mountID = 1183, faction = "all", coord = { 57154575 }, sort = 8, isKnown = false },
+    [142709] = { name = L["beastrider_kama"], id = 142709, questId = { 53083, 53504 }, type = "Rare", drop = "Mount", itemID = 163644, mountID = 1180, faction = "all", coord = { 65347116 }, sort = 9, isKnown = false },
+    [142692] = { name = L["nimar_the_slayer"], id = 142692, questId = { 53091, 53517 }, type = "Rare", drop = "Mount", itemID = 163706, mountID = 1185, faction = "all", coord = { 67616086 }, sort = 10, isKnown = false },
     [142739] = { name = L["knight_captain_aldrin"], id = 142739, questId = { 53088 }, type = "Rare", drop = "Mount", itemID = 163578, mountID = 1173, faction = "Horde", coord = { 48894001 }, note = "Horde only", sort = 11, isKnown = false },
     [142741] = { name = L["doomrider_helgrim"], id = 142741, questId = { 53085 }, type = "Rare", drop = "Mount", itemID = 163579, mountID = 1174, faction = "Alliance", coord = { 53565764 }, note = "Alliance only", sort = 12, isKnown = false },
     [142508] = { name = L["branchlord_aldrus"], id = 142508, questId = { 53013, 53505 }, type = "Elite", drop = "Pet", itemID = 163650, petID = 143503, speciesID = 2433, faction = "all", coord = { 22602135 }, sort = 13, isKnown = false },
-    [142688] = { name = L["darbel_montrose"], id = 142688, questId = { 53084, 53507 }, type = "Rare", drop = "Pet", itemID = 163652, petID = 143507, speciesID = 2434, faction = "all", coord = { 50673675, 50756121 }, sort = 14, isKnown = false },
-    [141668] = { name = L["echo_of_myzrael"], id = 141668, questId = { 53059, 53508 }, type = "Elite", drop = "Pet", itemID = 163677, petID = 143515, speciesID = 2435, faction = "all", coord = { 57073506 }, sort = 15, isKnown = false },
-    [142433] = { name = L["fozruk"], id = 142433, questId = { 53019, 53510 }, type = "Elite", drop = "Pet", itemID = 163711, petID = 143627, speciesID = 2440, faction = "all", coord = { 59422773 }, sort = 16, isKnown = false },
-    [142716] = { name = L["man_hunter_rog"], id = 142716, questId = { 53090, 53515 }, type = "Rare", drop = "Pet", itemID = 163712 , petID = 143628, speciesID = 2441, faction = "all", coord = { 52277674 }, sort = 17, isKnown = false },
-    [142435] = { name = L["plaguefeather"], id = 142435, questId = { 53020, 53519 }, type = "Elite", drop = "Pet", itemID = 163690, petID = 143564, speciesID = 2438, faction = "all", coord = { 35606435 }, sort = 18, isKnown = false },
-    [142436] = { name = L["ragebeak"], id = 142436, questId = { 53016, 53522 }, type = "Elite", drop = "Pet", itemID = 163689, petID = 143563, speciesID = 2437, faction = "all", coord = { 18412794, 11905220 }, sort = 19, isKnown = false },
-    [142438] = { name = L["venomarus"], id = 142438, questId = { 53024, 53528 }, type = "Elite", drop = "Pet", itemID = 163648, petID = 143499, speciesID = 2432, faction = "all", coord = { 56945330 }, sort = 20, isKnown = false },
-    [142440] = { name = L["yogursa"], id = 142440, questId = { 53015, 53529 }, type = "Elite", drop = "Pet", itemID = 163684, petID = 143533, speciesID = 2436, faction = "all", coord = { 13063622 }, sort = 21, isKnown = false },
+    [141668] = { name = L["echo_of_myzrael"], id = 141668, questId = { 53059, 53508 }, type = "Elite", drop = "Pet", itemID = 163677, petID = 143515, speciesID = 2435, faction = "all", coord = { 57073506 }, sort = 14, isKnown = false },
+    [142433] = { name = L["fozruk"], id = 142433, questId = { 53019, 53510 }, type = "Elite", drop = "Pet", itemID = 163711, petID = 143627, speciesID = 2440, faction = "all", coord = { 59422773 }, sort = 15, isKnown = false },
+    [142435] = { name = L["plaguefeather"], id = 142435, questId = { 53020, 53519 }, type = "Elite", drop = "Pet", itemID = 163690, petID = 143564, speciesID = 2438, faction = "all", coord = { 35606435 }, sort = 16, isKnown = false },
+    [142436] = { name = L["ragebeak"], id = 142436, questId = { 53016, 53522 }, type = "Elite", drop = "Pet", itemID = 163689, petID = 143563, speciesID = 2437, faction = "all", coord = { 18412794, 11905220 }, sort = 17, isKnown = false },
+    [142438] = { name = L["venomarus"], id = 142438, questId = { 53024, 53528 }, type = "Elite", drop = "Pet", itemID = 163648, petID = 143499, speciesID = 2432, faction = "all", coord = { 56945330 }, sort = 18, isKnown = false },
+    [142440] = { name = L["yogursa"], id = 142440, questId = { 53015, 53529 }, type = "Elite", drop = "Pet", itemID = 163684, petID = 143533, speciesID = 2436, faction = "all", coord = { 13063622 }, sort = 19, isKnown = false },
+    [142688] = { name = L["darbel_montrose"], id = 142688, questId = { 53084, 53507 }, type = "Rare", drop = "Pet", itemID = 163652, petID = 143507, speciesID = 2434, faction = "all", coord = { 50673675, 50756121 }, sort = 20, isKnown = false },
+    [142716] = { name = L["man_hunter_rog"], id = 142716, questId = { 53090, 53515 }, type = "Rare", drop = "Pet", itemID = 163712 , petID = 143628, speciesID = 2441, faction = "all", coord = { 52277674 }, sort = 21, isKnown = false },
     [142686] = { name = L["foulbelly"], id = 142686, questId = { 53086, 53509 }, type = "Rare", drop = "Toy", itemID = 163735, faction = "all", coord = { 22305106 }, cave = { 28804557 }, note = "Inside cave", sort = 22, isKnown = false },
     [142662] = { name = L["geomancer_flintdagger"], id = 142662, questId = { 53060, 53511 }, type = "Rare", drop = "Toy", itemID = 163713, faction = "all", coord = { 79452939 }, cave = { 78143689 }, note = "Inside cave", sort = 23, isKnown = false },
     [142725] = { name = L["horrific_apparition"], id = 142725, questId = { 53087, 53512 }, type = "Rare", drop = "Toy", itemID = 163736, faction = "all", coord = { 26723278, 19446123 }, sort = 24, isKnown = false },
@@ -92,6 +92,11 @@ local defaults = {
             colorizeStatus = false,
             available = { 0, 1, 0, 1 },
             defeated = { 1, 0.12, 0.12, 1 },
+            colorizeRares = true,
+            worldboss = { 1, 0.5, 0, 1 },
+            elite = { 0.63, 0.20, 0.93, 1 },
+            rare = { 0, 0.44, 0.87, 1 },
+            goliath = { 1, 1, 1, 1 },
         },
         unitframe = {
             showStaus = true,
@@ -100,6 +105,7 @@ local defaults = {
         },
         worldmapicons = {
             showWorldmapIcons = true,
+            showOnlyAtMaxLevel = true,
             clickToTomTom = true,
             hideIconWhenDefeated = false,
             hideAlreadyKnown = false,
@@ -341,6 +347,25 @@ function WarfrontRareTracker:GetDropText(npcid)
     end
 end
 
+function WarfrontRareTracker:GetColoredRareName(npcid)
+    local rare = WR.rares[npcid]
+    if WR.db.profile.colors.colorizeRares then
+        if rare.type == "WorldBoss" then
+            return self:ColorText(rare.name, WR.db.profile.colors.worldboss)
+        elseif rare.type == "Elite" then
+            return self:ColorText(rare.name, WR.db.profile.colors.elite)
+        elseif rare.type == "Rare" then
+            return self:ColorText(rare.name, WR.db.profile.colors.rare)
+        elseif rare.type == "Goliath" then
+            return self:ColorText(rare.name, WR.db.profile.colors.goliath)
+        else
+            return self:ColorText(rare.name, WR.colors.white)
+        end
+    else
+        return self:ColorText(rare.name, WR.colors.white)
+    end
+end
+
 function WarfrontRareTracker:CheckFactionWarfrontControl()
     local state, percentage, nextChange, _ = C_ContributionCollector.GetState(11); -- Battle for Stromgarde
     local factionControlling
@@ -516,10 +541,10 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
             elseif WR.db.profile.menu.hideGoliaths and rare.type == "Goliath" then
             else
                 local rare = WR.rares[npcid]
-                local name = rare.name
-                if rare.type == "WorldBoss" then
-                    name = WarfrontRareTracker:ColorText(name, WR.colors.purple)
-                end
+                local name = WarfrontRareTracker:GetColoredRareName(npcid)
+                -- if rare.type == "WorldBoss" then
+                --     name = WarfrontRareTracker:ColorText(name, WR.colors.purple)
+                -- end
                 local drop = WarfrontRareTracker:GetDropText(npcid)
                 local status = WarfrontRareTracker:GetStatusText(npcid)
 
@@ -782,6 +807,10 @@ local function getNewWorldmapPin()
 end
 
 function WarfrontRareTracker:UpdateWorldMapIcons(init)
+    if WR.db.profile.worldmapicons.showOnlyAtMaxLevel and UnitLevel("player") ~= 120 then
+        self:WipeWorldmapIcons()
+        return
+    end
     local playerMapid = HBD:GetPlayerZone()
     if init or playerMapid == 14 then
         self:WipeWorldmapIcons()
