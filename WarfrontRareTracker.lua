@@ -266,6 +266,14 @@ local function isPlayerMaxZoneLevel(mapid)
     return playerLevel >= rareDB[mapid].zonelevel 
 end
 
+local function isPlayerMaxLevel()
+    if playerLevel ~= PLAYER_MAXLEVEL then
+        return false
+    else
+        return true
+    end
+end
+
 local function getNPCIDFromGUID(guid)
 	if guid then
 		local unit_type, _, _, _, _, mob_id = strsplit('-', guid)
@@ -551,7 +559,7 @@ end
 local function showRare(mapid, npcid, worldmap)
     if isNPCPlayerFaction(mapid, npcid) then
         if worldmap ~= nil and worldmap == true then
-            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and playerLevel ~= PLAYER_MAXLEVEL then
+            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and isPlayerMaxLevel() then
                 return false
             end
             if WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated and isQuestCompleted(mapid, npcid) or WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == "Goliath" then
@@ -739,12 +747,10 @@ local function addToTomTom(mapid, npcid)
 end
 
 local function playerLeveledUp(newLevel)
-    playerLevel = newLevel
-
-    if newLevel == PLAYER_MAXLEVEL and WarfrontRareTracker.db.profile.general.enableLevelUpSound then
+    if isPlayerMaxLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpSound then
         playSound("good")
     end
-    if newLevel == PLAYER_MAXLEVEL and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
+    if isPlayerMaxLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
         local zones = ""
         for mapid, c in pairs(rareDB) do
             if string.len(zones) > 1 then
@@ -849,7 +855,8 @@ function WarfrontRareTracker:OnEvent(event, ...)
         end
     elseif event == "PLAYER_LEVEL_UP" then
         local newLevel = ...
-        if newLevel == PLAYER_MAXLEVEL then
+        playerLevel = newLevel
+        if isPlayerMaxLevel() then
             C_Timer.After(5, function() playerLeveledUp(newLevel) end)
         end
     end
@@ -867,10 +874,12 @@ end
 ----------------
 -- Bucket events
 function WarfrontRareTracker:BUCKET_ON_LOOT_RECEIVED()
-    if isSessionLocked("BUCKET_ON_LOOT_RECEIVED") then
-        return
+    if isPlayerMaxLevel() then
+        if isSessionLocked("BUCKET_ON_LOOT_RECEIVED") then
+            return
+        end
+        C_Timer.After(4, function() WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons("LootTimer") end)
     end
-    C_Timer.After(4, function() WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons("LootTimer") end)
 end
 
 function WarfrontRareTracker:ZONE_CHANGED()
@@ -886,7 +895,9 @@ function WarfrontRareTracker:ZONE_CHANGED()
 end
 
 function WarfrontRareTracker:TOYS_UPDATED()
-    scanForKnownItems()
+    if isPlayerMaxLevel() then
+        scanForKnownItems()
+    end
 end
 
 function WarfrontRareTracker:CONTRIBUTION_COLLECTOR_UPDATE_SINGLE() -- This got fired on faction change and percentage. NOTE this got spammed on percentage, so it's a Bucket event with a delay of 30 seconds.
@@ -905,7 +916,6 @@ function WarfrontRareTracker:RefreshMinimap()
 end
 
 function WarfrontRareTracker:RefreshConfig()
-    self:ConfigChangeCheck()
     self:RefreshMinimap()
     self:RefreshBrokerText()
     self:UpdateAllWorldMapIcons()
@@ -982,7 +992,7 @@ function WarfrontRareTracker:MenuOnClick(self, button)
         LibStub("AceConfigDialog-3.0"):Open("WarfrontRareTracker")
     elseif button == "LeftButton" then
         if not WarfrontRareTracker.db.profile.menu.hideOnCombat or WarfrontRareTracker.db.profile.menu.hideOnCombat and not UnitAffectingCombat("player") then
-            if WarfrontRareTracker.db.profile.menu.showMenuOn == "click" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and playerLevel == PLAYER_MAXLEVEL then
+            if WarfrontRareTracker.db.profile.menu.showMenuOn == "click" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and isPlayerMaxLevel() then
                 if menuTooltip == nil then
                     WarfrontRareTracker:ShowMenu(self)
                 else
@@ -995,7 +1005,7 @@ end
 
 function WarfrontRareTracker:MenuOnEnter(self)
     if not WarfrontRareTracker.db.profile.menu.hideOnCombat or WarfrontRareTracker.db.profile.menu.hideOnCombat and not UnitAffectingCombat("player") then
-        if WarfrontRareTracker.db.profile.menu.showMenuOn == "mouse" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and playerLevel == PLAYER_MAXLEVEL then
+        if WarfrontRareTracker.db.profile.menu.showMenuOn == "mouse" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and isPlayerMaxLevel() then
             WarfrontRareTracker:ShowMenu(self)
         end
     end
