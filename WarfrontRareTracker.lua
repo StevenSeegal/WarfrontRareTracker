@@ -267,10 +267,10 @@ local function isPlayerMaxZoneLevel(mapid)
 end
 
 local function isPlayerMaxLevel()
-    if playerLevel ~= PLAYER_MAXLEVEL then
-        return false
-    else
+    if playerLevel >=  PLAYER_MAXLEVEL then
         return true
+    else
+        return false
     end
 end
 
@@ -368,7 +368,7 @@ local function getColoredRareName(mapid, npcid)
 end
 
 local function getColoredStatusText(mapid, npcid)
-    if not isPlayerMaxZoneLevel(mapid) then
+    if not isPlayerMaxLevel() then
         return colorText("Level "..rareDB[mapid].zonelevel, colors.orange)
     end
     local rare = rareDB[mapid].rares[npcid]
@@ -559,7 +559,7 @@ end
 local function showRare(mapid, npcid, worldmap)
     if isNPCPlayerFaction(mapid, npcid) then
         if worldmap ~= nil and worldmap == true then
-            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and isPlayerMaxLevel() then
+            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
                 return false
             end
             if WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated and isQuestCompleted(mapid, npcid) or WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == "Goliath" then
@@ -642,7 +642,7 @@ local function updateBrokerText()
             brokerText = "Warfront Rare Tracker"
         elseif WarfrontRareTracker.db.profile.broker.brokerText == "factionstatus" then
             if hasDBContributionInfo() then
-                if isPlayerMaxZoneLevel(mapid) then
+                if isPlayerMaxLevel() then
                     canSchedule = true
                     if factionControlling ~= getPlayerFaction() then
                         local state, percentage, timeNextChange = getWarfrontProgressInfo()
@@ -1516,7 +1516,7 @@ function WarfrontRareTracker:DeleteAllWorldmapIcons()
 end
 
 function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons(event)
-    if not isPlayerMaxZoneLevel() then
+    if not isPlayerMaxLevel() then
         return
     end
     if event == nil then event = "Unknown" end
@@ -1545,9 +1545,9 @@ function WarfrontRareTracker:UpdateAllWorldMapIcons()
                 local npcid = rare.npcid
                 if showRare(mapid, npcid, true) then
                     WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, npcid)
-                        if rare.cave then
-                            WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, npcid, rare.cave)
-                        end
+                    if rare.cave then
+                        WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, npcid, rare.cave)
+                    end
                 end
             end
         end
