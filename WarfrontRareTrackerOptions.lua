@@ -1026,6 +1026,9 @@ function WarfrontRareTracker:DelayedConfigInitialize()
 end
 
 local function checkConfigChanges()
+    if WarfrontRareTracker.db.profile.profileversion == nil then
+        WarfrontRareTracker.db.profile["profileversion"] = 1
+    end
     if WarfrontRareTracker.db.profile.profileversion == 1 then
         WarfrontRareTracker.db.profile.profileversion = 2 -- Set the version one higher
         -- changes

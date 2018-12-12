@@ -3,6 +3,9 @@ if not L then return end
 
 --------
 -- Rares
+--------
+
+-- Arathi Highlands
 L["dooms_howl"] = "사자의 포효"
 L["the_lions_roar"] = "멸망의 고함"
 L["cresting_goliath"] = "물결치는 거수"
@@ -34,6 +37,42 @@ L["ruul_onestone"] = "루울 원스톤"
 L["singer"] = "싱어"
 L["zalas_witherbark"] = "마른나무껍질 잘라스"
 
+-- Darkshore
+L["ivus_the_decayed"] = "Ivus the Decayed"
+L["ivus_the_forest_lord"] = "Ivus the Forest Lord"
+L["alash_anir"] = "Alash'anir"
+L["frightened_kodo"] = "Frightened Kodo"
+L["agathe_wyrmwood"] = "Agathe Wyrmwood"
+L["croz_bloodrage"] = "Croz Bloodrage"
+L["moxo_the_beheader"] = "Moxo the Beheader"
+L["blackpaw"] = "Blackpaw"
+L["shadowclaw"] = "Shadowclaw"
+L["athil_dewfire"] = "Athil Dewfire"
+L["conflagros"] = "Conflagros"
+L["cyclarus"] = "Cyclarus"
+L["hydrath"] = "Hydrath"
+L["soggoth_the_slitherer"] = "Soggoth the Slitherer"
+L["twilight_prophet_graeme"] = "Twilight Prophet Graeme"
+L["zim_kaga"] = "Zim'kaga"
+L["orwell_stevenson"] = "Orwell Stevenson"
+L["onu"] = "Onu"
+L["grimhorn"] = "Grimhorn"
+L["gren_tornfur"] = "Gren Tornfur"
+L["athrikus_narassin"] = "Athrikus Narassin"
+L["commander_ral_esh"] = "Commander Ral'esh"
+L["commander_drald"] = "Commander Drald"
+L["burninator_mark_v"] = "Burninator Mark V"
+L["thelar_moonstrike"] = "Thelar Moonstrike"
+L["sapper_odette"] = "Sapper Odette"
+L["aman"] = "Aman"
+L["mrggr_marr"] = "Mrggr'marr"
+L["stonebinder_ssra_vess"] = "Stonebinder Ssra'vess"
+L["granokk"] = "Granokk"
+L["madfeather"] = "Madfeather"
+L["scalefiend"] = "Scalefiend"
+L["shattershard"] = "Shattershard"
+L["glimmerspine"] = "Glimmerspine"
+L["glrglrr"] = "Glrglrr"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.
