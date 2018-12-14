@@ -3,6 +3,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 local isTomTomlocked = true
 local hasMultipleRareDB = false
 local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys" }
+local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
 
 local colors = {
@@ -28,9 +29,15 @@ local function isBrokerIntervalDisabled()
     end
 end
 
-local function refreshWorldmapIcons()
-    if WarfrontRareTracker.db.profile.worldmapicons.showWorldmapIcons then
-        WarfrontRareTracker:UpdateAllWorldMapIcons()
+local function refreshWorldmapIcons(masterfiltermode)
+    if masterfiltermode then
+        if WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.worldmapicons.showWorldmapIcons then
+            WarfrontRareTracker:UpdateAllWorldMapIcons()
+        end
+    else
+        if WarfrontRareTracker.db.profile.worldmapicons.showWorldmapIcons then
+            WarfrontRareTracker:UpdateAllWorldMapIcons()
+        end
     end
 end
 
@@ -103,7 +110,7 @@ configOptions = {
                             type = "select",
                             style = "dropdown",
                             order = 2,
-                            values = { ["addonname"]="Addon Name", ["factionstatus"]="Faction Warfront Status", ["allstatus"]="All Warfront Status", ["zonename"]="Selected Zone Name" },
+                            values = brokerTexts,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.broker.brokerText
                                 end,
@@ -231,46 +238,81 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
-                        hideAlreadyKnown = {
-                            name = "Hide Known Items",
-                            desc = "Hides Rare's of which drop you already know.",
+                        useMasterfilter = {
+                            name = "Use Master Filter",
+                            desc = "Use Master Filter.",
                             type = "toggle",
-                            width = 1,
-                            order = 1,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.menu.hideAlreadyKnown
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.menu.hideAlreadyKnown = value
-                                end,
-                        },
-                        hideGoliaths = {
-                            name = "Hide Goliaths",
-                            desc = "Hides the Goliaths as they don't drop a learnable item.",
-                            type = "toggle",
-                            width = 1,
+                            width = "full",
                             order = 2,
                             get = function(info)
-                                    return WarfrontRareTracker.db.profile.menu.hideGoliaths
+                                    return WarfrontRareTracker.db.profile.menu.useMasterfilter
                                 end,
                             set = function(info, value)
-                                    WarfrontRareTracker.db.profile.menu.hideGoliaths = value
+                                    WarfrontRareTracker.db.profile.menu.useMasterfilter = value
                                 end,
                         },
-                        whitelist = {
-                            name = "Whitelist:",
-                            desc = "Select which 'Already Know' drop you still want to show.",
-                            type = "multiselect",
-                            width = "half",
-                            order = 3,
-                            values = whitelist,
-                            get = function(info, key)
-                                    return WarfrontRareTracker.db.profile.menu.whitelist[key]
-                                end,
-                            set = function(info, key, value)
-                                    WarfrontRareTracker.db.profile.menu.whitelist[key] = value
-                                end,
-                            hidden = function() return not WarfrontRareTracker.db.profile.menu.hideAlreadyKnown end,
+                        hideoptions = {
+                            name = "Hide Options",
+                            order = 10,
+                            type = "group",
+                            inline = true,
+                            hidden = function() return WarfrontRareTracker.db.profile.menu.useMasterfilter end,
+                            args = {
+                                hideGoliaths = {
+                                    name = "Hide Goliaths",
+                                    desc = "Hides the Goliaths as they don't drop a learnable item.",
+                                    type = "toggle",
+                                    width = 1,
+                                    order = 1,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideGoliaths
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideGoliaths = value
+                                        end,
+                                },
+                                hideUnknowLoot = {
+                                    name = "Hide Unknown Loot",
+                                    desc = "Hides the Rare's that don't drop a learnable item.",
+                                    type = "toggle",
+                                    width = 1,
+                                    order = 2,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideUnknowLoot
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideUnknowLoot = value
+                                        end,
+                                },
+                                hideAlreadyKnown = {
+                                    name = "Hide Known Items",
+                                    desc = "Hides Rare's of which drop you already know.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 3,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideAlreadyKnown
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideAlreadyKnown = value
+                                        end,
+                                },
+                                whitelist = {
+                                    name = "Whitelist:",
+                                    desc = "Select which 'Already Know' drop you still want to show.",
+                                    type = "multiselect",
+                                    width = "half",
+                                    order = 4,
+                                    values = whitelist,
+                                    get = function(info, key)
+                                            return WarfrontRareTracker.db.profile.menu.whitelist[key]
+                                        end,
+                                    set = function(info, key, value)
+                                            WarfrontRareTracker.db.profile.menu.whitelist[key] = value
+                                        end,
+                                    hidden = function() return not WarfrontRareTracker.db.profile.menu.hideAlreadyKnown end,
+                                },
+                            },
                         },
                     },
                 },
@@ -280,17 +322,17 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
-                        showWarfrontOnTitle = {
-                            name = "Warfront Status In Title",
-                            desc = "Shows Warfront Status when mouse over the title of the menu.",
+                        showWarfrontOnZoneName = {
+                            name = "Warfront Status On Zone Name",
+                            desc = "Shows Warfront Status when mouse over the title of the zone.",
                             type = "toggle",
                             width = 1.3,
                             order = 1,
                             get = function(info)
-                                    return WarfrontRareTracker.db.profile.menu.showWarfrontOnTitle
+                                    return WarfrontRareTracker.db.profile.menu.showWarfrontOnZoneName
                                 end,
                             set = function(info, value)
-                                    WarfrontRareTracker.db.profile.menu.showWarfrontOnTitle = value
+                                    WarfrontRareTracker.db.profile.menu.showWarfrontOnZoneName = value
                                 end,
                         },
                         showWarfrontTitle = {
@@ -306,7 +348,7 @@ configOptions = {
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.menu.showWarfrontTitle = value
                                 end,
-                            hidden = function() return not WarfrontRareTracker.db.profile.menu.showWarfrontOnTitle end,
+                            disabled = function() return not WarfrontRareTracker.db.profile.menu.showWarfrontOnZoneName end,
                         },
                         seperator = {
                             name = "",
@@ -339,7 +381,7 @@ configOptions = {
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.menu.showWarfrontMenu = value
                                 end,
-                            hidden = function() return not WarfrontRareTracker.db.profile.menu.showWarfrontInMenu end,
+                            disabled = function() return not WarfrontRareTracker.db.profile.menu.showWarfrontInMenu end,
                         },
                     },
                 },
@@ -482,10 +524,119 @@ configOptions = {
                 },
             },
         },
+        masterfilter = {
+            name = "Master Filter",
+            type = "group",
+            order = 5,
+            args = {
+                hideOptions = {
+                    name = "Shared Filter Options",
+                    order = 1,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        hideGoliaths = {
+                            name = "Hide Goliaths",
+                            desc = "Hides the Icon of the Goliaths.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideGoliaths
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideGoliaths = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideUnknowLoot = {
+                            name = "Hide Unknown Loot",
+                            desc = "Hides the Rare's that don't drop a learnable item.",
+                            type = "toggle",
+                            width = "full",
+                            order = 3,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideAlreadyKnown = {
+                            name = "Hide Known Items",
+                            desc = "Hides the Icon of the Rare's which drop you already know.",
+                            type = "toggle",
+                            width = "full",
+                            order = 4,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        whitelist = {
+                            name = "Whitelist:",
+                            desc = "Select which 'Already Know' drop you still want to show.",
+                            type = "multiselect",
+                            width = "half",
+                            order = 5,
+                            values = whitelist,
+                            get = function(info, key)
+                                    return WarfrontRareTracker.db.profile.masterfilter.whitelist[key]
+                                end,
+                            set = function(info, key, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.whitelist[key] = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                            hidden = function() return not WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown end,
+                        },
+                    },
+                },
+                worldmap = {
+                    name = "Worldmap Options",
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        worldmapHideIconWhenDefeated = {
+                            name = "Hide When Defeated",
+                            desc = "Hides the Icon when the Rare is Defeated.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        showOnlyAtMaxLevel = {
+                            name = "Show Only At Level 120",
+                            desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                    },
+                },
+            },
+        },
         colors = {
             name = "Color Options",
             type = "group",
-            order = 5,
+            order = 6,
             args = {
                 drops = {
                     name = "Color Known Items",
@@ -688,7 +839,7 @@ configOptions = {
         unitframes = {
             name = "Unit Frames",
             type = "group",
-            order = 6,
+            order = 7,
             args = {
                 unitframes = {
                     name = "NPC Unit Frame Options",
@@ -787,7 +938,7 @@ configOptions = {
         worldmap = {
             name = "Worldmap",
             type = "group",
-            order = 7,
+            order = 8,
             args = {
                 worldmap = {
                     name = "Worldmap Icons",
@@ -820,7 +971,7 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel = value
-                                    refreshWorldmapIcons()
+                                    refreshWorldmapIcons(false)
                                 end,
                         },
                         clickToTomTom = {
@@ -845,64 +996,102 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
-                        hideIconWhenDefeated = {
-                            name = "Hide When Defeated",
-                            desc = "Hides the Icon when the Rare is Defeated.",
-                            type = "toggle",
-                            width = "full",
-                            order = 1,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated = value
-                                    refreshWorldmapIcons()
-                                end,
-                        },
-                        hideGoliaths = {
-                            name = "Hide Goliaths",
-                            desc = "Hides the Icon of the Goliaths.",
+                        useMasterfilter = {
+                            name = "Use Master Filter",
+                            desc = "Use Master Filter.",
                             type = "toggle",
                             width = "full",
                             order = 2,
                             get = function(info)
-                                    return WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
+                                    return WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter
                                 end,
                             set = function(info, value)
-                                    WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths = value
-                                    refreshWorldmapIcons()
+                                    WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter = value
+                                    refreshWorldmapIcons(false)
                                 end,
                         },
-                        hideAlreadyKnown = {
-                            name = "Hide Known Items",
-                            desc = "Hides the Icon of the Rare's which drop you already know.",
-                            type = "toggle",
-                            width = "full",
-                            order = 3,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown = value
-                                    refreshWorldmapIcons()
-                                end,
+                        hideoptions = {
+                            name = "Hide Options",
+                            order = 10,
+                            type = "group",
+                            inline = true,
+                            hidden = function() return WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter end,
+                            args = {
+                                hideIconWhenDefeated = {
+                                    name = "Hide When Defeated",
+                                    desc = "Hides the Icon when the Rare is Defeated.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 2,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideGoliaths = {
+                                    name = "Hide Goliaths",
+                                    desc = "Hides the Icon of the Goliaths.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 3,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideUnknowLoot = {
+                                    name = "Hide Unknown Loot",
+                                    desc = "Hides the Rare's that don't drop a learnable item.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 4,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideAlreadyKnown = {
+                                    name = "Hide Known Items",
+                                    desc = "Hides the Icon of the Rare's which drop you already know.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 5,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                whitelist = {
+                                    name = "Whitelist:",
+                                    desc = "Select which 'Already Know' drop you still want to show.",
+                                    type = "multiselect",
+                                    width = "half",
+                                    order = 6,
+                                    values = whitelist,
+                                    get = function(info, key)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]
+                                        end,
+                                    set = function(info, key, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.whitelist[key] = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                    hidden = function() return not WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown end,
+                                },
+                            },
                         },
-                        whitelist = {
-                            name = "Whitelist:",
-                            desc = "Select which 'Already Know' drop you still want to show.",
-                            type = "multiselect",
-                            width = "half",
-                            order = 4,
-                            values = whitelist,
-                            get = function(info, key)
-                                    return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]
-                                end,
-                            set = function(info, key, value)
-                                    WarfrontRareTracker.db.profile.worldmapicons.whitelist[key] = value
-                                    refreshWorldmapIcons()
-                                end,
-                            hidden = function() return not WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown end,
-                        },
+                        
                     },
                 },
             },
@@ -910,7 +1099,7 @@ configOptions = {
         tomtom = {
             name = "TomTom",
             type = "group",
-            order = 8,
+            order = 9,
             args = {
                 tomtom = {
                     name = "TomTom Integration (Requires TomTom)",
@@ -953,7 +1142,7 @@ configOptions = {
         soundMessage = {
             name = "Sounds & Messages",
             type = "group",
-            order = 9,
+            order = 10,
             args = {
                 zone = {
                     name = "Warfront Change Options",
@@ -1015,6 +1204,36 @@ configOptions = {
     },
 }
 
+local currentConfigVersion = 3
+local function checkConfigChanges()
+    if WarfrontRareTracker.db.profile.profileversion == nil then
+        WarfrontRareTracker.db.profile["profileversion"] = 1
+    end
+    
+    if brokerTexts[WarfrontRareTracker.db.profile.broker.brokerText] == nil then
+        WarfrontRareTracker.db.profile.broker.brokerText = "addonname"
+    end
+
+    -- new changes
+    if WarfrontRareTracker.db.profile.profileversion < currentConfigVersion then
+        WarfrontRareTracker.db.profile.profileversion = currentConfigVersion
+        -- Copy current 'Hide' settings to the new 'Master Filter'  showWarfrontOnTitle showWarfrontOnZoneName
+        WarfrontRareTracker.db.profile.menu.showWarfrontOnZoneName = WarfrontRareTracker.db.profile.menu.showWarfrontOnTitle
+        WarfrontRareTracker.db.profile.masterfilter.showOnlyAtMaxLevel = WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel
+        WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown = WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
+        WarfrontRareTracker.db.profile.masterfilter.hideGoliaths = WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
+        WarfrontRareTracker.db.profile.masterfilter.whitelist["Mount"] = WarfrontRareTracker.db.profile.worldmapicons.whitelist["Mount"]
+        WarfrontRareTracker.db.profile.masterfilter.whitelist["Pet"] = WarfrontRareTracker.db.profile.worldmapicons.whitelist["Pet"]
+        WarfrontRareTracker.db.profile.masterfilter.whitelist["Toy"] = WarfrontRareTracker.db.profile.worldmapicons.whitelist["Toy"]
+        WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel = WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel
+        WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated = WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
+    end
+end
+
+function WarfrontRareTracker:OnRefreshConfig()
+    checkConfigChanges()
+end
+
 function WarfrontRareTracker:DelayedConfigInitialize()
     if IsAddOnLoaded("TomTom") then
         isTomTomlocked = false
@@ -1025,20 +1244,9 @@ function WarfrontRareTracker:DelayedConfigInitialize()
     end
 end
 
-local function checkConfigChanges()
-    if WarfrontRareTracker.db.profile.profileversion == nil then
-        WarfrontRareTracker.db.profile["profileversion"] = 1
-    end
-    if WarfrontRareTracker.db.profile.profileversion == 1 then
-        WarfrontRareTracker.db.profile.profileversion = 2 -- Set the version one higher
-        -- changes
-        WarfrontRareTracker.db.profile.broker.brokerText = "addonname"
-    end
-end
-
 function WarfrontRareTracker:RegisterOptions()
     configOptions.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(WarfrontRareTracker.db)
-    configOptions.args.profiles.order = 10
+    configOptions.args.profiles.order = -1
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("WarfrontRareTracker", configOptions)
     checkConfigChanges()
 
