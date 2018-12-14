@@ -271,12 +271,25 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideGoliaths = value
                                         end,
                                 },
+                                hideUnavailable = {
+                                    name = "Hide Unavailable Rares",
+                                    desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
+                                    type = "toggle",
+                                    width = 1,
+                                    order = 2,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideUnavailable
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideUnavailable = value
+                                        end,
+                                },
                                 hideUnknowLoot = {
                                     name = "Hide Unknown Loot",
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
                                     width = 1,
-                                    order = 2,
+                                    order = 4,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUnknowLoot
                                         end,
@@ -288,7 +301,7 @@ configOptions = {
                                     name = "Hide Known Items",
                                     desc = "Hides Rare's of which drop you already know.",
                                     type = "toggle",
-                                    width = "full",
+                                    width = 1,
                                     order = 3,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideAlreadyKnown
@@ -302,7 +315,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 4,
+                                    order = 5,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.menu.whitelist[key]
@@ -549,12 +562,26 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
+                        hideUnavailable = {
+                            name = "Hide Unavailable Rares",
+                            desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
+                            type = "toggle",
+                            width = "full",
+                            order = 3,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideUnavailable
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideUnavailable = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         hideUnknowLoot = {
                             name = "Hide Unknown Loot",
                             desc = "Hides the Rare's that don't drop a learnable item.",
                             type = "toggle",
                             width = "full",
-                            order = 3,
+                            order = 4,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot
                                 end,
@@ -568,7 +595,7 @@ configOptions = {
                             desc = "Hides the Icon of the Rare's which drop you already know.",
                             type = "toggle",
                             width = "full",
-                            order = 4,
+                            order = 5,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown
                                 end,
@@ -582,7 +609,7 @@ configOptions = {
                             desc = "Select which 'Already Know' drop you still want to show.",
                             type = "multiselect",
                             width = "half",
-                            order = 5,
+                            order = 6,
                             values = whitelist,
                             get = function(info, key)
                                     return WarfrontRareTracker.db.profile.masterfilter.whitelist[key]
@@ -1022,7 +1049,7 @@ configOptions = {
                                     desc = "Hides the Icon when the Rare is Defeated.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 2,
+                                    order = 1,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
                                         end,
@@ -1036,12 +1063,26 @@ configOptions = {
                                     desc = "Hides the Icon of the Goliaths.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 3,
+                                    order = 2,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideUnavailable = {
+                                    name = "Hide Unavailable Rares",
+                                    desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 3,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideUnavailable
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideUnavailable = value
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
@@ -1211,7 +1252,7 @@ local function checkConfigChanges()
     end
     
     if brokerTexts[WarfrontRareTracker.db.profile.broker.brokerText] == nil then
-        WarfrontRareTracker.db.profile.broker.brokerText = "addonname"
+        WarfrontRareTracker.db.profile.broker.brokerText = "allstatus"
     end
 
     -- new changes

@@ -71,7 +71,7 @@ L["madfeather"] = "Madfeather"
 L["scalefiend"] = "Scalefiend"
 L["shattershard"] = "Shattershard"
 L["glimmerspine"] = "Glimmerspine"
-L["glrglrr"] = "Glrglrr"
+L["glrglrr"] = "Glrglrr (Amberclaw)"  --  Amberclaw <Glrglrr's Mount> (Guy sits on the crab)
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.
