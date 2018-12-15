@@ -1016,7 +1016,7 @@ function WarfrontRareTracker:BUCKET_ON_LOOT_RECEIVED()
         if isSessionLocked("BUCKET_ON_LOOT_RECEIVED") then
             return
         end
-        C_Timer.After(4, function() WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons() end)
+        C_Timer.After(3, function() WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons() end)
     end
 end
 
@@ -1646,7 +1646,7 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
     if not isPlayerMaxLevel() then
         return
     end
-    if self.db.profile.worldmapicons.hideIconWhenDefeated and rareDB[currentPlayerMapid] then
+    if self.db.profile.worldmapicons.hideIconWhenDefeated and rareDB[currentPlayerMapid] or self.db.profile.masterfilter.worldmapHideIconWhenDefeated and rareDB[currentPlayerMapid] then
         for k, icon in pairs(rareDB[currentPlayerMapid].worldmapIcons) do
             if isQuestCompleted(currentPlayerMapid, icon.npcid) then
                 HBDPins:RemoveWorldMapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
