@@ -949,7 +949,9 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterBucketEvent("ZONE_CHANGED", 1, "ZONE_CHANGED")
     self:RegisterBucketEvent("ZONE_CHANGED_INDOORS", 1, "ZONE_CHANGED")
     self:RegisterBucketEvent("ZONE_CHANGED_NEW_AREA", 1,"ZONE_CHANGED")
+    
     self:RegisterBucketEvent("LOOT_CLOSED", 1,"BUCKET_ON_LOOT_RECEIVED")
+    self:RegisterBucketEvent("PLAYER_MONEY", 2, "BUCKET_ON_LOOT_RECEIVED") -- if worldboss only drops money
     self:RegisterBucketEvent("SHOW_LOOT_TOAST", 2, "BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("SHOW_LOOT_TOAST_UPGRADE", 2,"BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("ENCOUNTER_LOOT_RECEIVED", 2, "BUCKET_ON_LOOT_RECEIVED")
@@ -969,6 +971,7 @@ function WarfrontRareTracker:OnDisable()
     self:UnregisterBucket("ZONE_CHANGED_INDOORS")
     self:UnregisterBucket("ZONE_CHANGED_NEW_AREA")
     self:UnregisterBucket("LOOT_CLOSED")
+    self:UnregisterBucket("PLAYER_MONEY")
     self:UnregisterBucket("SHOW_LOOT_TOAST")
     self:UnregisterBucket("SHOW_LOOT_TOAST_UPGRADE")
     self:UnregisterBucket("ENCOUNTER_LOOT_RECEIVED")
@@ -1127,24 +1130,52 @@ function WarfrontRareTracker:MenuOnClick(self, button)
     if button == "RightButton" then
         LibStub("AceConfigDialog-3.0"):Open("WarfrontRareTracker")
     elseif button == "LeftButton" then
-        if not WarfrontRareTracker.db.profile.menu.hideOnCombat or WarfrontRareTracker.db.profile.menu.hideOnCombat and not UnitAffectingCombat("player") then
-            if WarfrontRareTracker.db.profile.menu.showMenuOn == "click" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and isPlayerMaxLevel() then
-                if menuTooltip == nil then
-                    WarfrontRareTracker:ShowMenu(self)
-                else
-                    WarfrontRareTracker:MenuOnLeave()
-                end
-            end
+        if WarfrontRareTracker.db.profile.menu.showMenuOn ~= "click" then
+            return
+        end
+        if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
+            return
+        end
+        -- if WarfrontRareTracker.db.profile.menu.useMasterfilter then
+        --     if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
+        --         return
+        --     end
+        -- else
+        --     if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+        --         return
+        --     end
+        -- end
+        if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+            return
+        end
+        if menuTooltip == nil then
+            WarfrontRareTracker:ShowMenu(self)
+        else
+            WarfrontRareTracker:MenuOnLeave()
         end
     end
 end
 
 function WarfrontRareTracker:MenuOnEnter(self)
-    if not WarfrontRareTracker.db.profile.menu.hideOnCombat or WarfrontRareTracker.db.profile.menu.hideOnCombat and not UnitAffectingCombat("player") then
-        if WarfrontRareTracker.db.profile.menu.showMenuOn == "mouse" and not WarfrontRareTracker.db.profile.menu.showAtMaxLevel or WarfrontRareTracker.db.profile.menu.showAtMaxLevel and isPlayerMaxLevel() then
-            WarfrontRareTracker:ShowMenu(self)
-        end
+    if WarfrontRareTracker.db.profile.menu.showMenuOn ~= "mouse" then
+        return
     end
+    if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
+        return
+    end
+    -- if WarfrontRareTracker.db.profile.menu.useMasterfilter then
+    --     if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
+    --         return
+    --     end
+    -- else
+    --     if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+    --         return
+    --     end
+    -- end
+    if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+        return
+    end
+    WarfrontRareTracker:ShowMenu(self)
 end
 
 function WarfrontRareTracker:MenuOnLeave()
