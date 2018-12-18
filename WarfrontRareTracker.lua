@@ -13,7 +13,7 @@ local HBDPins = LibStub("HereBeDragons-Pins-2.0")
 -- Local references to wow's provided functions
 -----------------------------------------------
 local floor, mod, format, strsplit, table, tonumber, type, pairs, next = floor, mod, format, strsplit, table, tonumber, type, pairs, next
-local IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel = IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel
+local UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel = UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel
 local C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver = C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver
 
 ------------
@@ -57,9 +57,12 @@ local isTomTomloaded = false
 local autoChangeZone = nil
 local autoChangeZoneTimestamp = 0
 local manualTimestamp = 0
+local isInInstance = false
 local currentPlayerMapid = 0
 local currentPlayerLevel = 0
+local currentPlayerName = ""
 local currentPlayerFaction = ""
+local currentPlayerRealm = ""
 
 -- Rare Database
 local sortedRareDB = {}
@@ -74,37 +77,38 @@ local rareDB = {
         hordeContributionMapID = 11,
         warfrontControlledByFaction = "",
         worldmapIcons = {},
+        minimapIcons = {},
         rares = {
-            [138122] = { name = L["dooms_howl"], npcid = 138122, questId = { 53002 }, type = TYPE_WORLDBOSS, drop = DROP_TOY, itemID = 163828, faction = "Alliance", coord = { 38624096 }, note = "Alliance only", isKnown = false },
-            [137374] = { name = L["the_lions_roar"], npcid = 137374, questId = { 53001 }, type = TYPE_WORLDBOSS, drop = DROP_TOY, itemID = 163829, faction = "Horde", coord = { 38624096 }, note = "Horde only", isKnown = false },
-            [141618] = { name = L["cresting_goliath"], npcid = 141618, questId = { 53018, 53531 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163700, faction = FACTION_ALL, coord = { 62093158 }, isKnown = false },
-            [141615] = { name = L["burning_goliath"], npcid = 141615, questId = { 53017, 53506 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163691, faction = FACTION_ALL, coord = { 30664478 }, isKnown = false },
-            [141620] = { name = L["rumbling_goliath"], npcid = 141620, questId = { 53021, 53523 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163701, faction = FACTION_ALL, coord = { 29885974 }, isKnown = false },
-            [141616] = { name = L["thundering_goliath"], npcid = 141616, questId = { 53023, 53527 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163698, faction = FACTION_ALL, coord = { 46325212 }, isKnown = false },
-            [142709] = { name = L["beastrider_kama"], npcid = 142709, questId = { 53083, 53504 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163644, mountID = 1180, faction = FACTION_ALL, coord = { 65347116 }, isKnown = false },
+            [138122] = { name = L["dooms_howl"], npcid = 138122, questId = { 53002 }, type = TYPE_WORLDBOSS, drop = DROP_TOY, itemID = 163828, faction = "Alliance", coord = { 38624096 }, bothphases = false, note = "Alliance only", warning = "Unavailable under Horde Control", isKnown = false },
+            [137374] = { name = L["the_lions_roar"], npcid = 137374, questId = { 53001 }, type = TYPE_WORLDBOSS, drop = DROP_TOY, itemID = 163829, faction = "Horde", coord = { 38624096 }, bothphases = false, note = "Horde only", warning = "Unavailable under Alliance Control", isKnown = false },
+            [141618] = { name = L["cresting_goliath"], npcid = 141618, questId = { 53018, 53531 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163700, faction = FACTION_ALL, coord = { 62093158 }, bothphases = true, isKnown = false },
+            [141615] = { name = L["burning_goliath"], npcid = 141615, questId = { 53017, 53506 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163691, faction = FACTION_ALL, coord = { 30664478 }, bothphases = true, isKnown = false },
+            [141620] = { name = L["rumbling_goliath"], npcid = 141620, questId = { 53021, 53523 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163701, faction = FACTION_ALL, coord = { 29885974 }, bothphases = true, isKnown = false },
+            [141616] = { name = L["thundering_goliath"], npcid = 141616, questId = { 53023, 53527 }, type = TYPE_GOLIATH, drop = DROP_ITEM, itemID = 163698, faction = FACTION_ALL, coord = { 46325212 }, bothphases = true, isKnown = false },
+            [142709] = { name = L["beastrider_kama"], npcid = 142709, questId = { 53083, 53504 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163644, mountID = 1180, faction = FACTION_ALL, coord = { 65347116 }, bothphases = true, isKnown = false },
             [142692] = { name = L["nimar_the_slayer"], npcid = 142692, questId = { 53091, 53517 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163706, mountID = 1185, faction = FACTION_ALL, coord = { 67616086 }, isKnown = false },
-            [142423] = { name = L["overseer_krix"], npcid = 142423, questId = { 53014, 53518 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 163646, mountID = 1182, faction = FACTION_ALL, coord = { 32923847, 27405722 }, cave = { 33693676, 27385601 }, note = "Inside cave", isKnown = false },
-            [142437] = { name = L["skullripper"], npcid = 142437, questId = { 53022, 53526 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 163645, mountID = 1183, faction = FACTION_ALL, coord = { 57154575 }, isKnown = false },
-            [142739] = { name = L["knight_captain_aldrin"], npcid = 142739, questId = { 53088 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163578, mountID = 1173, faction = "Horde", coord = { 48894001 }, note = "Horde only", isKnown = false },
-            [142741] = { name = L["doomrider_helgrim"], npcid = 142741, questId = { 53085 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163579, mountID = 1174, faction = "Alliance", coord = { 53565764 }, note = "Alliance only", isKnown = false },
-            [142508] = { name = L["branchlord_aldrus"], npcid = 142508, questId = { 53013, 53505 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163650, petID = 143503, speciesID = 2433, faction = FACTION_ALL, coord = { 22602135 }, isKnown = false },
-            [142688] = { name = L["darbel_montrose"], npcid = 142688, questId = { 53084, 53507 }, type = TYPE_RARE, drop = DROP_PET, itemID = 163652, petID = 143507, speciesID = 2434, faction = FACTION_ALL, coord = { 50673675, 50756121 }, isKnown = false },
+            [142423] = { name = L["overseer_krix"], npcid = 142423, questId = { 53014, 53518 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 163646, mountID = 1182, faction = FACTION_ALL, coord = { 32923847, 27405722 }, cave = { 33693676, 27385601 }, bothphases = true, note = "Inside cave", isKnown = false },
+            [142437] = { name = L["skullripper"], npcid = 142437, questId = { 53022, 53526 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 163645, mountID = 1183, faction = FACTION_ALL, coord = { 57154575 }, bothphases = true, isKnown = false },
+            [142739] = { name = L["knight_captain_aldrin"], npcid = 142739, questId = { 53088 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163578, mountID = 1173, faction = "Horde", coord = { 48894001 }, bothphases = false, note = "Horde only", warning = "Unavailable under Alliance Control", isKnown = false },
+            [142741] = { name = L["doomrider_helgrim"], npcid = 142741, questId = { 53085 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 163579, mountID = 1174, faction = "Alliance", coord = { 53565764 }, bothphases = false, note = "Alliance only", warning = "Unavailable under Horde Control", isKnown = false },
+            [142508] = { name = L["branchlord_aldrus"], npcid = 142508, questId = { 53013, 53505 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163650, petID = 143503, speciesID = 2433, faction = FACTION_ALL, coord = { 22602135 }, bothphases = true, isKnown = false },
+            [142688] = { name = L["darbel_montrose"], npcid = 142688, questId = { 53084, 53507 }, type = TYPE_RARE, drop = DROP_PET, itemID = 163652, petID = 143507, speciesID = 2434, faction = FACTION_ALL, coord = { 50673675, 50756121 }, bothphases = true, isKnown = false },
             [141668] = { name = L["echo_of_myzrael"], npcid = 141668, questId = { 53059, 53508 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163677, petID = 143515, speciesID = 2435, faction = FACTION_ALL, coord = { 57073506 }, note = "Spawns after defeating all 4 Goliaths.\nAfter defeating the Goliaths there will be\na broadcast when she spawns.", isKnown = false },
-            [142433] = { name = L["fozruk"], npcid = 142433, questId = { 53019, 53510 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163711, petID = 143627, speciesID = 2440, faction = FACTION_ALL, coord = { 59422773 }, isKnown = false },
-            [142716] = { name = L["man_hunter_rog"], npcid = 142716, questId = { 53090, 53515 }, type = TYPE_RARE, drop = DROP_PET, itemID = 163712 , petID = 143628, speciesID = 2441, faction = FACTION_ALL, coord = { 52277674 }, isKnown = false },
-            [142435] = { name = L["plaguefeather"], npcid = 142435, questId = { 53020, 53519 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163690, petID = 143564, speciesID = 2438, faction = FACTION_ALL, coord = { 35606435 }, isKnown = false },
-            [142436] = { name = L["ragebeak"], npcid = 142436, questId = { 53016, 53522 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163689, petID = 143563, speciesID = 2437, faction = FACTION_ALL, coord = { 18412794, 11905220 }, isKnown = false },
-            [142438] = { name = L["venomarus"], npcid = 142438, questId = { 53024, 53528 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163648, petID = 143499, speciesID = 2432, faction = FACTION_ALL, coord = { 56945330 }, isKnown = false },
-            [142440] = { name = L["yogursa"], npcid = 142440, questId = { 53015, 53529 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163684, petID = 143533, speciesID = 2436, faction = FACTION_ALL, coord = { 13063622 }, isKnown = false },
-            [142686] = { name = L["foulbelly"], npcid = 142686, questId = { 53086, 53509 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163735, faction = FACTION_ALL, coord = { 22305106 }, cave = { 28804557 }, note = "Inside cave", isKnown = false },
-            [142662] = { name = L["geomancer_flintdagger"], npcid = 142662, questId = { 53060, 53511 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163713, faction = FACTION_ALL, coord = { 79452939 }, cave = { 78143689 }, note = "Inside cave", isKnown = false },
-            [142725] = { name = L["horrific_apparition"], npcid = 142725, questId = { 53087, 53512 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163736, faction = FACTION_ALL, coord = { 26723278, 19446123 }, isKnown = false },
-            [142112] = { name = L["korgresh_coldrage"], npcid = 142112, questId = { 53058, 53513 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163744, faction = FACTION_ALL, coord = { 49178409 }, cave = { 48007941 }, note = "Inside cave", isKnown = false },
-            [142684] = { name = L["kovork"], npcid = 142684, questId = { 53089, 53514 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163750, faction = FACTION_ALL, coord = { 25404872 }, cave = { 28804557 }, note = "Inside cave", isKnown = false },
-            [141942] = { name = L["molok_the_crusher"], npcid = 141942, questId = { 53057, 53516 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163775, faction = FACTION_ALL, coord = { 47657800 }, isKnown = false },
-            [142683] = { name = L["ruul_onestone"], npcid = 142683, questId = { 53092, 53524 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163741, faction = FACTION_ALL, coord = { 42905660 }, isKnown = false },
-            [142690] = { name = L["singer"], npcid = 142690, questId = { 53093, 53525 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163738, faction = FACTION_ALL, coord = { 51213999, 50595746 }, isKnown = false },
-            [142682] = { name = L["zalas_witherbark"], npcid = 142682, questId = { 53094, 53530 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163745, faction = FACTION_ALL, coord = { 62868112 }, cave = { 63277708 }, note = "Inside cave", isKnown = false },
+            [142433] = { name = L["fozruk"], npcid = 142433, questId = { 53019, 53510 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163711, petID = 143627, speciesID = 2440, faction = FACTION_ALL, coord = { 59422773 }, bothphases = true, isKnown = false },
+            [142716] = { name = L["man_hunter_rog"], npcid = 142716, questId = { 53090, 53515 }, type = TYPE_RARE, drop = DROP_PET, itemID = 163712 , petID = 143628, speciesID = 2441, faction = FACTION_ALL, coord = { 52277674 }, bothphases = true, isKnown = false },
+            [142435] = { name = L["plaguefeather"], npcid = 142435, questId = { 53020, 53519 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163690, petID = 143564, speciesID = 2438, faction = FACTION_ALL, coord = { 35606435 }, bothphases = true, isKnown = false },
+            [142436] = { name = L["ragebeak"], npcid = 142436, questId = { 53016, 53522 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163689, petID = 143563, speciesID = 2437, faction = FACTION_ALL, coord = { 18412794, 11905220 }, bothphases = true, isKnown = false },
+            [142438] = { name = L["venomarus"], npcid = 142438, questId = { 53024, 53528 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163648, petID = 143499, speciesID = 2432, faction = FACTION_ALL, coord = { 56945330 }, bothphases = true, isKnown = false },
+            [142440] = { name = L["yogursa"], npcid = 142440, questId = { 53015, 53529 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 163684, petID = 143533, speciesID = 2436, faction = FACTION_ALL, coord = { 13063622 }, bothphases = true, isKnown = false },
+            [142686] = { name = L["foulbelly"], npcid = 142686, questId = { 53086, 53509 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163735, faction = FACTION_ALL, coord = { 22305106 }, cave = { 28804557 }, bothphases = true, note = "Inside cave", isKnown = false },
+            [142662] = { name = L["geomancer_flintdagger"], npcid = 142662, questId = { 53060, 53511 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163713, faction = FACTION_ALL, coord = { 79452939 }, cave = { 78143689 }, bothphases = true, note = "Inside cave", isKnown = false },
+            [142725] = { name = L["horrific_apparition"], npcid = 142725, questId = { 53087, 53512 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163736, faction = FACTION_ALL, coord = { 26723278, 19446123 }, bothphases = true, isKnown = false },
+            [142112] = { name = L["korgresh_coldrage"], npcid = 142112, questId = { 53058, 53513 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163744, faction = FACTION_ALL, coord = { 49178409 }, cave = { 48007941 }, bothphases = true, note = "Inside cave", isKnown = false },
+            [142684] = { name = L["kovork"], npcid = 142684, questId = { 53089, 53514 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163750, faction = FACTION_ALL, coord = { 25404872 }, cave = { 28804557 }, bothphases = true, note = "Inside cave", isKnown = false },
+            [141942] = { name = L["molok_the_crusher"], npcid = 141942, questId = { 53057, 53516 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163775, faction = FACTION_ALL, coord = { 47657800 }, bothphases = true, isKnown = false },
+            [142683] = { name = L["ruul_onestone"], npcid = 142683, questId = { 53092, 53524 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163741, faction = FACTION_ALL, coord = { 42905660 }, bothphases = true, isKnown = false },
+            [142690] = { name = L["singer"], npcid = 142690, questId = { 53093, 53525 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163738, faction = FACTION_ALL, coord = { 51213999, 50595746 }, bothphases = true, isKnown = false },
+            [142682] = { name = L["zalas_witherbark"], npcid = 142682, questId = { 53094, 53530 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 163745, faction = FACTION_ALL, coord = { 62868112 }, bothphases = true, cave = { 63277708 }, note = "Inside cave", isKnown = false },
         },
     },
     [62] = {
@@ -117,47 +121,48 @@ local rareDB = {
         hordeContributionMapID = 118,
         warfrontControlledByFaction = "",
         worldmapIcons = {},
+        minimapIcons = {},
         rares = {
             -- Worldbosses
-            [148295] = { name = L["ivus_the_decayed"], npcid = 148295, questId = { 54895 }, type = TYPE_WORLDBOSS, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALLIANCE, coord = { 41253597 }, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false },
-            [144946] = { name = L["ivus_the_forest_lord"], npcid = 144946, questId = { 54896 }, type = TYPE_WORLDBOSS, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_HORDE, coord = { 41253597 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false },
+            [148295] = { name = L["ivus_the_decayed"], npcid = 148295, questId = { 54895 }, type = TYPE_WORLDBOSS, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALLIANCE, coord = { 41253597 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false },
+            [144946] = { name = L["ivus_the_forest_lord"], npcid = 144946, questId = { 54896 }, type = TYPE_WORLDBOSS, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_HORDE, coord = { 41253597 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false },
             -- Mounts
-            [148787] = { name = L["alash_anir"], npcid = 148787, questId = { 54695, 54696 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 166432, mountID = 1200, faction = FACTION_ALL, coord = { 56473076 }, isKnown = false }, -- Ashenvale Chimaera
+            [148787] = { name = L["alash_anir"], npcid = 148787, questId = { 54695, 54696 }, type = TYPE_ELITE, drop = DROP_MOUNT, itemID = 166432, mountID = 1200, faction = FACTION_ALL, coord = { 56473076 }, bothphases = true, isKnown = false }, -- Ashenvale Chimaera
             --[148790] = { name = L["frightened_kodo"], npcid = 148790, questId = { 0, 0 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166433, mountID = 1201, faction = FACTION_ALL, coord = { 10001000 }, isKnown = false }, -- Frightened Kodo
-            [149652] = { name = L["agathe_wyrmwood"], npcid = 149652, questId = { 54883 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166438, mountID = 1199, faction = FACTION_ALLIANCE, coord = { 49522495 }, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Blackpaw (Caged Bear)
-            [149655] = { name = L["croz_bloodrage"], npcid = 149655, questId = { 54886 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166437, mountID = 1205, faction = FACTION_ALLIANCE, coord = { 50633241 }, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Kaldorei Nightsaber (Captured Kaldorei Nightsaber)
-            [147701] = { name = L["moxo_the_beheader"], npcid = 147701, questId = { 54277 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166434, mountID = 1203, faction = FACTION_ALLIANCE, coord = { 66981881 }, note = "Alliance Only", isKnown = false }, -- Umber Nightsaber (Captured Umber Nightsaber)
-            [149660] = { name = L["blackpaw"], npcid = 149660, questId = { 54890 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166438, mountID = 1199, faction = FACTION_HORDE, coord = { 49522495 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Blackpaw (Caged Bear)
-            [149663] = { name = L["shadowclaw"], npcid = 149663, questId = { 54892 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166437, mountID = 1205, faction = FACTION_HORDE, coord = { 39693341 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Kaldorei Nightsaber (Captured Kaldorei Nightsaber)
-            [148037] = { name = L["athil_dewfire"], npcid = 148037, questId = { 54431 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166434, mountID = 1203, faction = FACTION_HORDE, coord = { 41657594 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Umber Nightsaber (Captured Umber Nightsaber)
+            [149652] = { name = L["agathe_wyrmwood"], npcid = 149652, questId = { 54883 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166438, mountID = 1199, faction = FACTION_ALLIANCE, coord = { 49522495 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Blackpaw (Caged Bear)
+            [149655] = { name = L["croz_bloodrage"], npcid = 149655, questId = { 54886 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166437, mountID = 1205, faction = FACTION_ALLIANCE, coord = { 50633241 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Kaldorei Nightsaber (Captured Kaldorei Nightsaber)
+            [147701] = { name = L["moxo_the_beheader"], npcid = 147701, questId = { 54277 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166434, mountID = 1203, faction = FACTION_ALLIANCE, coord = { 66981881 }, bothphases = true, note = "Alliance Only", isKnown = false }, -- Umber Nightsaber (Captured Umber Nightsaber)
+            [149660] = { name = L["blackpaw"], npcid = 149660, questId = { 54890 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166438, mountID = 1199, faction = FACTION_HORDE, coord = { 49522495 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Blackpaw (Caged Bear)
+            [149663] = { name = L["shadowclaw"], npcid = 149663, questId = { 54892 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166437, mountID = 1205, faction = FACTION_HORDE, coord = { 39693341 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Kaldorei Nightsaber (Captured Kaldorei Nightsaber)
+            [148037] = { name = L["athil_dewfire"], npcid = 148037, questId = { 54431 }, type = TYPE_RARE, drop = DROP_MOUNT, itemID = 166434, mountID = 1203, faction = FACTION_HORDE, coord = { 41657594 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- Umber Nightsaber (Captured Umber Nightsaber)
             -- Pets
-            [147260] = { name = L["conflagros"], npcid = 147260, questId = { 54232, 54233 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166451, petID = 148825, speciesID = 2546, faction = FACTION_ALL, coord = { 39206200 }, isKnown = false }, -- Detective Ray
-            [147241] = { name = L["cyclarus"], npcid = 147241, questId = { 54229, 54230 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166448, petID = 148784, speciesID = 2545, faction = FACTION_ALL, coord = { 43705350 }, isKnown = false }, -- Gust of Cyclarus
-            [147240] = { name = L["hydrath"], npcid = 147240, questId = { 54227, 54228 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166452, petID = 148841, speciesID = 2547, faction = FACTION_ALL, coord = { 52403210 }, isKnown = false }, -- Hydrath Droplet
-            [147897] = { name = L["soggoth_the_slitherer"], npcid = 147897, questId = { 54320, 54321 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166454, petID = 148844, speciesID = 2549, faction = FACTION_ALL, coord = { 40508510 }, isKnown = false }, -- Void Jelly
-            [147942] = { name = L["twilight_prophet_graeme"], npcid = 147942, questId = { 54397, 54398 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166455, petID = 148846, speciesID = 2550, faction = FACTION_ALL, coord = { 40608260 }, isKnown = false }, -- Zur'aj the Depleted
-            [147664] = { name = L["zim_kaga"], npcid = 147664, questId = { 54274 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166453, petID = 148843, speciesID = 2548, faction = FACTION_ALLIANCE, coord = { 62300980 }, note = "Alliance Only", isKnown = false }, -- Everburning Treant
-            [149659] = { name = L["orwell_stevenson"], npcid = 149659, questId = { 54889 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166528, petID = 149205, speciesID = 2563, faction = FACTION_ALLIANCE, coord = { 39303410 }, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Nightwreathed Watcher
-            [147758] = { name = L["onu"], npcid = 147758, questId = { 54291 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166453, petID = 148843, speciesID = 2548, faction = FACTION_HORDE, coord = { 45207490 }, note = "Horde Only", isKnown = false }, -- Everburning Treant
-            [149662] = { name = L["grimhorn"], npcid = 149662, questId = { 54891 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166528, petID = 149205, speciesID = 2563, faction = FACTION_HORDE, coord = { 50603240 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false },-- Nightwreathed Watcher
+            [147260] = { name = L["conflagros"], npcid = 147260, questId = { 54232, 54233 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166451, petID = 148825, speciesID = 2546, faction = FACTION_ALL, coord = { 39206200 }, bothphases = true, isKnown = false }, -- Detective Ray
+            [147241] = { name = L["cyclarus"], npcid = 147241, questId = { 54229, 54230 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166448, petID = 148784, speciesID = 2545, faction = FACTION_ALL, coord = { 43705350 }, bothphases = true, isKnown = false }, -- Gust of Cyclarus
+            [147240] = { name = L["hydrath"], npcid = 147240, questId = { 54227, 54228 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166452, petID = 148841, speciesID = 2547, faction = FACTION_ALL, coord = { 52403210 }, bothphases = true, isKnown = false }, -- Hydrath Droplet
+            [147897] = { name = L["soggoth_the_slitherer"], npcid = 147897, questId = { 54320, 54321 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166454, petID = 148844, speciesID = 2549, faction = FACTION_ALL, coord = { 40508510 }, bothphases = true, isKnown = false }, -- Void Jelly
+            [147942] = { name = L["twilight_prophet_graeme"], npcid = 147942, questId = { 54397, 54398 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166455, petID = 148846, speciesID = 2550, faction = FACTION_ALL, coord = { 40608260 }, bothphases = true, isKnown = false }, -- Zur'aj the Depleted
+            [147664] = { name = L["zim_kaga"], npcid = 147664, questId = { 54274 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166453, petID = 148843, speciesID = 2548, faction = FACTION_ALLIANCE, coord = { 62300980 }, bothphases = true, note = "Alliance Only", isKnown = false }, -- Everburning Treant
+            [149659] = { name = L["orwell_stevenson"], npcid = 149659, questId = { 54889 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166528, petID = 149205, speciesID = 2563, faction = FACTION_ALLIANCE, coord = { 39303410 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- Nightwreathed Watcher
+            [147758] = { name = L["onu"], npcid = 147758, questId = { 54291 }, type = TYPE_ELITE, drop = DROP_PET, itemID = 166453, petID = 148843, speciesID = 2548, faction = FACTION_HORDE, coord = { 45207490 }, bothphases = true, note = "Horde Only", isKnown = false }, -- Everburning Treant
+            [149662] = { name = L["grimhorn"], npcid = 149662, questId = { 54891 }, type = TYPE_RARE, drop = DROP_PET, itemID = 166528, petID = 149205, speciesID = 2563, faction = FACTION_HORDE, coord = { 50603240 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false },-- Nightwreathed Watcher
             -- Toys
-            [148031] = { name = L["gren_tornfur"], npcid = 148031, questId = { 54428, 54429 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166785, faction = FACTION_ALL, coord = { 40905640 }, isKnown = false },
-            [147708] = { name = L["athrikus_narassin"], npcid = 147708, questId = { 54278, 54279 }, type = TYPE_ELITE, drop = DROP_TOY, itemID = 166784, faction = FACTION_ALL, coord = { 58402430 }, isKnown = false },
-            [148025] = { name = L["commander_ral_esh"], npcid = 148025, questId = { 54426, 54427 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166787, faction = FACTION_ALL, coord = { 37907620 }, isKnown = false },
-            [147845] = { name = L["commander_drald"], npcid = 147845, questId = { 54309 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166790, faction = FACTION_ALLIANCE, coord = { 46408590 }, note = "Alliance Only", isKnown = false }, -- Highborne Memento
-            [149141] = { name = L["burninator_mark_v"], npcid = 149141, questId = { 54768 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166788, faction = FACTION_ALLIANCE, coord = { 41507640 }, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- widdle Twirler: Shredder Blade
-            [147435] = { name = L["thelar_moonstrike"], npcid = 147435, questId = { 54252 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166790, faction = FACTION_HORDE, coord = { 62101650 }, note = "Horde Only", isKnown = false }, -- Highborne Memento
-            [148103] = { name = L["sapper_odette"], npcid = 148103, questId = { 54452 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166788, faction = FACTION_HORDE, coord = { 33008380 }, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- widdle Twirler: Shredder Blade
+            [148031] = { name = L["gren_tornfur"], npcid = 148031, questId = { 54428, 54429 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166785, faction = FACTION_ALL, coord = { 40905640 }, bothphases = true, isKnown = false },
+            [147708] = { name = L["athrikus_narassin"], npcid = 147708, questId = { 54278, 54279 }, type = TYPE_ELITE, drop = DROP_TOY, itemID = 166784, faction = FACTION_ALL, coord = { 58402430 }, bothphases = true, isKnown = false },
+            [148025] = { name = L["commander_ral_esh"], npcid = 148025, questId = { 54426, 54427 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166787, faction = FACTION_ALL, coord = { 37907620 }, bothphases = true, isKnown = false },
+            [147845] = { name = L["commander_drald"], npcid = 147845, questId = { 54309 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166790, faction = FACTION_ALLIANCE, coord = { 46408590 }, bothphases = true, note = "Alliance Only", isKnown = false }, -- Highborne Memento
+            [149141] = { name = L["burninator_mark_v"], npcid = 149141, questId = { 54768 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166788, faction = FACTION_ALLIANCE, coord = { 41507640 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", isKnown = false }, -- widdle Twirler: Shredder Blade
+            [147435] = { name = L["thelar_moonstrike"], npcid = 147435, questId = { 54252 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166790, faction = FACTION_HORDE, coord = { 62101650 }, bothphases = true, note = "Horde Only", isKnown = false }, -- Highborne Memento
+            [148103] = { name = L["sapper_odette"], npcid = 148103, questId = { 54452 }, type = TYPE_RARE, drop = DROP_TOY, itemID = 166788, faction = FACTION_HORDE, coord = { 33008380 }, bothphases = false, note = "Horde Only", warning = "Unavailable under Alliance Control", isKnown = false }, -- widdle Twirler: Shredder Blade
             -- Unknown
-            [147966] = { name = L["aman"], npcid = 147966, questId = { 54405, 54406 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 37808470 }, isKnown = false },
+            [147966] = { name = L["aman"], npcid = 147966, questId = { 54405, 54406 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 37808470 }, bothphases = true, isKnown = false },
             [147970] = { name = L["mrggr_marr"], npcid = 147970, questId = { 54408, 54409 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 35808180 }, isKnown = false },
-            [147332] = { name = L["stonebinder_ssra_vess"], npcid = 147332, questId = { 54247, 54248 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 45505900 }, isKnown = false },
-            [147261] = { name = L["granokk"], npcid = 147261, questId = { 54234, 54235 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 47995575 }, cave = { 47125599 }, note = "Inside cave", isKnown = false },
-            [149657] = { name = L["madfeather"], npcid = 149657, questId = { 54887, 54888 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 44004820 }, isKnown = false },
-            [149665] = { name = L["scalefiend"], npcid = 149665, questId = { 54893, 54894 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 47604450 }, isKnown = false },
-            [147751] = { name = L["shattershard"], npcid = 147751, questId = { 54289, 54290 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 43402930 }, isKnown = false },
-            [149654] = { name = L["glimmerspine"], npcid = 149654, questId = { 54884, 54885 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 43401960 }, isKnown = false },
-            [147746] = { name = L["glrglrr"], npcid = 147746, questId = { 54285, 54286 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 57301560 }, isKnown = false },
+            [147332] = { name = L["stonebinder_ssra_vess"], npcid = 147332, questId = { 54247, 54248 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 45505900 }, bothphases = true, isKnown = false },
+            [147261] = { name = L["granokk"], npcid = 147261, questId = { 54234, 54235 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 47995575 }, bothphases = true, cave = { 47125599 }, note = "Inside cave", isKnown = false },
+            [149657] = { name = L["madfeather"], npcid = 149657, questId = { 54887, 54888 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 44004820 }, bothphases = true, isKnown = false },
+            [149665] = { name = L["scalefiend"], npcid = 149665, questId = { 54893, 54894 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 47604450 }, bothphases = true, isKnown = false },
+            [147751] = { name = L["shattershard"], npcid = 147751, questId = { 54289, 54290 }, type = TYPE_ELITE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 43402930 }, bothphases = true, isKnown = false },
+            [149654] = { name = L["glimmerspine"], npcid = 149654, questId = { 54884, 54885 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 43401960 }, bothphases = true, isKnown = false },
+            [147746] = { name = L["glrglrr"], npcid = 147746, questId = { 54285, 54286 }, type = TYPE_RARE, drop = DROP_UNKNOWN, itemID = 0, faction = FACTION_ALL, coord = { 57301560 }, bothphases = true, isKnown = false },
         },
     },
 }
@@ -251,10 +256,20 @@ local dbDefaults = {
             showAlreadyKnown = true,
             compactMode = true,
         },
+        minimapIcons = {
+            showMinimapIcons = true,
+            showOnlyAtMaxLevel = true,
+            onMinimapHoover = true,
+            minimapIconsCompactMode = true,
+            minimapIconSize = 13,
+            minimapIconAlpha = 1,
+        },
         worldmapicons = {
             showWorldmapIcons = true,
             showOnlyAtMaxLevel = true,
             clickToTomTom = true,
+            worldmapIconSize = 13,
+            worldmapIconAlpha = 1,
             hideIconWhenDefeated = false,
             useMasterfilter = true,
             hideAlreadyKnown = false,
@@ -338,23 +353,22 @@ local function getPlayerSelectedZone()
     return currentZone
 end
 
-local function getPlayerFaction()
-    local playerFaction, _ = UnitFactionGroup("player")
-    return playerFaction
-end
+-- local function getPlayerFaction()
+--     local playerFaction, _ = UnitFactionGroup("player")
+--     return playerFaction
+-- end
 
 local function isNPCPlayerFaction(mapid, npcid)
-    local playerFaction = getPlayerFaction()
     local rareFaction = rareDB[mapid].rares[npcid].faction
-    return rareFaction == playerFaction or rareFaction == FACTION_ALL
+    return rareFaction == currentPlayerFaction or rareFaction == FACTION_ALL
 end
 
-local function isPlayerMaxZoneLevel(mapid)
-    if mapid == nil then
-        mapid = getPlayerSelectedZone()
-    end
-    return currentPlayerLevel >= rareDB[mapid].zonelevel 
-end
+-- local function isPlayerMaxZoneLevel(mapid)
+--     if mapid == nil then
+--         mapid = getPlayerSelectedZone()
+--     end
+--     return currentPlayerLevel >= rareDB[mapid].zonelevel 
+-- end
 
 local function isPlayerMaxLevel()
     if currentPlayerLevel >= PLAYER_MAXLEVEL then
@@ -386,7 +400,12 @@ local function getNPCIDFromGUID(guid)
 end
 
 local function isNPCUpForPlayerFaction(mapid, npcid)
-    return rareDB[mapid].rares[npcid].faction == rareDB[mapid].warfrontControlledByFaction or rareDB[mapid].rares[npcid].faction == FACTION_ALL
+    if rareDB[mapid].rares[npcid].bothphases then
+        return true
+    else
+        return rareDB[mapid].rares[npcid].faction == rareDB[mapid].warfrontControlledByFaction or rareDB[mapid].rares[npcid].faction == FACTION_ALL
+    end
+    --return rareDB[mapid].rares[npcid].faction == rareDB[mapid].warfrontControlledByFaction or rareDB[mapid].rares[npcid].faction == FACTION_ALL
 end
 
 local function isQuestCompleted(mapid, npcid)
@@ -627,7 +646,7 @@ local function checkFactionWarfrontControl(mapid)
             rareDB[mapid].warfrontControlledByFaction = factionControlling
             WarfrontRareTracker:OnFactionChange(mapid)
 
-            local prefix = factionControlling == getPlayerFaction() and "Good" or "Bad"
+            local prefix = factionControlling == currentPlayerFaction and "Good" or "Bad"
             local faction = rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE and colorText(FACTION_HORDE, colors.red) or colorText(FACTION_ALLIANCE, colors.blue)
             WarfrontRareTracker:Print(colorText(format("%s news eveyone. The ", prefix), colors.turqoise) .. faction .. colorText(" has gained control over ", colors.turqoise) .. colorText(rareDB[mapid].zonename, colors.lightcyan) .. colorText("!", colors.turqoise))
             if WarfrontRareTracker.db.profile.general.enableZoneChangeSound then
@@ -697,7 +716,7 @@ local function showRare(mapid, npcid, mode)
             else
                 return true
             end
-        else -- Master Filter    worldmapHideUnavailable     hideUnavailable
+        else
             if mode == "worldmap" then
                 if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
                     return false
@@ -778,7 +797,7 @@ local function updateBrokerText()
         elseif WarfrontRareTracker.db.profile.broker.brokerText == "factionstatus" then
             if hasDBContributionInfo() then
                 canSchedule = true
-                if factionControlling ~= getPlayerFaction() then
+                if factionControlling ~= currentPlayerFaction then
                     local state, percentage, timeNextChange = getWarfrontProgressInfo()
                     if state ~= nil and state == 1 and percentage ~= nil then
                         scheduleState = 1
@@ -930,11 +949,9 @@ function WarfrontRareTracker:DelayedInitialize(auto)
     if IsAddOnLoaded("TomTom") then
         isTomTomloaded = true
     end
-    WarfrontRareTracker:ZONE_CHANGED()
     scanForKnownItems()
     self:UpdateAllWorldMapIcons()
     updateBrokerText()
-    --WarfrontRareTracker:SortRares()
     C_Timer.After(5, function() WarfrontRareTracker:RefreshAllData() end)
     delayedInitializeDone = true
 end
@@ -956,7 +973,6 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterBucketEvent("SHOW_LOOT_TOAST_UPGRADE", 2,"BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("ENCOUNTER_LOOT_RECEIVED", 2, "BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("TOYS_UPDATED", 2,"TOYS_UPDATED")
-    --self:RegisterBucketEvent("CONTRIBUTION_COLLECTOR_UPDATE_SINGLE", 30, "CONTRIBUTION_COLLECTOR_UPDATE_SINGLE") -- maybe 1 min.
     -- Set variables and Worldmap Icons
     self:DelayedInitialize(true)
 end
@@ -976,7 +992,6 @@ function WarfrontRareTracker:OnDisable()
     self:UnregisterBucket("SHOW_LOOT_TOAST_UPGRADE")
     self:UnregisterBucket("ENCOUNTER_LOOT_RECEIVED")
     self:UnregisterBucket("TOYS_UPDATED")
-    --self:UnregisterBucket("CONTRIBUTION_COLLECTOR_UPDATE_SINGLE")
     -- Delete Worldmap Icons
     self:DeleteAllWorldmapIcons()
 end
@@ -1006,7 +1021,10 @@ end
 function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     currentPlayerLevel = UnitLevel("player")
-    currentPlayerFaction = getPlayerFaction()
+    currentPlayerName = UnitName("player")
+    currentPlayerFaction = UnitFactionGroup("player")
+    currentPlayerRealm = GetRealmName()
+    WarfrontRareTracker:ZONE_CHANGED()
     checkWarfrontControl()
     WarfrontRareTracker:SortRares()
     C_Timer.After(5, function() WarfrontRareTracker:DelayedInitialize(false) end)
@@ -1028,6 +1046,8 @@ function WarfrontRareTracker:ZONE_CHANGED()
     local currentMapID = C_Map.GetBestMapForUnit("player")
     if currentMapID ~= currentPlayerMapid then
         currentPlayerMapid = currentMapID
+        isInInstance, _ = IsInInstance()
+        --print("ZONE_CHANGED - currentPlayerMapid: " .. currentPlayerMapid .. " isInInstance: " .. tostring(isInInstance))
         self:CheckMapChange(oldMapid)
     end
 end
@@ -1035,14 +1055,6 @@ end
 function WarfrontRareTracker:TOYS_UPDATED()
     if isPlayerMaxLevel() then
         scanForKnownItems()
-    end
-end
-
-function WarfrontRareTracker:CONTRIBUTION_COLLECTOR_UPDATE_SINGLE() -- This got fired on faction change and percentage. NOTE this got spammed on percentage, so it's a Bucket event with a delay of 30 seconds.
-    for mapid, v in pairs(rareDB) do
-        if isWarfrontFactionChanged(mapid) then
-            checkWarfrontControl(mapid)
-        end
     end
 end
 
@@ -1119,6 +1131,63 @@ function WarfrontRareTracker:CheckMapChange(oldMapid)
     end
     if self.db.profile.menu.autoChangeZone and autoChangeZone ~= oldAutoChangeZone then
         WarfrontRareTracker:SetTimestamp(false)
+    end
+end
+
+function WarfrontRareTracker:SetWorldmapIconSize(size, minimap)
+    if minimap then
+        self.db.profile.minimapIcons.minimapIconSize = size
+        for mapid, content in pairs(rareDB) do
+            for k, icon in pairs(content.minimapIcons) do
+                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE then
+                    icon:SetHeight(size + 3)
+                    icon:SetWidth(size + 3)
+                else
+                    icon:SetHeight(size)
+                    icon:SetWidth(size)
+                end
+            end
+        end
+    else
+        self.db.profile.worldmapicons.worldmapIconSize = size
+        for mapid, content in pairs(rareDB) do
+            for k, icon in pairs(content.worldmapIcons) do
+                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE then
+                    icon:SetHeight(size + 3)
+                    icon:SetWidth(size + 3)
+                else
+                    icon:SetHeight(size)
+                    icon:SetWidth(size)
+                end
+            end
+        end
+    end
+end
+
+function WarfrontRareTracker:SetWorldmapIconAlpha(alpha, minimap)
+    if minimap then
+        self.db.profile.minimapIcons.minimapIconAlpha = alpha / 100
+        for mapid, content in pairs(rareDB) do
+            for k, icon in pairs(content.minimapIcons) do
+                icon:SetAlpha(self.db.profile.minimapIcons.minimapIconAlpha)
+            end
+        end
+    else
+        self.db.profile.worldmapicons.worldmapIconAlpha = alpha / 100
+        for mapid, content in pairs(rareDB) do
+            for k, icon in pairs(content.worldmapIcons) do
+                icon:SetAlpha(self.db.profile.worldmapicons.worldmapIconAlpha)
+            end
+        end
+    end
+    
+end
+
+function WarfrontRareTracker:GetWorldmapIconAlpha(minimap)
+    if minimap then
+        return self.db.profile.minimapIcons.minimapIconAlpha * 100
+    else
+        return self.db.profile.worldmapicons.worldmapIconAlpha * 100
     end
 end
 
@@ -1529,7 +1598,6 @@ end
 -------------------
 -- Worldmap Tooltip
 function WarfrontRareTracker:WorldmapTooltipOnClick(self, mapid, npcid)
-    local rare = rareDB[mapid].rares[npcid]
     if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.worldmapicons.clickToTomTom then
         addToTomTom(mapid, npcid)
     end
@@ -1542,7 +1610,7 @@ function WarfrontRareTracker:WorldmapTooltipOnLeave()
     end
 end
 
-function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC)
+function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, minimap)
     if LibQTip:IsAcquired("WarfrontRareTrackerWorldmapTip") and worldmapTooltip then
         LibQTip.Release(worldmapTooltip)
         worldmapTooltip = nil
@@ -1556,63 +1624,115 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC)
     local name
     local rare = rareDB[mapid].rares[npcid]
     if NPC then
+        local itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rare.itemID)
+        if itemName == nil then
+            itemName = "Unknown"
+        end
         name = rare.name
         if rare.type == TYPE_WORLDBOSS or rare.type == TYPE_ELITE or rare.type == TYPE_GOLIATH then
             name = colorText(name, colors.purple)
         else
             name = colorText(name, colors.blue)
         end
-        worldmapTooltip:AddHeader(name)
 
-        line = worldmapTooltip:AddLine()
-        worldmapTooltip:SetCell(line, 1, colorText("Drop: ", colors.yellow), nil, nil, 2)
-        if rare.itemID > 0 then
-            local itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rare.itemID)
-
-            if itemTexture ~= nil then
-                worldmapTooltip:AddHeader(itemLink or itemName, "|T" .. itemTexture .. ":22|t")
+        if minimap and WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover then
+            if WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
+                line = worldmapTooltip:AddHeader()
+                worldmapTooltip:SetCell(line, 1, name .. colorText(": ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
+                if rare.type ~= TYPE_GOLIATH and rare.isKnown and rare.itemID > 0 then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rare.drop .. " already known", colors.red), nil, nil, 2)
+                elseif rare.type ~= TYPE_GOLIATH and not rare.isKnown and rare.itemID > 0  then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rare.drop .. " still needed", colors.green), nil, nil, 2)
+                end
             else
-                worldmapTooltip:AddHeader(itemLink or itemName)
-            end
-            
-            npcToolTip:SetItemByID(rare.itemID)
-            for i = 2, npcToolTip:NumLines() do
-                local tooltipLine =  _G["__WarfrontRareTracker_ScanTipTextLeft" .. i]
-                local text = tooltipLine:GetText()
-                local color = {}
-                color[1], color[2], color[3], color[4] = tooltipLine:GetTextColor()
-                --print("text: "..text.."  R: "..color[1].."  G: "..color[2].."  B: "..color[3])
-
-                if string.len(text) > 1 then
-                    local line = worldmapTooltip:AddLine()
-                    worldmapTooltip:SetCell(line, 1, colorText(text, color), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
+                line = worldmapTooltip:AddHeader()
+                worldmapTooltip:SetCell(line, 1, name, nil, nil, 2)
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, colorText("Status: ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
+                if itemName ~= "Unknown" then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText("Drops " .. rare.drop .. ": ", colors.yellow) .. (itemLink or itemName), nil, nil, 2)
+                end
+                if rare.type ~= TYPE_GOLIATH and rare.isKnown and rare.itemID > 0 then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText(rare.drop .. " already known", colors.red), nil, nil, 2)
+                elseif rare.type ~= TYPE_GOLIATH and not rare.isKnown and rare.itemID > 0  then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText(rare.drop .. " still needed", colors.green), nil, nil, 2)
                 end
             end
-        else
-            worldmapTooltip:AddHeader("No know drop")
-        end
-        if rare.warning then
-            if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction then
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, colorText(rare.warning, colors.red), nil, nil, 2)
-            end
-        end
-        if rare.note then
-            if rare.warning and rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction == currentPlayerFaction then
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rare.note, colors.grey), nil, nil, 2)
-            elseif not rare.warning then
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
+            
+            if rare.note and not WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
                 line = worldmapTooltip:AddLine()
                 worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rare.note, colors.grey), nil, nil, 2)
             end
+        elseif not minimap then
+            worldmapTooltip:AddHeader(name)-- .. getColoredStatusText(mapid, npcid))
+
+            line = worldmapTooltip:AddLine()
+            worldmapTooltip:SetCell(line, 1, colorText("Status: ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
+            
+        
+            if rare.itemID > 0 then
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, colorText("Drop: ", colors.yellow), nil, nil, 2)
+
+                if itemTexture ~= nil then
+                    worldmapTooltip:AddHeader(itemLink or itemName, "|T" .. itemTexture .. ":22|t")
+                else
+                    worldmapTooltip:AddHeader(itemLink or itemName)
+                end
+                npcToolTip:SetItemByID(rare.itemID)
+                for i = 2, npcToolTip:NumLines() do
+                    local tooltipLine =  _G["__WarfrontRareTracker_ScanTipTextLeft" .. i]
+                    local text = tooltipLine:GetText()
+                    local color = {}
+                    color[1], color[2], color[3], color[4] = tooltipLine:GetTextColor()
+                    --print("text: "..text.."  R: "..color[1].."  G: "..color[2].."  B: "..color[3])
+
+                    if string.len(text) > 1 then
+                        local line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText(text, color), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
+                    end
+                end
+
+                if rare.warning then
+                    if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction then
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText(rare.warning, colors.red), nil, nil, 2)
+                    end
+                end
+                if rare.note then
+                    if rare.warning and rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction == currentPlayerFaction then
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rare.note, colors.grey), nil, nil, 2)
+                    elseif not rare.warning then
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rare.note, colors.grey), nil, nil, 2)
+                    end
+                end
+            else
+                if rare.warning then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText(rare.warning, colors.red), nil, nil, 2)
+                else
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, "No know drop", nil, nil, 2)
+                end
+            end
         end
-        if worldmapTooltip:GetLineCount() > 1 then
+
+        if worldmapTooltip:GetLineCount() >= 1 then
             worldmapTooltip:Show()
         end
     else
@@ -1649,6 +1769,28 @@ local function getNewWorldmapPin()
 	return worldmapIcon
 end
 
+local function getNewMinimapPin()
+    local minimapIcon = next(pinCache)
+    if minimapIcon then
+		pinCache[minimapIcon] = nil
+		return minimapIcon
+    end
+    PinCount = PinCount + 1
+    minimapIcon = CreateFrame("Button", "WarfrontPin"..PinCount, MiniMap)
+    minimapIcon:SetFrameLevel(5)
+	minimapIcon:EnableMouse(true)
+	minimapIcon:SetWidth(12)
+	minimapIcon:SetHeight(12)
+	minimapIcon:SetPoint("CENTER", MiniMap, "CENTER")
+	local texture = minimapIcon:CreateTexture(nil, "OVERLAY")
+	minimapIcon.texture = texture
+	texture:SetAllPoints(minimapIcon)
+	minimapIcon:RegisterForClicks("AnyUp")
+	minimapIcon:SetMovable(true)
+    minimapIcon:Hide()
+	return minimapIcon
+end
+
 local function recyclePin(icon)
     icon.npcid = nil
     icon.mapid = nil
@@ -1661,6 +1803,11 @@ local function deleteZonePins(mapid)
         rareDB[mapid].worldmapIcons[k] = nil
     end
     HBDPins:RemoveAllWorldMapIcons("WarfrontRareTracker"..rareDB[mapid].zonename)
+    for k, v in pairs(rareDB[mapid].minimapIcons) do
+        recyclePin(v)
+        rareDB[mapid].minimapIcons[k] = nil
+    end
+    HBDPins:RemoveAllMinimapIcons("WarfrontRareTracker"..rareDB[mapid].zonename)
 end
 
 local function deleteAllPins()
@@ -1685,19 +1832,26 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
                 rareDB[currentPlayerMapid].worldmapIcons[k] = nil
             end
         end
+        if self.db.profile.minimapIcons.showMinimapIcons then
+            for k, icon in pairs(rareDB[currentPlayerMapid].minimapIcons) do
+                if isQuestCompleted(currentPlayerMapid, icon.npcid) then
+                    HBDPins:RemoveMinimapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
+                    recyclePin(icon)
+                    rareDB[currentPlayerMapid].minimapIcons[k] = nil
+                end
+            end
+        end
     end
 end
 
 function WarfrontRareTracker:UpdateAllWorldMapIcons()
     deleteAllPins()
-    if self.db.profile.worldmapicons.showWorldmapIcons then
-        for mapid, content in pairs(rareDB) do
-            for k, rare in pairs(content.rares) do
-                if showRare(mapid, rare.npcid, "worldmap") then
-                    WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, rare.npcid)
-                    if rare.cave then
-                        WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, rare.npcid, rare.cave)
-                    end
+    for mapid, content in pairs(rareDB) do
+        for k, rare in pairs(content.rares) do
+            if showRare(mapid, rare.npcid, "worldmap") then
+                WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, rare.npcid)
+                if rare.cave then
+                    WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, rare.npcid, rare.cave)
                 end
             end
         end
@@ -1707,14 +1861,12 @@ end
 function WarfrontRareTracker:UpdateZoneWorldMapIcons(mapid)
     if mapid == nil then return end
     deleteZonePins(mapid)
-    if self.db.profile.worldmapicons.showWorldmapIcons then
-        if rareDB[mapid] then
-            for k, rare in pairs(rareDB[mapid].rares) do
-                if showRare(mapid, rare.npcid, "worldmap") then
-                    WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, rare.npcid)
-                    if rare.cave then
-                        WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, rare.npcid, rare.cave)
-                    end
+    if rareDB[mapid] then
+        for k, rare in pairs(rareDB[mapid].rares) do
+            if showRare(mapid, rare.npcid, "worldmap") then
+                WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, rare.npcid)
+                if rare.cave then
+                    WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, rare.npcid, rare.cave)
                 end
             end
         end
@@ -1723,60 +1875,110 @@ end
 
 function WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, npcid)
     local rare = rareDB[mapid].rares[npcid]
-    local icon = getNewWorldmapPin()
-    icon:SetParent(WorldMap)
-    icon:SetHeight(13)
-    icon:SetWidth(13)
-    icon:SetAlpha(1)
-    local t = icon.texture
-    t:SetTexCoord(0, 1, 0, 1)
-    t:SetVertexColor(1, 1, 1, 1)
-    if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction and rareDB[mapid].rares[npcid].warning then
-        t:SetTexture("Interface\\Worldmap\\GlowSkull_64Red")
-    elseif rare.type == TYPE_WORLDBOSS or rare.type == TYPE_ELITE then
-        icon:SetHeight(15)
-        icon:SetWidth(15)
-        t:SetTexture("Interface\\Worldmap\\GlowSkull_64Purple")
-    elseif rare.type == TYPE_GOLIATH then
-        t:SetTexture("Interface\\Worldmap\\GlowSkull_64Grey")
-    else
-        t:SetTexture("Interface\\Worldmap\\GlowSkull_64Blue")
-    end
-    icon.npcid = npcid
-    icon.mapid = mapid
-    icon:SetScript("OnClick", function(self) WarfrontRareTracker:WorldmapTooltipOnClick(self, icon.mapid, icon.npcid) end)
-    icon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, icon.mapid, icon.npcid, true) end)
-    icon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
     local coord = rare.coord[1]
     if #rare.coord > 1 and rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE then
         coord = rare.coord[2]
     end
     local x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
-    table.insert(rareDB[mapid].worldmapIcons, icon)
-    HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, icon, mapid, x, y, 1)
+    if self.db.profile.worldmapicons.showWorldmapIcons then
+        local worldmapicon = getNewWorldmapPin()
+        worldmapicon:SetParent(WorldMap)
+        worldmapicon:SetHeight(self.db.profile.worldmapicons.worldmapIconSize)
+        worldmapicon:SetWidth(self.db.profile.worldmapicons.worldmapIconSize)
+        worldmapicon:SetAlpha(self.db.profile.worldmapicons.worldmapIconAlpha)
+        worldmapicon.texture:SetTexCoord(0, 1, 0, 1)
+        worldmapicon.texture:SetVertexColor(1, 1, 1, 1)
+        if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction and not rareDB[mapid].rares[npcid].bothphases then
+            worldmapicon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Red")
+        elseif rare.type == TYPE_WORLDBOSS or rare.type == TYPE_ELITE then
+            worldmapicon:SetHeight(self.db.profile.worldmapicons.worldmapIconSize + 3)
+            worldmapicon:SetWidth(self.db.profile.worldmapicons.worldmapIconSize + 3)
+            worldmapicon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Purple")
+        elseif rare.type == TYPE_GOLIATH then
+            worldmapicon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Grey")
+        else
+            worldmapicon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Blue")
+        end
+        worldmapicon.npcid = npcid
+        worldmapicon.mapid = mapid
+        worldmapicon:SetScript("OnClick", function(self) WarfrontRareTracker:WorldmapTooltipOnClick(self, worldmapicon.mapid, worldmapicon.npcid, false) end)
+        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, true, false) end)
+        worldmapicon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
+        table.insert(rareDB[mapid].worldmapIcons, worldmapicon)
+        HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, worldmapicon, mapid, x, y, 1)
+    end
+    if self.db.profile.minimapIcons.showMinimapIcons then
+        local minimapIcon = getNewMinimapPin()
+        minimapIcon:SetParent(MiniMap)
+        minimapIcon:SetHeight(self.db.profile.minimapIcons.minimapIconSize)
+        minimapIcon:SetWidth(self.db.profile.minimapIcons.minimapIconSize)
+        minimapIcon:SetAlpha(self.db.profile.minimapIcons.minimapIconAlpha)
+        minimapIcon.texture:SetTexCoord(0, 1, 0, 1)
+        minimapIcon.texture:SetVertexColor(1, 1, 1, 1)
+        if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction and not rareDB[mapid].rares[npcid].bothphases then
+            minimapIcon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Red")
+        elseif rare.type == TYPE_WORLDBOSS or rare.type == TYPE_ELITE then
+            minimapIcon:SetHeight(self.db.profile.minimapIcons.minimapIconSize + 3)
+            minimapIcon:SetWidth(self.db.profile.minimapIcons.minimapIconSize + 3)
+            minimapIcon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Purple")
+        elseif rare.type == TYPE_GOLIATH then
+            minimapIcon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Grey")
+        else
+            minimapIcon.texture:SetTexture("Interface\\Worldmap\\GlowSkull_64Blue")
+        end
+        minimapIcon.npcid = npcid
+        minimapIcon.mapid = mapid
+        if self.db.profile.minimapIcons.onMinimapHoover then
+            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, true, true) end)
+            minimapIcon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
+        end
+        table.insert(rareDB[mapid].minimapIcons, minimapIcon)
+        HBDPins:AddMinimapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, minimapIcon, mapid, x, y, false, false)
+    end
 end
 
 function WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, npcid, caveCoord)
-    local icon = getNewWorldmapPin()
-    icon:SetParent(WorldMap)
-    icon:SetHeight(13)
-    icon:SetWidth(13)
-    icon:SetAlpha(1)
-    local t = icon.texture
-    t:SetTexCoord(0, 1, 0, 1)
-    t:SetVertexColor(1, 1, 1, 1)
-    t:SetTexture("Interface\\MINIMAP\\Suramar_Door_Icon")
-    icon.npcid = npcid
-    icon.mapid = mapid
-    icon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, icon.mapid, icon.npcid, false) end)
-    icon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
     local coord = caveCoord[1]
     if #caveCoord > 1 and rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE then
         coord = caveCoord[2]
     end
     local x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
-    table.insert(rareDB[mapid].worldmapIcons, icon)
-    HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, icon, mapid, x, y, 1)
+    if self.db.profile.worldmapicons.showWorldmapIcons then
+        local worldmapicon = getNewWorldmapPin()
+        worldmapicon:SetParent(WorldMap)
+        worldmapicon:SetHeight(self.db.profile.worldmapicons.worldmapIconSize)
+        worldmapicon:SetWidth(self.db.profile.worldmapicons.worldmapIconSize)
+        worldmapicon:SetAlpha(self.db.profile.worldmapicons.worldmapIconAlpha)
+        worldmapicon.texture:SetTexCoord(0, 1, 0, 1)
+        worldmapicon.texture:SetVertexColor(1, 1, 1, 1)
+        worldmapicon.texture:SetTexture("Interface\\MINIMAP\\Suramar_Door_Icon")
+        worldmapicon.npcid = npcid
+        worldmapicon.mapid = mapid
+        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, false, false) end)
+        worldmapicon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
+        
+        table.insert(rareDB[mapid].worldmapIcons, worldmapicon)
+        HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, worldmapicon, mapid, x, y, 1)
+    end
+    if self.db.profile.minimapIcons.showMinimapIcons then
+        local minimapIcon = getNewMinimapPin()
+        minimapIcon:SetParent(MiniMap)
+        minimapIcon:SetHeight(self.db.profile.minimapIcons.minimapIconSize)
+        minimapIcon:SetWidth(self.db.profile.minimapIcons.minimapIconSize)
+        minimapIcon:SetAlpha(self.db.profile.minimapIcons.minimapIconAlpha)
+        minimapIcon.texture:SetTexCoord(0, 1, 0, 1)
+        minimapIcon.texture:SetVertexColor(1, 1, 1, 1)
+        minimapIcon.texture:SetTexture("Interface\\MINIMAP\\Suramar_Door_Icon")
+        minimapIcon.npcid = npcid
+        minimapIcon.mapid = mapid
+        if self.db.profile.minimapIcons.onMinimapHoover then
+            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, false, true) end)
+            minimapIcon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
+        end
+        table.insert(rareDB[mapid].minimapIcons, minimapIcon)
+
+        HBDPins:AddMinimapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, minimapIcon, mapid, x, y, false, false)
+    end
 end
 
 ----------------
@@ -1820,15 +2022,15 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                 elseif WarfrontRareTracker.db.profile.unitframe.showDrop and rare.itemID > 0 then
                     local itemName, itemLink, itemRarity, _, _, itemType, _, _, _, _, _ = GetItemInfo(rare.itemID)
                     if itemLink or itemName then
-                        text = text .. (itemLink or itemName) .. " "
+                        text = text .. (itemLink or itemName)
                     end
                 end
                 -- Ignore Goliaths
                 if rare.type ~= TYPE_GOLIATH and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rare.isKnown then
-                    text = text .. colorText(rare.drop .. " already known", colors.red)
+                    text = text .. colorText(": ", colors.yellow) .. colorText(rare.drop .. " already known", colors.red)
                 elseif rare.type ~= TYPE_GOLIATH and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rare.isKnown then
                     if rare.itemID > 0 then
-                        text = text .. colorText(rare.drop .. " still needed", colors.green)
+                        text = text .. colorText(": ", colors.yellow) .. colorText(rare.drop .. " still needed", colors.green)
                     end
                 end
                 -- Ignore Drop: Item (if needed with a new Warfront)

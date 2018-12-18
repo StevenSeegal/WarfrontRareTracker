@@ -963,7 +963,7 @@ configOptions = {
             },
         },
         worldmap = {
-            name = "Worldmap",
+            name = "Worldmap & Minimap",
             type = "group",
             order = 8,
             args = {
@@ -992,7 +992,7 @@ configOptions = {
                             desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 6,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel
                                 end,
@@ -1002,11 +1002,11 @@ configOptions = {
                                 end,
                         },
                         clickToTomTom = {
-                            name = "Click To Add TomTom Waypoint",
+                            name = "Click Worldmap To Add TomTom Waypoint",
                             desc = "Click on the Rare's Icon to add a TomTom Waypoint.",
                             type = "toggle",
                             width = "full",
-                            order = 3,
+                            order = 7,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.worldmapicons.clickToTomTom
                                 end,
@@ -1015,14 +1015,145 @@ configOptions = {
                                 end,
                             disabled = function() return isTomTomlocked or not WarfrontRareTracker.db.profile.tomtom.enableIntegration end,
                         },
+                        description = {
+                            name = WarfrontRareTracker:ColorizeText("\nIcon Settings:\n", colors.yellow),
+                            type = "description",
+                            order = 8,
+                        },
+                        iconSize = {
+                            name = "Worldmap Icon Size",
+                            desc = "Set the Worldmap Icon Size.",
+                            type = "range",
+                            order = 9,
+                            min = 8,
+                            max = 42,
+                            step = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.worldmapicons.worldmapIconSize
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker:SetWorldmapIconSize(value, false)
+                                end,
+                        },
+                        iconAlpha = {
+                            name = "Worldmap Icon Alpha",
+                            desc = "Set the Worldmap Icon Alpha.",
+                            type = "range",
+                            order = 10,
+                            min = 1,
+                            max = 100,
+                            step = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker:GetWorldmapIconAlpha(false)
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker:SetWorldmapIconAlpha(value, false)
+                                end,
+                        },
+                        seperator = {
+                            name = "",
+                            type = "description",
+                            order = 11,
+                        },
                     },
                 },
-                hide = {
-                    name = "Hide Icons",
+                minimap = {
+                    name = "Minimap Icons",
                     order = 2,
                     type = "group",
                     inline = true,
                     args = {
+                        showMinimapIcons = {
+                            name = "Show Minimap Icons",
+                            desc = "Adds Icons to the Minimap showing you where a Rare can be found.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.minimapIcons.showMinimapIcons
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.minimapIcons.showMinimapIcons = value
+                                    WarfrontRareTracker:UpdateAllWorldMapIcons()
+                                end,
+                        },
+                        onMinimapHoover = {
+                            name = "Show Loot Info In Minimap",
+                            desc = "Shows a Loot Info window while mousing over an icon on the Minimap.",
+                            type = "toggle",
+                            width = 1.3,
+                            order = 4,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover = value
+                                    WarfrontRareTracker:UpdateAllWorldMapIcons()
+                                end,
+                        },
+                        minimapIconsCompactMode = {
+                            name = "Compact mode",
+                            desc = "Minimalize the info showing while hoovering over an Icon in the Minimap.",
+                            type = "toggle",
+                            width = 1,
+                            order = 5,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode = value
+                                    WarfrontRareTracker:UpdateAllWorldMapIcons()
+                                end,
+                            disabled = function() return not WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover end,
+                        },
+                        description = {
+                            name = WarfrontRareTracker:ColorizeText("\nIcon Settings:\n", colors.yellow),
+                            type = "description",
+                            order = 8,
+                        },
+                        minimapIconSize = {
+                            name = "Minimap Icon Size",
+                            desc = "Set the Worldmap Icon Size.",
+                            type = "range",
+                            order = 12,
+                            min = 8,
+                            max = 42,
+                            step = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.minimapIcons.minimapIconSize
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker:SetWorldmapIconSize(value, true)
+                                end,
+                        },
+                        minimapIconAlpha = {
+                            name = "Minimap Icon Alpha",
+                            desc = "Set the Worldmap Icon Alpha.",
+                            type = "range",
+                            order = 13,
+                            min = 1,
+                            max = 100,
+                            step = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker:GetWorldmapIconAlpha(true)
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker:SetWorldmapIconAlpha(value, true)
+                                end,
+                        },
+                    },
+                },
+                hide = {
+                    name = "Hide Icons",
+                    order = 3,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        description = {
+                            name = WarfrontRareTracker:ColorizeText("Note: ", colors.yellow) .. WarfrontRareTracker:ColorizeText("Both Worldmap Icons and Minimap Icons uses the same filter options!\n", colors.lightcyan),
+                            type = "description",
+                            order = 1,
+                        },
                         useMasterfilter = {
                             name = "Use Master Filter",
                             desc = "Use Master Filter.",
