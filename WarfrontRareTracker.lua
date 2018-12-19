@@ -6,6 +6,7 @@ local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
 local MinimapIcon = LibStub("LibDBIcon-1.0")
 
 local LibQTip = LibStub("LibQTip-1.0")
+local HBD = LibStub("HereBeDragons-2.0")
 local HBDPins = LibStub("HereBeDragons-Pins-2.0")
 
 
@@ -40,6 +41,7 @@ local DROP_MOUNT = "Mount"
 local DROP_PET = "Pet"
 local DROP_TOY = "Toy"
 local DROP_UNKNOWN = "Unknown"
+local WARFRONT_PINNAME = "WarfrontRareTrackerPin"
 
 ---------
 -- Locals
@@ -912,8 +914,26 @@ local function currentPlayerLeveledUp(newLevel)
     end
 end
 
-local function printMessage()
-    WarfrontRareTracker:Print(colorText("You can now switch to the new \"", colors.turqoise) .. colorText("Darkshore Warfront", colors.lightcyan) .. colorText("\" by clicking on the Zonename at the top of the menu, or just go there and it will automatically change. Please check for updates regularly as I'm missing a few items from it.", colors.turqoise))
+----------------------
+-- Addon Compatibility
+----------------------
+
+-- MinimapButtonBag
+-- Add Minimap Icons to the 'Ignore List' or else the addon thinks all Icons are an Addon Icon at the edge of the Menimap.
+local function checkMBBPinExclusion()
+    if IsAddOnLoaded("MBB") then
+        if MBB_Ignore ~= nil then
+            local pinAlreadyExcluded = false
+            for k, v in pairs(MBB_Ignore) do
+                if v == WARFRONT_PINNAME then
+                    pinAlreadyExcluded = true
+                end
+            end
+            if pinAlreadyExcluded == false then
+                MBB_Ignore[#MBB_Ignore + 1] = WARFRONT_PINNAME
+            end
+        end
+    end
 end
 
 ------------
@@ -944,7 +964,6 @@ function WarfrontRareTracker:DelayedInitialize(auto)
     if auto == true and delayedInitializeDone == false then
         return
     end
-    C_Timer.After(10, function() printMessage() end)
     WarfrontRareTracker:DelayedConfigInitialize()
     if IsAddOnLoaded("TomTom") then
         isTomTomloaded = true
@@ -1025,6 +1044,7 @@ function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     currentPlayerFaction = UnitFactionGroup("player")
     currentPlayerRealm = GetRealmName()
     WarfrontRareTracker:ZONE_CHANGED()
+    checkMBBPinExclusion()
     checkWarfrontControl()
     WarfrontRareTracker:SortRares()
     C_Timer.After(5, function() WarfrontRareTracker:DelayedInitialize(false) end)
@@ -1746,15 +1766,17 @@ end
 -- Worldmap Icons
 -----------------
 local pinCache = {}
-local PinCount = 0
+local pinCount = 0
+local pinAlreadyExcluded = false
+
 local function getNewWorldmapPin()
     local worldmapIcon = next(pinCache)
     if worldmapIcon then
 		pinCache[worldmapIcon] = nil
 		return worldmapIcon
     end
-    PinCount = PinCount + 1
-    worldmapIcon = CreateFrame("Button", "WarfrontPin"..PinCount, WorldMap)
+    pinCount = pinCount + 1
+    worldmapIcon = CreateFrame("Button", WARFRONT_PINNAME..pinCount, Worldmap)
     worldmapIcon:SetFrameLevel(5)
 	worldmapIcon:EnableMouse(true)
 	worldmapIcon:SetWidth(12)
@@ -1775,13 +1797,13 @@ local function getNewMinimapPin()
 		pinCache[minimapIcon] = nil
 		return minimapIcon
     end
-    PinCount = PinCount + 1
-    minimapIcon = CreateFrame("Button", "WarfrontPin"..PinCount, MiniMap)
+    pinCount = pinCount + 1
+    minimapIcon = CreateFrame("Button", WARFRONT_PINNAME..pinCount, Minimap)
     minimapIcon:SetFrameLevel(5)
 	minimapIcon:EnableMouse(true)
 	minimapIcon:SetWidth(12)
 	minimapIcon:SetHeight(12)
-	minimapIcon:SetPoint("CENTER", MiniMap, "CENTER")
+	minimapIcon:SetPoint("CENTER", Minimap, "CENTER")
 	local texture = minimapIcon:CreateTexture(nil, "OVERLAY")
 	minimapIcon.texture = texture
 	texture:SetAllPoints(minimapIcon)
@@ -1882,7 +1904,7 @@ function WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, npcid)
     local x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
     if self.db.profile.worldmapicons.showWorldmapIcons then
         local worldmapicon = getNewWorldmapPin()
-        worldmapicon:SetParent(WorldMap)
+        worldmapicon:SetParent(Worldmap)
         worldmapicon:SetHeight(self.db.profile.worldmapicons.worldmapIconSize)
         worldmapicon:SetWidth(self.db.profile.worldmapicons.worldmapIconSize)
         worldmapicon:SetAlpha(self.db.profile.worldmapicons.worldmapIconAlpha)
@@ -1909,7 +1931,7 @@ function WarfrontRareTracker:PlaceWorldmapNPCIcon(mapid, npcid)
     end
     if self.db.profile.minimapIcons.showMinimapIcons then
         local minimapIcon = getNewMinimapPin()
-        minimapIcon:SetParent(MiniMap)
+        minimapIcon:SetParent(Minimap)
         minimapIcon:SetHeight(self.db.profile.minimapIcons.minimapIconSize)
         minimapIcon:SetWidth(self.db.profile.minimapIcons.minimapIconSize)
         minimapIcon:SetAlpha(self.db.profile.minimapIcons.minimapIconAlpha)
@@ -1945,7 +1967,7 @@ function WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, npcid, caveCoord)
     local x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
     if self.db.profile.worldmapicons.showWorldmapIcons then
         local worldmapicon = getNewWorldmapPin()
-        worldmapicon:SetParent(WorldMap)
+        worldmapicon:SetParent(Worldmap)
         worldmapicon:SetHeight(self.db.profile.worldmapicons.worldmapIconSize)
         worldmapicon:SetWidth(self.db.profile.worldmapicons.worldmapIconSize)
         worldmapicon:SetAlpha(self.db.profile.worldmapicons.worldmapIconAlpha)
@@ -1962,7 +1984,7 @@ function WarfrontRareTracker:PlaceWorldmapCaveIcon(mapid, npcid, caveCoord)
     end
     if self.db.profile.minimapIcons.showMinimapIcons then
         local minimapIcon = getNewMinimapPin()
-        minimapIcon:SetParent(MiniMap)
+        minimapIcon:SetParent(Minimap)
         minimapIcon:SetHeight(self.db.profile.minimapIcons.minimapIconSize)
         minimapIcon:SetWidth(self.db.profile.minimapIcons.minimapIconSize)
         minimapIcon:SetAlpha(self.db.profile.minimapIcons.minimapIconAlpha)
