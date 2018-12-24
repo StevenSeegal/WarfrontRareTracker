@@ -72,7 +72,7 @@ L["madfeather"] = "Piumafolle"
 L["scalefiend"] = "Demonio Scaglioso"
 L["shattershard"] = "Spaccaschegge"
 L["glimmerspine"] = "Brillaspina"
-L["glrglrr"] = "Glrglrr (Zannambrata)"
+L["amberclaw"] = "Zannambrata"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

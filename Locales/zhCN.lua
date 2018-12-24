@@ -72,7 +72,7 @@ L["madfeather"] = "狂羽"
 L["scalefiend"] = "鳞魔"
 L["shattershard"] = "破片"
 L["glimmerspine"] = "微光之脊"
-L["glrglrr"] = "格勒格勒 (琥珀之爪)"
+L["amberclaw"] = "琥珀之爪"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

@@ -72,7 +72,7 @@ L["madfeather"] = "Wahnfeder"
 L["scalefiend"] = "Schuppenscheusal"
 L["shattershard"] = "Trümmerstück"
 L["glimmerspine"] = "Schimmerpanzer"
-L["glrglrr"] = "Glrglrr (Beinsteinklaue)"
+L["amberclaw"] = "Beinsteinklaue "
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

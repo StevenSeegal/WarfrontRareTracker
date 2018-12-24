@@ -72,7 +72,7 @@ L["madfeather"] = "Бешеное Перо"
 L["scalefiend"] = "Нагазавр"
 L["shattershard"] = "Расколокол"
 L["glimmerspine"] = "Блескошип"
-L["glrglrr"] = "Глрглрр (Янтарная Клешня)"
+L["amberclaw"] = "Янтарная Клешня"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

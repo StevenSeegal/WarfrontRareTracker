@@ -72,7 +72,7 @@ L["madfeather"] = "맛간깃털"
 L["scalefiend"] = "비늘마귀"
 L["shattershard"] = "산산파편"
 L["glimmerspine"] = "반짝가시"
-L["glrglrr"] = "가옳옳 (호박집게)"
+L["amberclaw"] = "호박집게"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

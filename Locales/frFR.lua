@@ -72,7 +72,7 @@ L["madfeather"] = "Plume-Furieuse"
 L["scalefiend"] = "Brutécaille"
 L["shattershard"] = "Brise-Eclat"
 L["glimmerspine"] = "Dos-Scintillant"
-L["glrglrr"] = "Glrglrr (Pince-Ambrée)"
+L["amberclaw"] = "Pince-Ambrée"
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

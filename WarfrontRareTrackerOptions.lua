@@ -284,6 +284,19 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideUnavailable = value
                                         end,
                                 },
+                                hideUntrackable = {
+                                    name = "Hide Untrackable Rares",
+                                    desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
+                                    type = "toggle",
+                                    width = 1,
+                                    order = 3,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideUntrackable
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideUntrackable = value
+                                        end,
+                                },
                                 hideUnknowLoot = {
                                     name = "Hide Unknown Loot",
                                     desc = "Hides the Rare's that don't drop a learnable item.",
@@ -553,7 +566,7 @@ configOptions = {
                             desc = "Hides the Icon of the Goliaths.",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 1,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideGoliaths
                                 end,
@@ -567,12 +580,26 @@ configOptions = {
                             desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                             type = "toggle",
                             width = "full",
-                            order = 3,
+                            order = 2,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnavailable
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.masterfilter.hideUnavailable = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideUntrackable = {
+                            name = "Hide Untrackable Rares",
+                            desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideUntrackable
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideUntrackable = value
                                     refreshWorldmapIcons(true)
                                 end,
                         },
@@ -1217,12 +1244,26 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                hideUntrackable = {
+                                    name = "Hide Untrackable Rares",
+                                    desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 4,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideUntrackable
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideUntrackable = value
+                                            refreshWorldmapIcons(true)
+                                        end,
+                                },
                                 hideUnknowLoot = {
                                     name = "Hide Unknown Loot",
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 4,
+                                    order = 5,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot
                                         end,
@@ -1236,7 +1277,7 @@ configOptions = {
                                     desc = "Hides the Icon of the Rare's which drop you already know.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 5,
+                                    order = 6,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
                                         end,
@@ -1250,7 +1291,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 6,
+                                    order = 7,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]
