@@ -3,6 +3,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 local isTomTomlocked = true
 local hasMultipleRareDB = false
 local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys" }
+local defeatModes = { ["hide"] = "Hide Icon", ["change"] = "Change Icon", ["none"] = "Nothing" }
 local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
 
@@ -655,17 +656,32 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
-                        worldmapHideIconWhenDefeated = {
-                            name = "Hide When Defeated",
-                            desc = "Hides the Icon when the Rare is Defeated.",
-                            type = "toggle",
-                            width = "full",
+                        -- worldmapHideIconWhenDefeated = {
+                        --     name = "Hide When Defeated",
+                        --     desc = "Hides the Icon when the Rare is Defeated.",
+                        --     type = "toggle",
+                        --     width = "full",
+                        --     order = 1,
+                        --     get = function(info)
+                        --             return WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated
+                        --         end,
+                        --     set = function(info, value)
+                        --             WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated = value
+                        --             refreshWorldmapIcons(true)
+                        --         end,
+                        -- },
+                        worldmapHandleDefeated = {
+                            name = "What to do with Defeated Rare's",
+                            desc = "What to do with Defeated Rare's.",
+                            type = "select",
+                            --width = "full",
                             order = 1,
+                            values = defeatModes,
                             get = function(info)
-                                    return WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated
+                                    return WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated
                                 end,
                             set = function(info, value)
-                                    WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated = value
+                                    WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated = value
                                     refreshWorldmapIcons(true)
                                 end,
                         },
@@ -1202,17 +1218,33 @@ configOptions = {
                             inline = true,
                             hidden = function() return WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter end,
                             args = {
-                                hideIconWhenDefeated = {
-                                    name = "Hide When Defeated",
-                                    desc = "Hides the Icon when the Rare is Defeated.",
-                                    type = "toggle",
-                                    width = "full",
+                                -- hideIconWhenDefeated = {
+                                --     name = "Hide When Defeated",
+                                --     desc = "Hides the Icon when the Rare is Defeated.",
+                                --     type = "toggle",
+                                --     width = "full",
+                                --     order = 1,
+                                --     get = function(info)
+                                --             return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
+                                --         end,
+                                --     set = function(info, value)
+                                --             WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated = value
+                                --             refreshWorldmapIcons(false)
+                                --         end,
+                                -- },
+                                handleDefeated = {
+                                    name = "What to do with Defeated Rare's",
+                                    desc = "What to do with Defeated Rare's.",
+                                    type = "select",
+                                    style = "dropdown",
+                                    --width = "half",
                                     order = 1,
+                                    values = defeatModes,
                                     get = function(info)
-                                            return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
+                                            return WarfrontRareTracker.db.profile.worldmapicons.handleDefeated
                                         end,
                                     set = function(info, value)
-                                            WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated = value
+                                            WarfrontRareTracker.db.profile.worldmapicons.handleDefeated = value
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
