@@ -80,6 +80,7 @@ local rareDB = { -- New
         warfrontControlledByFaction = "",
         worldmapIcons = {},
         minimapIcons = {},
+        index = 1,
         rares = {
             [138122] = { name = L["dooms_howl"], npcid = 138122, questId = { 53002 }, type = TYPE_WORLDBOSS, faction = FACTION_ALLIANCE, coord = { 38624096 }, bothphases = false, note = "Alliance only", warning = "Unavailable under Horde Control", loot = { { droptype = DROP_TOY, itemID = 163828, isKnown = false } } },
             [137374] = { name = L["the_lions_roar"], npcid = 137374, questId = { 53001 }, type = TYPE_WORLDBOSS, faction = FACTION_HORDE, coord = { 38624096 }, bothphases = false, note = "Horde only", warning = "Unavailable under Alliance Control", loot = { { droptype = DROP_TOY, itemID = 163829, isKnown = false } } },
@@ -124,6 +125,7 @@ local rareDB = { -- New
         warfrontControlledByFaction = "",
         worldmapIcons = {},
         minimapIcons = {},
+        index = 2,
         rares = {
             -- Worldbosses
             [148295] = { name = L["ivus_the_decayed"], npcid = 148295, questId = { 54895 }, type = TYPE_WORLDBOSS, faction = FACTION_ALLIANCE, coord = { 41253597 }, bothphases = false, note = "Alliance Only", warning = "Unavailable under Horde Control", loot = {  } },
@@ -221,6 +223,8 @@ local dbDefaults = {
             groupTypeSortOn = "drop",
             sortAscending = "true",
             worldbossOnTop = true,
+            keepSelectionMenuOpen = false,
+            alwaysShowWorldboss = true,
         },
         masterfilter = {
             showOnlyAtMaxLevel = true,
@@ -232,6 +236,7 @@ local dbDefaults = {
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false },
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
+            alwaysShowWorldboss = true,
         },
         colors = {
             colorizeDrops = true,
@@ -275,6 +280,7 @@ local dbDefaults = {
             hideUnavailable = false,
             hideGoliaths = false,
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false },
+            alwaysShowWorldboss = true,
         },
         tomtom = {
             enableIntegration = true,
@@ -289,6 +295,10 @@ local dbDefaults = {
     char = {
         selectedZone = 14,
         debug= 0,
+    },
+    global = {
+        printCompatibilityMessage1 = true,
+        printCompatibilityMessage2 = true,
     },
 }
 
@@ -759,13 +769,17 @@ local function showRare(mapid, npcid, mode) -- Rewritten
             if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
                 return false
             end
-            if WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+            -- if WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+            --     return false
+            if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
+                return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
+                return true
+            elseif WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot and not rareHasLegitQuests(mapid, npcid) then
-                return false
-            elseif WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideUnavailable and rareDB[mapid].rares[npcid].bothphases == false and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction then
                 return false 
@@ -777,7 +791,9 @@ local function showRare(mapid, npcid, mode) -- Rewritten
                 return true
             end
         elseif mode == "menu" and not WarfrontRareTracker.db.profile.menu.useMasterfilter then
-            if WarfrontRareTracker.db.profile.menu.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+            if WarfrontRareTracker.db.profile.menu.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
+                return true
+            elseif WarfrontRareTracker.db.profile.menu.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
@@ -800,7 +816,9 @@ local function showRare(mapid, npcid, mode) -- Rewritten
                     return false
                 end
             end
-            if WarfrontRareTracker.db.profile.masterfilter.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+            if WarfrontRareTracker.db.profile.masterfilter.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
+                return true
+            elseif WarfrontRareTracker.db.profile.masterfilter.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
@@ -1061,7 +1079,7 @@ end
 ----------------------
 
 -- MinimapButtonBag
--- Add Minimap Icons to the 'Ignore List' or else the addon thinks all Icons are an Addon Icon at the edge of the Menimap.
+-- Add Minimap Icons to the 'Ignore List' or else the addon thinks all Icons are an Addon Icon at the edge of the Minimap.
 local function checkMBBPinExclusion()
     if IsAddOnLoaded("MBB") then
         if MBB_Ignore ~= nil then
@@ -1073,9 +1091,40 @@ local function checkMBBPinExclusion()
             end
             if pinAlreadyExcluded == false then
                 MBB_Ignore[#MBB_Ignore + 1] = WARFRONT_PINNAME
+                if WarfrontRareTracker.db.global.printCompatibilityMessage1 then
+                    C_Timer.After(15, function() WarfrontRareTracker:Print(colorText("Addon ", colors.turqoise) .. colorText("Minimap Button Bag", colors.yellow) .. colorText(" found, minimap icons are automatically blacklisted!", colors.turqoise)) end)
+                    WarfrontRareTracker.db.global.printCompatibilityMessage1 = false
+                end
             end
         end
     end
+end
+
+-- MinimapButtonFrame
+-- Add Minimap Icons to the 'Ignore List' or else the addon thinks all Icons are an Addon Icon at the edge of the Minimap.
+local function checkMBFPinExclusion()
+    if IsAddOnLoaded("MinimapButtonFrame") then
+        if bachMBF.db.profile.MinimapIcons ~= nil then
+            local pinAlreadyExcluded = false
+            for k, v in pairs(bachMBF.db.profile.MinimapIcons) do
+                if v == WARFRONT_PINNAME then
+                    pinAlreadyExcluded = true
+                end
+            end
+            if pinAlreadyExcluded == false then
+                bachMBF.db.profile.MinimapIcons[#bachMBF.db.profile.MinimapIcons + 1] = WARFRONT_PINNAME
+                if WarfrontRareTracker.db.global.printCompatibilityMessage2 then
+                    C_Timer.After(15, function() WarfrontRareTracker:Print(colorText("Addon ", colors.turqoise) .. colorText("Minimap Button Frame", colors.yellow) .. colorText(" found, minimap icons are automatically blacklisted!", colors.turqoise)) end)
+                    WarfrontRareTracker.db.global.printCompatibilityMessage2 = false
+                end
+            end
+        end
+    end
+end
+
+local function checkAddonCompatibility()
+    checkMBBPinExclusion()
+    checkMBFPinExclusion()
 end
 
 ------------
@@ -1099,6 +1148,7 @@ function WarfrontRareTracker:OnInitialize()
 
     WarfrontRareTracker:RegisterOptions()
     MinimapIcon:Register("WarfrontRareTracker", self.broker, self.db.profile.minimap)
+    WarfrontRareTracker:InitWarfrontSwitchTable()
 end
 
 local delayedInitializeDone = false
@@ -1186,7 +1236,7 @@ function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     currentPlayerFaction = UnitFactionGroup("player")
     currentPlayerRealm = GetRealmName()
     WarfrontRareTracker:ZONE_CHANGED()
-    checkMBBPinExclusion()
+    checkAddonCompatibility()
     checkWarfrontControl()
     sortLootTables()
     WarfrontRareTracker:SortRares()
@@ -1207,7 +1257,9 @@ end
 function WarfrontRareTracker:ZONE_CHANGED()
     local oldMapid = currentPlayerMapid
     local currentMapID = C_Map.GetBestMapForUnit("player")
-    if currentMapID ~= currentPlayerMapid then
+    if currentMapID == nil then
+        currentPlayerMapid = 0
+    elseif currentMapID ~= currentPlayerMapid then
         currentPlayerMapid = currentMapID
         playerIsInInstance, _ = IsInInstance()
         --print("ZONE_CHANGED - currentPlayerMapid: " .. currentPlayerMapid .. " playerIsInInstance: " .. tostring(playerIsInInstance))
@@ -1229,7 +1281,7 @@ function WarfrontRareTracker:RefreshMinimap()
 end
 
 function WarfrontRareTracker:RefreshConfig()
-    WarfrontRareTracker:OnRefreshConfig()
+    self:OnRefreshConfig()
     self:RefreshMinimap()
     self:RefreshBrokerText()
     self:UpdateAllWorldMapIcons()
@@ -1275,6 +1327,7 @@ function WarfrontRareTracker:OnFactionChange(mapid)
 end
 
 function WarfrontRareTracker:CheckMapChange(oldMapid)
+    if currentPlayerMapid <= 0 then return end
     if oldMapid == currentPlayerMapid then return end
     local oldAutoChangeZone = autoChangeZone
 
@@ -1358,10 +1411,33 @@ end
 -- Tooltips
 ---------------
 -- Menu Tooltip
+local warfrontSwitchTable = {}
+function WarfrontRareTracker:InitWarfrontSwitchTable()
+    for mapid, contents in pairs(rareDB) do
+        if contents.index then
+            warfrontSwitchTable[contents.index] = mapid
+        end
+    end
+end
+
+local function switchToNextWarfront()
+    local index = rareDB[WarfrontRareTracker.db.char.selectedZone].index + 1
+    if index > getBDSize(rareDB) then
+        index = 1
+    end
+
+    WarfrontRareTracker.db.char.selectedZone = warfrontSwitchTable[index]
+    if menuTooltip then
+        WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
+    end
+end
+
 function WarfrontRareTracker:MenuOnClick(self, button)
     if button == "RightButton" then
         LibStub("AceConfigDialog-3.0"):Open("WarfrontRareTracker")
-    elseif button == "LeftButton" then
+    elseif button == "LeftButton" and IsShiftKeyDown() then
+        switchToNextWarfront()
+    elseif button == "LeftButton" and not IsShiftKeyDown() then
         if WarfrontRareTracker.db.profile.menu.showMenuOn ~= "click" then
             return
         end
@@ -1455,7 +1531,7 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
     menuTooltip:SetCell(line, 1, " ", nil, "LEFT", 3)
 
     line = menuTooltip:AddHeader()
-    menuTooltip:SetCell(line, 1, TYPE_RARE)
+    menuTooltip:SetCell(line, 1, "Rare")
     menuTooltip:SetCell(line, 2, "Drops", nil, "LEFT", 1, LibQTip.LabelProvider, 20, nil, 100, 100)
     menuTooltip:SetCell(line, 3, "Status")
     menuTooltip:AddSeparator()
@@ -1489,6 +1565,8 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
         line = menuTooltip:AddLine()
         menuTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 3)
     end
+    line = menuTooltip:AddLine()
+    menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to cycle Warfront.", colors.turqoise), "LEFT", 3)
 end
 
 function WarfrontRareTracker:MenuTooltipOnLineClick(self, info, button)
@@ -1506,56 +1584,81 @@ end
 -- Menu Warfront Selection Tooltip
 local oldSelectedZone
 function WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button)
-    if isWarfrontSelectionMenuCollapsed then
-        oldSelectedZone = WarfrontRareTracker.db.char.selectedZone
-        isWarfrontSelectionMenuCollapsed = false
-    else
-        WarfrontRareTracker.db.char.selectedZone = mapid
-        if oldSelectedZone ~= nil or oldSelectedZone ~= mapid then
+    if WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen then
+        if WarfrontRareTracker.db.char.selectedZone ~= mapid then
+
+            WarfrontRareTracker.db.char.selectedZone = mapid
             WarfrontRareTracker:SetTimestamp(true)
         end
-        isWarfrontSelectionMenuCollapsed = true
+    else
+        if isWarfrontSelectionMenuCollapsed then
+            oldSelectedZone = WarfrontRareTracker.db.char.selectedZone
+            isWarfrontSelectionMenuCollapsed = false
+        else
+            WarfrontRareTracker.db.char.selectedZone = mapid
+            if oldSelectedZone ~= nil or oldSelectedZone ~= mapid then
+                WarfrontRareTracker:SetTimestamp(true)
+            end
+            isWarfrontSelectionMenuCollapsed = true
+        end
     end
     WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
 end
 
 function WarfrontRareTracker:ShowMenuWarfrontSelection(mapid, tooltip)
     local line
-    if isWarfrontSelectionMenuCollapsed and getBDSize(rareDB) <= 1 then
+    if WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen then
         line = tooltip:AddHeader()
-        tooltip:SetCell(line, 1, colorText(rareDB[mapid].zonename, colors.lightcyan), tooltip:GetHeaderFont(), "CENTER", 3)
-    elseif isWarfrontSelectionMenuCollapsed and getBDSize(rareDB) > 1 then
-        line = tooltip:AddHeader()
-        tooltip:SetCell(line, 1, colorText(rareDB[mapid].zonename, colors.lightcyan), tooltip:GetHeaderFont(), "CENTER", 3)
-        tooltip:SetLineScript(line, "OnEnter", function(self) WarfrontRareTracker:WarfrontStatusTooltipOnEnter(self) end)
-        tooltip:SetLineScript(line, "OnLeave", function() WarfrontRareTracker:WarfrontStatusTooltipOnleave() end)
-        tooltip:SetLineScript(line, "OnMouseUp", function(self, mapid, button) WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button) end, mapid)
-    else
-        line = tooltip:AddHeader()
-        tooltip:SetCell(line, 1, colorText("Select Warfront", colors.yellow), tooltip:GetHeaderFont(), "CENTER", 3)
-        tooltip:AddSeparator()
-        local selectedColor = colors.green
-        local activeColor = colors.orange
+            tooltip:SetCell(line, 1, colorText("Select Warfront", colors.yellow), tooltip:GetHeaderFont(), "CENTER", 3)
+            tooltip:AddSeparator()
 
-        if manualTimestamp >= autoChangeZoneTimestamp then
-            selectedColor = colors.orange
-            activeColor = colors.green
-        end
-        
-        for dbMapid, content in pairs(rareDB) do
-            line = tooltip:AddLine()
-            if WarfrontRareTracker.db.profile.menu.autoChangeZone and autoChangeZone ~= nil and dbMapid == autoChangeZone or WarfrontRareTracker.db.profile.menu.autoChangeZone and autoChangeZone == nil and dbMapid == WarfrontRareTracker.db.char.selectedZone then
-                tooltip:SetCell(line, 1, colorText(content.zonename, selectedColor), nil, "CENTER", 3)
-            elseif WarfrontRareTracker.db.profile.menu.autoChangeZone and dbMapid == WarfrontRareTracker.db.char.selectedZone then
-                tooltip:SetCell(line, 1, colorText(content.zonename, activeColor), nil, "CENTER", 3)
-            elseif not WarfrontRareTracker.db.profile.menu.autoChangeZone and dbMapid == WarfrontRareTracker.db.char.selectedZone then
-                tooltip:SetCell(line, 1, colorText(content.zonename, selectedColor), nil, "CENTER", 3)
-            else
-                tooltip:SetCell(line, 1, colorText(content.zonename, colors.grey), nil, "CENTER", 3)
+            for dbMapid, content in pairs(rareDB) do
+                line = tooltip:AddLine()
+                if dbMapid == WarfrontRareTracker.db.char.selectedZone then
+                    tooltip:SetCell(line, 1, colorText(content.zonename, colors.lightcyan), nil, "CENTER", 3)
+                else
+                    tooltip:SetCell(line, 1, colorText(content.zonename, colors.grey), nil, "CENTER", 3)
+                end
+                tooltip:SetLineScript(line, "OnMouseUp", function(self, mapid, button) WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button) end, dbMapid)
             end
-            tooltip:SetLineScript(line, "OnMouseUp", function(self, mapid, button) WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button) end, dbMapid)
+            tooltip:AddSeparator()
+    else
+        if isWarfrontSelectionMenuCollapsed and getBDSize(rareDB) <= 1 then
+            line = tooltip:AddHeader()
+            tooltip:SetCell(line, 1, colorText(rareDB[mapid].zonename, colors.lightcyan), tooltip:GetHeaderFont(), "CENTER", 3)
+        elseif isWarfrontSelectionMenuCollapsed and getBDSize(rareDB) > 1 then
+            line = tooltip:AddHeader()
+            tooltip:SetCell(line, 1, colorText(rareDB[mapid].zonename, colors.lightcyan), tooltip:GetHeaderFont(), "CENTER", 3)
+            tooltip:SetLineScript(line, "OnEnter", function(self) WarfrontRareTracker:WarfrontStatusTooltipOnEnter(self) end)
+            tooltip:SetLineScript(line, "OnLeave", function() WarfrontRareTracker:WarfrontStatusTooltipOnleave() end)
+            tooltip:SetLineScript(line, "OnMouseUp", function(self, mapid, button) WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button) end, mapid)
+        else
+            line = tooltip:AddHeader()
+            tooltip:SetCell(line, 1, colorText("Select Warfront", colors.yellow), tooltip:GetHeaderFont(), "CENTER", 3)
+            tooltip:AddSeparator()
+            local selectedColor = colors.green
+            local activeColor = colors.orange
+
+            if manualTimestamp > 0 and autoChangeZoneTimestamp > 0 and manualTimestamp >= autoChangeZoneTimestamp then
+                selectedColor = colors.orange
+                activeColor = colors.green
+            end
+            
+            for dbMapid, content in pairs(rareDB) do
+                line = tooltip:AddLine()
+                if WarfrontRareTracker.db.profile.menu.autoChangeZone and autoChangeZone ~= nil and dbMapid == autoChangeZone or WarfrontRareTracker.db.profile.menu.autoChangeZone and autoChangeZone == nil and dbMapid == WarfrontRareTracker.db.char.selectedZone then
+                    tooltip:SetCell(line, 1, colorText(content.zonename, selectedColor), nil, "CENTER", 3)
+                elseif WarfrontRareTracker.db.profile.menu.autoChangeZone and dbMapid == WarfrontRareTracker.db.char.selectedZone then
+                    tooltip:SetCell(line, 1, colorText(content.zonename, activeColor), nil, "CENTER", 3)
+                elseif not WarfrontRareTracker.db.profile.menu.autoChangeZone and dbMapid == WarfrontRareTracker.db.char.selectedZone then
+                    tooltip:SetCell(line, 1, colorText(content.zonename, selectedColor), nil, "CENTER", 3)
+                else
+                    tooltip:SetCell(line, 1, colorText(content.zonename, colors.grey), nil, "CENTER", 3)
+                end
+                tooltip:SetLineScript(line, "OnMouseUp", function(self, mapid, button) WarfrontRareTracker:MenuWarfrontSelectionToolOnCick(self, mapid, button) end, dbMapid)
+            end
+            tooltip:AddSeparator()
         end
-        tooltip:AddSeparator()
     end
 end
 

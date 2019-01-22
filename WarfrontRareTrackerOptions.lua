@@ -95,7 +95,6 @@ configOptions = {
                             name = "Show Broker Text",
                             desc = "Shows Broker Text. (You only see the Icon when Disabled)",
                             type = "toggle",
-                            --width = "full",
                             order = 1,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.broker.showBrokerText
@@ -182,7 +181,7 @@ configOptions = {
             },
         },
         menuGeneral = {
-            name = "Menu Options", -- showOnCombat
+            name = "Menu Options",
             type = "group",
             order = 3,
             args = {
@@ -233,9 +232,30 @@ configOptions = {
                         },
                     },
                 },
+                wartfontselect = {
+                    name = "Warfront Selection Menu",
+                    order = 2,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        keepSelectionMenuOpen = {
+                            name = "Keep Warfront Selection Menu Open.",
+                            desc = "Keeps the Warfront Selection Menu Open so you can switch Warfronts in a single click.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen = value
+                                end,
+                        },
+                    },
+                },
                 hide = {
                     name = "Hide Options",
-                    order = 2,
+                    order = 3,
                     type = "group",
                     inline = true,
                     args = {
@@ -259,12 +279,25 @@ configOptions = {
                             inline = true,
                             hidden = function() return WarfrontRareTracker.db.profile.menu.useMasterfilter end,
                             args = {
+                                alwaysShowWorldboss = {
+                                    name = "Always Show Worldboss",
+                                    desc = "Don't hide the Icon for the Worldbosses if it contains no loot on already known loot. Unless it's killed and you have a \"Hide When Defeated\" option selected somewhere.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 1,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.alwaysShowWorldboss
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.alwaysShowWorldboss = value
+                                        end,
+                                },
                                 hideGoliaths = {
                                     name = "Hide Goliaths",
                                     desc = "Hides the Goliaths as they don't drop a learnable item.",
                                     type = "toggle",
-                                    width = 1,
-                                    order = 1,
+                                    width = 1.2,
+                                    order = 2,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideGoliaths
                                         end,
@@ -276,8 +309,8 @@ configOptions = {
                                     name = "Hide Unavailable Rares",
                                     desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                                     type = "toggle",
-                                    width = 1,
-                                    order = 2,
+                                    width = 1.2,
+                                    order = 3,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUnavailable
                                         end,
@@ -289,8 +322,8 @@ configOptions = {
                                     name = "Hide Untrackable Rares",
                                     desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                                     type = "toggle",
-                                    width = 1,
-                                    order = 3,
+                                    width = 1.2,
+                                    order = 4,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUntrackable
                                         end,
@@ -302,8 +335,8 @@ configOptions = {
                                     name = "Hide Unknown Loot",
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
-                                    width = 1,
-                                    order = 4,
+                                    width = 1.2,
+                                    order = 5,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUnknowLoot
                                         end,
@@ -315,8 +348,8 @@ configOptions = {
                                     name = "Hide Known Items",
                                     desc = "Hides Rare's of which drop you already know.",
                                     type = "toggle",
-                                    width = 1,
-                                    order = 3,
+                                    width = 1.2,
+                                    order = 6,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideAlreadyKnown
                                         end,
@@ -329,7 +362,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 5,
+                                    order = 7,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.menu.whitelist[key]
@@ -345,7 +378,7 @@ configOptions = {
                 },
                 warfront = {
                     name = "Warfront Status",
-                    order = 3,
+                    order = 4,
                     type = "group",
                     inline = true,
                     args = {
@@ -414,7 +447,7 @@ configOptions = {
                 },
                 zonechange = {
                     name = "Auto Change Warfront Options",
-                    order = 4,
+                    order = 5,
                     type = "group",
                     inline = true,
                     args = {
@@ -562,12 +595,26 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
+                        alwaysShowWorldboss = {
+                            name = "Always Show Worldboss",
+                            desc = "Don't hide the Icon for the Worldbosses if it contains no loot on already known loot. Unless it's killed and you have a \"Hide When Defeated\" option selected somewhere.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.alwaysShowWorldboss
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.alwaysShowWorldboss = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         hideGoliaths = {
                             name = "Hide Goliaths",
                             desc = "Hides the Icon of the Goliaths.",
                             type = "toggle",
                             width = "full",
-                            order = 1,
+                            order = 2,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideGoliaths
                                 end,
@@ -581,7 +628,7 @@ configOptions = {
                             desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 3,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnavailable
                                 end,
@@ -595,7 +642,7 @@ configOptions = {
                             desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 4,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUntrackable
                                 end,
@@ -609,7 +656,7 @@ configOptions = {
                             desc = "Hides the Rare's that don't drop a learnable item.",
                             type = "toggle",
                             width = "full",
-                            order = 4,
+                            order = 5,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot
                                 end,
@@ -623,7 +670,7 @@ configOptions = {
                             desc = "Hides the Icon of the Rare's which drop you already know.",
                             type = "toggle",
                             width = "full",
-                            order = 5,
+                            order = 6,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown
                                 end,
@@ -637,7 +684,7 @@ configOptions = {
                             desc = "Select which 'Already Know' drop you still want to show.",
                             type = "multiselect",
                             width = "half",
-                            order = 6,
+                            order = 7,
                             values = whitelist,
                             get = function(info, key)
                                     return WarfrontRareTracker.db.profile.masterfilter.whitelist[key]
@@ -656,25 +703,10 @@ configOptions = {
                     type = "group",
                     inline = true,
                     args = {
-                        -- worldmapHideIconWhenDefeated = {
-                        --     name = "Hide When Defeated",
-                        --     desc = "Hides the Icon when the Rare is Defeated.",
-                        --     type = "toggle",
-                        --     width = "full",
-                        --     order = 1,
-                        --     get = function(info)
-                        --             return WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated
-                        --         end,
-                        --     set = function(info, value)
-                        --             WarfrontRareTracker.db.profile.masterfilter.worldmapHideIconWhenDefeated = value
-                        --             refreshWorldmapIcons(true)
-                        --         end,
-                        -- },
                         worldmapHandleDefeated = {
                             name = "What to do with Defeated Rare's",
                             desc = "What to do with Defeated Rare's.",
                             type = "select",
-                            --width = "full",
                             order = 1,
                             values = defeatModes,
                             get = function(info)
@@ -1218,20 +1250,6 @@ configOptions = {
                             inline = true,
                             hidden = function() return WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter end,
                             args = {
-                                -- hideIconWhenDefeated = {
-                                --     name = "Hide When Defeated",
-                                --     desc = "Hides the Icon when the Rare is Defeated.",
-                                --     type = "toggle",
-                                --     width = "full",
-                                --     order = 1,
-                                --     get = function(info)
-                                --             return WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated
-                                --         end,
-                                --     set = function(info, value)
-                                --             WarfrontRareTracker.db.profile.worldmapicons.hideIconWhenDefeated = value
-                                --             refreshWorldmapIcons(false)
-                                --         end,
-                                -- },
                                 handleDefeated = {
                                     name = "What to do with Defeated Rare's",
                                     desc = "What to do with Defeated Rare's.",
@@ -1248,12 +1266,26 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                alwaysShowWorldboss = {
+                                    name = "Always Show Worldboss",
+                                    desc = "Don't hide the Icon for the Worldbosses if it contains no loot on already known loot. Unless it's killed and you have a \"Hide When Defeated\" option selected somewhere.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 2,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
                                 hideGoliaths = {
                                     name = "Hide Goliaths",
                                     desc = "Hides the Icon of the Goliaths.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 2,
+                                    order = 3,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
                                         end,
@@ -1267,7 +1299,7 @@ configOptions = {
                                     desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 3,
+                                    order = 4,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUnavailable
                                         end,
@@ -1281,7 +1313,7 @@ configOptions = {
                                     desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                                     type = "toggle",
                                     width = "full",
-                                    order = 4,
+                                    order = 5,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUntrackable
                                         end,
@@ -1295,7 +1327,7 @@ configOptions = {
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 5,
+                                    order = 6,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot
                                         end,
@@ -1309,7 +1341,7 @@ configOptions = {
                                     desc = "Hides the Icon of the Rare's which drop you already know.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 6,
+                                    order = 7,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
                                         end,
@@ -1323,7 +1355,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 7,
+                                    order = 8,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]
