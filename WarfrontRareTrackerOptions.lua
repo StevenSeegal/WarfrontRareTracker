@@ -344,12 +344,25 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideUnknowLoot = value
                                         end,
                                 },
+                                hideGearOnly = {
+                                    name = "Hide Gear Only",
+                                    desc = "Hides the Rare's that only drops Gear.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 6,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideGearOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideGearOnly = value
+                                        end,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides Rare's of which drop you already know.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 6,
+                                    order = 9,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideAlreadyKnown
                                         end,
@@ -362,7 +375,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 7,
+                                    order = 10,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.menu.whitelist[key]
@@ -665,12 +678,26 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
+                        hideGearOnly = {
+                            name = "Hide Gear Only",
+                            desc = "Hides the Rare's that only drops Gear.",
+                            type = "toggle",
+                            width = "full",
+                            order = 6,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideGearOnly
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideGearOnly = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         hideAlreadyKnown = {
                             name = "Hide Known Items",
                             desc = "Hides the Icon of the Rare's which drop you already know.",
                             type = "toggle",
                             width = "full",
-                            order = 6,
+                            order = 9,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown
                                 end,
@@ -684,7 +711,7 @@ configOptions = {
                             desc = "Select which 'Already Know' drop you still want to show.",
                             type = "multiselect",
                             width = "half",
-                            order = 7,
+                            order = 10,
                             values = whitelist,
                             get = function(info, key)
                                     return WarfrontRareTracker.db.profile.masterfilter.whitelist[key]
@@ -1336,12 +1363,26 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                hideGearOnly = {
+                                    name = "Hide Gear Only",
+                                    desc = "Hides the Rare's that only drops Gear.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 6,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides the Icon of the Rare's which drop you already know.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 7,
+                                    order = 9,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
                                         end,
@@ -1355,7 +1396,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 8,
+                                    order = 10,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]
