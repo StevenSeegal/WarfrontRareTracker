@@ -74,7 +74,8 @@ local rareDB = { -- New
         zonename = "Arathi Highlands",
         scenarioname = "Battle for Stromgarde",
         gatheringname = "Contributing",
-        zonelevel = 120,
+        hidden = false,
+        zonephaseID = 1137, -- ArtID
         zoneContributionMapID = 11,
         allianceContributionMapID = 116,
         hordeContributionMapID = 11,
@@ -119,7 +120,8 @@ local rareDB = { -- New
         zonename = "Darkshore",
         scenarioname = "Battle for Darkshore",
         gatheringname = "Contributing", -- Change
-        zonelevel = 120,
+        hidden = false,
+        zonephaseID = 1176, -- ArtID
         zoneContributionMapID = 118,
         allianceContributionMapID = 117,
         hordeContributionMapID = 118,
@@ -237,6 +239,7 @@ local dbDefaults = {
             hideUnavailable = false,
             hideGearOnly = false,
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false },
+            worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
             alwaysShowWorldboss = true,
@@ -263,7 +266,8 @@ local dbDefaults = {
         },
         minimapIcons = {
             showMinimapIcons = true,
-            showOnlyAtMaxLevel = true,
+            showOnlyAtPhase = true,
+            showOnlyAtMaxLevel = false,
             onMinimapHoover = true,
             minimapIconsCompactMode = true,
             minimapIconSize = 13,
@@ -272,7 +276,8 @@ local dbDefaults = {
         worldmapicons = {
             handleDefeated = "change",
             showWorldmapIcons = true,
-            showOnlyAtMaxLevel = true,
+            showOnlyAtPhase = true,
+            showOnlyAtMaxLevel = false,
             clickToTomTom = true,
             worldmapIconSize = 13,
             worldmapIconAlpha = 1,
@@ -770,11 +775,14 @@ end
 local function showRare(mapid, npcid, mode) -- Rewritten
     if isNPCPlayerFaction(mapid, npcid) then
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
-            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
+            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].hidden == true  then
+                return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
                 return false
             end
             -- if WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
             --     return false
+            --if rareDB[mapid].hidden == true then return false end
             if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
@@ -818,7 +826,9 @@ local function showRare(mapid, npcid, mode) -- Rewritten
             end
         else
             if mode == "worldmap" then
-                if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
+                if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase == true and rareDB[mapid].hidden == true then
+                    return false
+                elseif WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
                     return false
                 elseif WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                     return false
@@ -848,7 +858,7 @@ local function showRare(mapid, npcid, mode) -- Rewritten
         return false
     end
 end
-
+  
 local function scanForKnownItems() -- Rewritten
     if newPetAdedTimer then
         WarfrontRareTracker:CancelTimer(newPetAdedTimer)
@@ -896,6 +906,7 @@ local function updateBrokerText()
         WarfrontRareTracker:CancelTimer(updateBrokerTimer)
         updateBrokerTimer = nil
     end
+    checkWarfrontControl()
     local canSchedule = false
     local scheduleState = 0
     local brokerText
@@ -938,8 +949,8 @@ local function updateBrokerText()
                 brokerText = "No Status Info"
             end
         elseif WarfrontRareTracker.db.profile.broker.brokerText == "allstatus" then
+            canSchedule = true
             if hasDBContributionInfo() then
-                canSchedule = true
                 local oppositeFaction = rareDB[getPlayerSelectedZone()].warfrontControlledByFaction == FACTION_HORDE and colorText("(A) ", colors.blue) or colorText("(H) ", colors.red)
                 local state, percentage, timeNextChange = getWarfrontProgressInfo()
                 if state ~= nil and state == 1 then
@@ -961,7 +972,6 @@ local function updateBrokerText()
                 else
                     scheduleState = 3
                     brokerText = colorText("Collecting Info...", colors.turqoise)
-                    canSchedule = false
                 end
             else
                 brokerText = "No Status Info"
@@ -990,12 +1000,10 @@ end
 
 local function getCoordsForWarfrontPhase(mapid, npcid, cave)
     if rareDB[mapid].rares[npcid] == nil or type(rareDB[mapid].rares[npcid]) ~= "table" then
-        --print("error")
         return 0
     end
     if cave then
         if rareDB[mapid].rares[npcid].cave == nil then
-            --print("no cave")
             return 0
         end
         if #rareDB[mapid].rares[npcid].cave == 1 then
@@ -1080,6 +1088,15 @@ local function sortLootTables()
             if rare.loot ~= nil and #rare.loot > 1 then
                 table.sort(rare.loot, function(a, b) return a.droptype < b.droptype end)
             end
+        end
+    end
+end
+
+local function checkWarfrontZonePhases()
+    for mapid, contents in pairs(rareDB) do
+        local artID = C_Map.GetMapArtID(mapid)
+        if contents.zonephaseID ~= artID then
+            contents.hidden = true
         end
     end
 end
@@ -1171,6 +1188,7 @@ function WarfrontRareTracker:DelayedInitialize(auto)
         isTomTomloaded = true
     end
     scanForKnownItems()
+    checkWarfrontZonePhases()
     self:UpdateAllWorldMapIcons()
     updateBrokerText()
     C_Timer.After(5, function() WarfrontRareTracker:RefreshAllData() end)
@@ -1264,6 +1282,14 @@ function WarfrontRareTracker:BUCKET_ON_LOOT_RECEIVED()
     end
 end
 
+local function isWarfrontInCorrectPhase(mapid)
+    if rareDB[mapid] == nil then
+        return false
+    end
+    return C_Map.GetMapArtID(currentPlayerMapid) == rareDB[mapid].zonephaseID
+end
+
+
 function WarfrontRareTracker:ZONE_CHANGED()
     local oldMapid = currentPlayerMapid
     local currentMapID = C_Map.GetBestMapForUnit("player")
@@ -1272,8 +1298,10 @@ function WarfrontRareTracker:ZONE_CHANGED()
     elseif currentMapID ~= currentPlayerMapid then
         currentPlayerMapid = currentMapID
         playerIsInInstance, _ = IsInInstance()
-        --print("ZONE_CHANGED - currentPlayerMapid: " .. currentPlayerMapid .. " playerIsInInstance: " .. tostring(playerIsInInstance))
         self:CheckMapChange(oldMapid)
+        C_Timer.After(3, function() WarfrontRareTracker:CheckWarfrontPhaseChange() end)
+    elseif currentMapID == currentPlayerMapid and rareDB[currentPlayerMapid] ~= nil then
+        C_Timer.After(3, function() WarfrontRareTracker:CheckWarfrontPhaseChange() end)
     end
 end
 
@@ -1324,6 +1352,40 @@ end
 -----------------
 -- Main functions
 -----------------
+local currentPhaseID = 0
+local previousPhaseID = 0
+local function checkIconsForPhase()
+    if currentPhaseID == rareDB[currentPlayerMapid].zonephaseID then
+        if rareDB[currentPlayerMapid].hidden == true then
+            rareDB[currentPlayerMapid].hidden = false
+            WarfrontRareTracker:RefreshZoneData(currentPlayerMapid)
+        end
+    else
+        if rareDB[currentPlayerMapid].hidden == false then
+            rareDB[currentPlayerMapid].hidden = true
+            WarfrontRareTracker:RefreshZoneData(currentPlayerMapid)
+        end
+    end
+end
+
+function WarfrontRareTracker:CheckWarfrontPhaseChange()
+    if type(rareDB[currentPlayerMapid]) == "table" then
+        if currentPhaseID == 0 then
+            currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
+            checkIconsForPhase()
+        end
+        previousPhaseID = currentPhaseID
+        currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
+
+        if currentPhaseID > 0 and currentPhaseID ~= previousPhaseID then
+            checkIconsForPhase()
+        end
+    else
+        currentPhaseID = 0
+        previousPhaseID = 0
+    end
+end
+
 function WarfrontRareTracker:GetRareDBSize()
     return getBDSize(rareDB)
 end
@@ -1680,11 +1742,6 @@ function WarfrontRareTracker:MenuTooltipOnLineLeave()
         lootTooltip = nil
     end
 end
-
--- if rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
---     line = lootTooltip:AddLine()
---     lootTooltip:SetCell(line, 1, colorText(DROP_GEAR_ONLY, colors.lightcyan), nil, nil, 2)
--- else
 
 local function addLootInfoToTooltip(tooltip, mapid, npcid, lootindex) -- New, usable is more tooltips
     if rareDB[mapid].rares[npcid].loot[lootindex] == nil then
@@ -2077,7 +2134,6 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
                     worldmapTooltip:SetCell(line, 1, " ", nil, nil, 2)
                     line = worldmapTooltip:AddLine()
                     worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
-                    --lootTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
                 end
             end
         else
@@ -2230,18 +2286,12 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
         for k, icon in pairs(rareDB[currentPlayerMapid].worldmapIcons) do
             if isQuestCompleted(currentPlayerMapid, icon.npcid) then
                 icon.texture:SetTexture(getWorldMapIconForRare(currentPlayerMapid, icon.npcid, icon.cave))
-                -- HBDPins:RemoveWorldMapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
-                -- recyclePin(icon)
-                -- rareDB[currentPlayerMapid].worldmapIcons[k] = nil
             end
         end
         if self.db.profile.minimapIcons.showMinimapIcons then
             for k, icon in pairs(rareDB[currentPlayerMapid].minimapIcons) do
                 if isQuestCompleted(currentPlayerMapid, icon.npcid) then
                     icon.texture:SetTexture(getWorldMapIconForRare(currentPlayerMapid, icon.npcid, icon.cave))
-                    -- HBDPins:RemoveMinimapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
-                    -- recyclePin(icon)
-                    -- rareDB[currentPlayerMapid].minimapIcons[k] = nil
                 end
             end
         end
@@ -2331,6 +2381,11 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
         return
     end
     if rareDB[currentPlayerMapid] == nil or playerIsInInstance then
+        return
+    end
+    if WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == true and WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
+        return
+    elseif WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == false and WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
         return
     end
 

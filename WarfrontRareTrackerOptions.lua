@@ -744,12 +744,26 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
+                        worldmapShowOnlyAtPhase = {
+                            name = "Show Only In Warfront Phase",
+                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 120\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         showOnlyAtMaxLevel = {
                             name = "Show Only At Level 120",
                             desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
                             type = "toggle",
                             width = "full",
-                            order = 2,
+                            order = 3,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel
                                 end,
@@ -757,6 +771,7 @@ configOptions = {
                                     WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel = value
                                     refreshWorldmapIcons(true)
                                 end,
+                            disabled = function() return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase end,
                         },
                     },
                 },
@@ -1089,6 +1104,20 @@ configOptions = {
                                     WarfrontRareTracker:UpdateAllWorldMapIcons()
                                 end,
                         },
+                        showOnlyAtPhase = {
+                            name = "Show Only In Warfront Phase",
+                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 120\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
+                            type = "toggle",
+                            width = "full",
+                            order = 2,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase = value
+                                    refreshWorldmapIcons(false)
+                                end,
+                        },
                         showOnlyAtMaxLevel = {
                             name = "Show Only At Level 120",
                             desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
@@ -1102,6 +1131,7 @@ configOptions = {
                                     WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel = value
                                     refreshWorldmapIcons(false)
                                 end,
+                            disabled = function() return WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase end,
                         },
                         clickToTomTom = {
                             name = "Click Worldmap To Add TomTom Waypoint",
