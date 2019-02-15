@@ -483,7 +483,7 @@ end
 
 local function getColoredStatusText(mapid, npcid)
     if not isPlayerMaxLevel() then
-        return colorText("Level "..rareDB[mapid].zonelevel, colors.orange)
+        return colorText("Level " .. PLAYER_MAXLEVEL, colors.orange)
     end
     local rare = rareDB[mapid].rares[npcid]
     if rare.questId[1] == -1 then
