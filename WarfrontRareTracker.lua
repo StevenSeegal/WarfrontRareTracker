@@ -243,6 +243,7 @@ local dbDefaults = {
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
             alwaysShowWorldboss = true,
+            showFooter = true,
         },
         colors = {
             colorizeDrops = true,
@@ -294,6 +295,8 @@ local dbDefaults = {
         tomtom = {
             enableIntegration = true,
             enableChatMessage = true,
+            tomtomAnnounce = false,
+            tomtomAnnounceLeader = true,
         },
         general = {
             enableZoneChangeSound = true,
@@ -454,9 +457,16 @@ local function getWarfrontTimeLeft(changeTime)
     return daysLeft, hoursLeft, minutesLeft, secondsLeft
 end
 
-local function colorText(text, color)
+local function colorText(text, color, noreset)
+    if noreset == nil then
+        noreset = false
+    end
     if text and color then
-        return format("|cff%02x%02x%02x%s|r", (color[1] or 1) * 255, (color[2] or 1) * 255, (color[3] or 1) * 255, text)
+        if noreset then
+            return format("|cff%02x%02x%02x%s", (color[1] or 1) * 255, (color[2] or 1) * 255, (color[3] or 1) * 255, text)
+        else
+            return format("|cff%02x%02x%02x%s|r", (color[1] or 1) * 255, (color[2] or 1) * 255, (color[3] or 1) * 255, text)
+        end
     else
         return text
     end
@@ -694,14 +704,14 @@ local function checkWarfrontControl(mapid)
     end
 end
 
-local function rareHasLoot(mapid, npcid) -- New
+local function rareHasLoot(mapid, npcid)
     if rareDB[mapid].rares[npcid].loot == nil then
         return false
     end
     return #rareDB[mapid].rares[npcid].loot > 0
 end
 
-local function rareHasAllLoot(mapid, npcid) -- New
+local function rareHasAllLoot(mapid, npcid)
     local i
     for i = 1, #rareDB[mapid].rares[npcid].loot do
         if not rareDB[mapid].rares[npcid].loot[i].isKnown then
@@ -711,7 +721,7 @@ local function rareHasAllLoot(mapid, npcid) -- New
     return true
 end
 
-local function rareHasLootType(mapid, npcid, whitelist) -- New
+local function rareHasLootType(mapid, npcid, whitelist)
     if type(whitelist) ~= "table" then
         return false
     end
@@ -746,7 +756,7 @@ local function rareHasLegitLoot(mapid, npcid)
     return true
 end
 
-local function rareHasLegitQuests(mapid, npcid) -- New
+local function rareHasLegitQuests(mapid, npcid)
     if rareDB[mapid].rares[npcid].questId == nil then
         return false
     end
@@ -1028,7 +1038,59 @@ local function getCoordsForWarfrontPhase(mapid, npcid, cave)
     end
 end
 
+local function getCoordsForPhase(mapid, npcid, tomtom)
+    if rareDB[mapid].rares[npcid] == nil then return 0, 0 end
+
+    local coord = rareDB[mapid].rares[npcid].coord[1]
+    if #rareDB[mapid].rares[npcid].coord > 1 and rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE then
+        coord = rareDB[mapid].rares[npcid].coord[2]
+    end
+    local x, y = 0, 0
+    if tomtom ~= nil and tomtom == true then
+        x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
+    else
+        x, y = floor(coord / 10000) / 100, (coord % 10000) / 100
+    end
+    return x, y
+end
+
+local function announceTomTom(mapid, npcid, skipchat)
+    local announced = false
+    if skipchat ~= nil and skipchat == true then
+        announced = true
+    else
+        skipchat = false
+    end
+
+    if type(rareDB[mapid].rares[npcid]) ~= "table" then return end
+
+    if WarfrontRareTracker.db.profile.tomtom.tomtomAnnounce then
+        if not IsInGroup() or IsInRaid() then return end -- Allow Raid?
+        local x, y = getCoordsForPhase(mapid, npcid)
+        if x <= 0 or y <= 0 then return end
+
+        if WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == true and UnitIsGroupLeader("player") or WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == false then
+            local text = format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y)
+
+            SendChatMessage(text, "PARTY", nil, nil)
+            announced = true
+        end
+    end
+    -- Chat Message
+    if WarfrontRareTracker.db.profile.tomtom.enableChatMessage and announced == false then
+        WarfrontRareTracker:Print(colorText("Added waypoint to: ", colors.turqoise) .. getColoredRareName(mapid, npcid))
+    end
+end
+
 local function addToTomTom(mapid, npcid)
+    if type(rareDB[mapid]) ~= "table" then
+        WarfrontRareTracker:Print(colorText("Error adding Waypoint: ", colors.red) .. colorText("Couldn't find zone ", colors.yellow) .. colorText(mapid, colors.orange) .. colorText(" in the Database.", colors.yellow))
+        return
+    elseif type(rareDB[mapid].rares[npcid]) ~= "table" then
+        WarfrontRareTracker:Print(colorText("Error adding Waypoint: ", colors.red) .. colorText("Couldn't find Rare with npcid ", colors.yellow) .. colorText(npcid, colors.orange) .. colorText(" in the Database.", colors.yellow))
+        return
+    end 
+
     if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
         local factionControlling = rareDB[mapid].warfrontControlledByFaction
         local rare = rareDB[mapid].rares[npcid]
@@ -1037,7 +1099,8 @@ local function addToTomTom(mapid, npcid)
             coord = rare.coord[2]
         end
         local name = rare.name
-        local x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
+
+        local x, y = getCoordsForPhase(mapid, npcid, true)
 
         TomTom:AddWaypoint(mapid, x, y, {
             title = name,
@@ -1059,9 +1122,7 @@ local function addToTomTom(mapid, npcid)
                 world = true,
             })
         end
-        if WarfrontRareTracker.db.profile.tomtom.enableChatMessage then
-            WarfrontRareTracker:Print("Added waypoint to: " .. rare.name)
-        end
+        announceTomTom(mapid, npcid)
     end
 end
 
@@ -1631,23 +1692,31 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
         WarfrontRareTracker:WarfrontStatusInfoTooltip(true)
     end
 
-    line = menuTooltip:AddLine()
-    menuTooltip:SetCell(line, 1, colorText("Right-Click to open Options.", colors.turqoise), "LEFT", 3)
-    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
+    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
         line = menuTooltip:AddLine()
         menuTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 3)
+        line = menuTooltip:AddLine()
+        menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce a TomTom Waypoint.", colors.turqoise), "LEFT", 3)
     end
+    -- menuTooltip:AddSeparator()
     line = menuTooltip:AddLine()
-    menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to cycle Warfront.", colors.turqoise), "LEFT", 3)
+    menuTooltip:SetCell(line, 1, colorText("Right-Click the icon to open Options.", colors.turqoise), "LEFT", 3)
+    line = menuTooltip:AddLine()
+    menuTooltip:SetCell(line, 1, colorText("Shift Left-Click the icon to cycle Warfront.", colors.turqoise), "LEFT", 3)
 end
 
 function WarfrontRareTracker:MenuTooltipOnLineClick(self, info, button)
     if button == "LeftButton" then
-        if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.menu.clickToTomTom then
-            local mapid, npcid = strsplit(':', info)
-            mapid = tonumber(mapid)
-            npcid = tonumber(npcid)
-            addToTomTom(mapid, npcid)
+        local mapid, npcid = strsplit(':', info)
+        mapid = tonumber(mapid)
+        npcid = tonumber(npcid)
+
+        if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
+            if IsShiftKeyDown() then
+                announceTomTom(mapid, npcid)
+            else
+                addToTomTom(mapid, npcid)
+            end
         end
     end
 end
@@ -1814,6 +1883,14 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
         lootTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
     end
 
+    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+        lootTooltip:AddSeparator()
+        line = lootTooltip:AddLine()
+        lootTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
+        line = lootTooltip:AddLine()
+        lootTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+    end
+
     if lootTooltip:GetLineCount() > 1 then
         lootTooltip:Show()
     end
@@ -1966,9 +2043,15 @@ end
 
 -------------------
 -- Worldmap Tooltip
-function WarfrontRareTracker:WorldmapTooltipOnClick(self, mapid, npcid)
-    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.worldmapicons.clickToTomTom then
-        addToTomTom(mapid, npcid)
+function WarfrontRareTracker:WorldmapTooltipOnClick(self, mapid, npcid, button)
+    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
+        if button == "LeftButton" then
+            if IsShiftKeyDown() then
+                announceTomTom(mapid, npcid, true)
+            else
+                addToTomTom(mapid, npcid)
+            end
+        end
     end
 end
 
@@ -2096,6 +2179,13 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
             if rareDB[mapid].rares[npcid].note and not WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
                 line = worldmapTooltip:AddLine()
                 worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 280)
+                if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+                    worldmapTooltip:AddSeparator()
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+                end
             end
         elseif not minimap then
             worldmapTooltip:AddHeader(getColoredRareName(mapid, npcid))
@@ -2135,6 +2225,13 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
                     line = worldmapTooltip:AddLine()
                     worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
                 end
+            end
+            if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+                worldmapTooltip:AddSeparator()
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
             end
         else
             if rareDB[mapid].rares[npcid].warning then
@@ -2346,7 +2443,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
         worldmapicon.npcid = npcid
         worldmapicon.mapid = mapid
         worldmapicon.cave = caveicon
-        worldmapicon:SetScript("OnClick", function(self) WarfrontRareTracker:WorldmapTooltipOnClick(self, worldmapicon.mapid, worldmapicon.npcid, false) end)
+        worldmapicon:SetScript("OnClick", function(self, button) WarfrontRareTracker:WorldmapTooltipOnClick(self, worldmapicon.mapid, worldmapicon.npcid, button) end)
         worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, true, false) end)
         worldmapicon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
         table.insert(rareDB[mapid].worldmapIcons, worldmapicon)

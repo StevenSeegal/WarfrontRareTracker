@@ -504,7 +504,7 @@ configOptions = {
             args = {
                 sort = {
                     name = "Sorting Options",
-                    order = 5,
+                    order = 1,
                     type = "group",
                     inline = true,
                     args = {
@@ -593,8 +593,34 @@ configOptions = {
                                     WarfrontRareTracker:SortRares()
                                 end,
                         },
+                        seperator = {
+                            name = "",
+                            type = "description",
+                            order = 10,
+                        },
                     },
                 },
+                -- footer = {
+                --     name = "Window Options",
+                --     order = 2,
+                --     type = "group",
+                --     inline = true,
+                --     args = {
+                --         showFooter = {
+                --             name = "Show Footer With Options.",
+                --             desc = "Shows the Footer Text with the default Options at the bottom of each window.\nIn special occations, this info does get displayed.",
+                --             type = "toggle",
+                --             width = "full",
+                --             order = 1,
+                --             get = function(info)
+                --                 return WarfrontRareTracker.db.profile.menu.showFooter
+                --             end,
+                --             set = function(info, value)
+                --                     WarfrontRareTracker.db.profile.menu.showFooter = value
+                --                 end,
+                --         },
+                --     },
+                -- },
             },
         },
         masterfilter = {
@@ -772,6 +798,27 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                             disabled = function() return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase end,
+                        },
+                    },
+                },
+                footer = {
+                    name = "Window Options",
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        showFooter = {
+                            name = "Show Footer With Options.",
+                            desc = "Shows the Footer Text with the default Options at the bottom of each window.\nIn special occations, this info does get displayed.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                return WarfrontRareTracker.db.profile.masterfilter.showFooter
+                            end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.showFooter = value
+                                end,
                         },
                     },
                 },
@@ -1482,7 +1529,35 @@ configOptions = {
                                     WarfrontRareTracker.db.profile.tomtom.enableChatMessage = value
                                 end,
                             disabled = function() return isTomTomlocked or not WarfrontRareTracker.db.profile.tomtom.enableIntegration end,
-                        }
+                        },
+                        tomtomAnnounce = {
+                            name = "Announce In Party Chat",
+                            desc = "Prints a message in Party Chat, telling your Party members to which Rare you're heading to.",
+                            type = "toggle",
+                            width = "full",
+                            order = 4,
+                            get = function(info)
+                                return WarfrontRareTracker.db.profile.tomtom.tomtomAnnounce
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.tomtom.tomtomAnnounce = value
+                                end,
+                            disabled = function() return isTomTomlocked or not WarfrontRareTracker.db.profile.tomtom.enableIntegration end,
+                        },
+                        tomtomAnnounceLeader = {
+                            name = "Only When Group Leader",
+                            desc = "Print the Party Announce only when you're the Group Leader.",
+                            type = "toggle",
+                            width = "full",
+                            order = 6,
+                            get = function(info)
+                                return WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader = value
+                                end,
+                            disabled = function() return isTomTomlocked or not WarfrontRareTracker.db.profile.tomtom.enableIntegration or not WarfrontRareTracker.db.profile.tomtom.tomtomAnnounce end,
+                        },
                     },
                 },
             },
