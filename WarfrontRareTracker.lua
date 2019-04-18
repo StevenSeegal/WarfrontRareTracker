@@ -306,7 +306,6 @@ local dbDefaults = {
     },
     char = {
         selectedZone = 14,
-        debug= 0,
     },
     global = {
         printCompatibilityMessage1 = true,
@@ -1241,9 +1240,9 @@ end
 
 local delayedInitializeDone = false
 function WarfrontRareTracker:DelayedInitialize(auto)
-    if auto == true and delayedInitializeDone == false then
-        return
-    end
+    -- if auto == true and delayedInitializeDone == false then
+    --     return
+    -- end
     WarfrontRareTracker:DelayedConfigInitialize()
     if IsAddOnLoaded("TomTom") then
         isTomTomloaded = true
@@ -1254,6 +1253,7 @@ function WarfrontRareTracker:DelayedInitialize(auto)
     updateBrokerText()
     C_Timer.After(5, function() WarfrontRareTracker:RefreshAllData() end)
     delayedInitializeDone = true
+    WarfrontRareTracker:InitWarfrontPhaseChange()
 end
 
 function WarfrontRareTracker:OnEnable()
@@ -1274,7 +1274,7 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterBucketEvent("ENCOUNTER_LOOT_RECEIVED", 2, "BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("TOYS_UPDATED", 2,"TOYS_UPDATED")
     -- Set variables and Worldmap Icons
-    self:DelayedInitialize(true)
+    --self:DelayedInitialize(false)
 end
 
 function WarfrontRareTracker:OnDisable()
@@ -1294,6 +1294,7 @@ function WarfrontRareTracker:OnDisable()
     self:UnregisterBucket("TOYS_UPDATED")
     -- Delete Worldmap Icons
     self:DeleteAllWorldmapIcons()
+    delayedInitializeDone = false
 end
 
 ----------------
@@ -1329,7 +1330,7 @@ function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     checkWarfrontControl()
     sortLootTables()
     WarfrontRareTracker:SortRares()
-    C_Timer.After(5, function() WarfrontRareTracker:DelayedInitialize(false) end)
+    C_Timer.After(5, function() WarfrontRareTracker:DelayedInitialize(true) end)
 end
 
 ----------------
@@ -1430,20 +1431,32 @@ local function checkIconsForPhase()
 end
 
 function WarfrontRareTracker:CheckWarfrontPhaseChange()
-    if type(rareDB[currentPlayerMapid]) == "table" then
+    if delayedInitializeDone == false then
+        return
+    end
+
+    if type(rareDB[currentPlayerMapid]) == "table" then -- If we are in a Warfont zone we need to keep track of it
         if currentPhaseID == 0 then
             currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
-            checkIconsForPhase()
+            --checkIconsForPhase()
         end
         previousPhaseID = currentPhaseID
         currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
 
         if currentPhaseID > 0 and currentPhaseID ~= previousPhaseID then
             checkIconsForPhase()
+            -- C_Timer.After(1, function() checkIconsForPhase() end) -- 1 second delay, is this needed for slower computers?
         end
-    else
-        currentPhaseID = 0
-        previousPhaseID = 0
+    end
+end
+
+function WarfrontRareTracker:InitWarfrontPhaseChange()
+    local phaseID = 0
+    for mapid, content in pairs(rareDB) do
+        phaseID = C_Map.GetMapArtID(mapid)
+        if phaseID ~= content.zonephaseID then
+            content.hidden = true
+        end
     end
 end
 
