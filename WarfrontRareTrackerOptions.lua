@@ -600,27 +600,6 @@ configOptions = {
                         },
                     },
                 },
-                -- footer = {
-                --     name = "Window Options",
-                --     order = 2,
-                --     type = "group",
-                --     inline = true,
-                --     args = {
-                --         showFooter = {
-                --             name = "Show Footer With Options.",
-                --             desc = "Shows the Footer Text with the default Options at the bottom of each window.\nIn special occations, this info does get displayed.",
-                --             type = "toggle",
-                --             width = "full",
-                --             order = 1,
-                --             get = function(info)
-                --                 return WarfrontRareTracker.db.profile.menu.showFooter
-                --             end,
-                --             set = function(info, value)
-                --                     WarfrontRareTracker.db.profile.menu.showFooter = value
-                --                 end,
-                --         },
-                --     },
-                -- },
             },
         },
         masterfilter = {
@@ -784,7 +763,7 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
-                        showOnlyAtMaxLevel = {
+                        worldmapShowOnlyAtMaxLevel = {
                             name = "Show Only At Level 120",
                             desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
                             type = "toggle",
@@ -798,27 +777,6 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                             disabled = function() return WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase end,
-                        },
-                    },
-                },
-                footer = {
-                    name = "Window Options",
-                    order = 4,
-                    type = "group",
-                    inline = true,
-                    args = {
-                        showFooter = {
-                            name = "Show Footer With Options.",
-                            desc = "Shows the Footer Text with the default Options at the bottom of each window.\nIn special occations, this info does get displayed.",
-                            type = "toggle",
-                            width = "full",
-                            order = 1,
-                            get = function(info)
-                                return WarfrontRareTracker.db.profile.masterfilter.showFooter
-                            end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.masterfilter.showFooter = value
-                                end,
                         },
                     },
                 },
@@ -1642,7 +1600,7 @@ local function checkConfigChanges()
         WarfrontRareTracker.db.profile.profileversion = currentConfigVersion
         -- Copy current 'Hide' settings to the new 'Master Filter'  showWarfrontOnTitle showWarfrontOnZoneName
         WarfrontRareTracker.db.profile.menu.showWarfrontOnZoneName = WarfrontRareTracker.db.profile.menu.showWarfrontOnTitle
-        WarfrontRareTracker.db.profile.masterfilter.showOnlyAtMaxLevel = WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel
+        --WarfrontRareTracker.db.profile.masterfilter.showOnlyAtMaxLevel = WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel
         WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown = WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
         WarfrontRareTracker.db.profile.masterfilter.hideGoliaths = WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths
         WarfrontRareTracker.db.profile.masterfilter.whitelist["Mount"] = WarfrontRareTracker.db.profile.worldmapicons.whitelist["Mount"]

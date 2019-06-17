@@ -119,7 +119,7 @@ local rareDB = { -- New
     [62] = {
         zonename = "Darkshore",
         scenarioname = "Battle for Darkshore",
-        gatheringname = "Contributing", -- Change
+        gatheringname = "Contributing",
         hidden = false,
         zonephaseID = 1176, -- ArtID
         zoneContributionMapID = 118,
@@ -231,7 +231,6 @@ local dbDefaults = {
             alwaysShowWorldboss = true,
         },
         masterfilter = {
-            showOnlyAtMaxLevel = true,
             hideAlreadyKnown = false,
             hideUnknowLoot = false,
             hideUntrackable = false,
@@ -243,7 +242,6 @@ local dbDefaults = {
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
             alwaysShowWorldboss = true,
-            showFooter = true,
         },
         colors = {
             colorizeDrops = true,
@@ -268,7 +266,6 @@ local dbDefaults = {
         minimapIcons = {
             showMinimapIcons = true,
             showOnlyAtPhase = true,
-            showOnlyAtMaxLevel = false,
             onMinimapHoover = true,
             minimapIconsCompactMode = true,
             minimapIconSize = 13,
@@ -781,7 +778,7 @@ local function rareHasLegitQuests(mapid, npcid)
     end
 end
 
-local function showRare(mapid, npcid, mode) -- Rewritten
+local function showRare(mapid, npcid, mode)
     if isNPCPlayerFaction(mapid, npcid) then
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
             if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].hidden == true  then
@@ -789,9 +786,6 @@ local function showRare(mapid, npcid, mode) -- Rewritten
             elseif WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
                 return false
             end
-            -- if WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
-            --     return false
-            --if rareDB[mapid].hidden == true then return false end
             if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
@@ -868,14 +862,13 @@ local function showRare(mapid, npcid, mode) -- Rewritten
     end
 end
   
-local function scanForKnownItems() -- Rewritten
+local function scanForKnownItems()
     if newPetAdedTimer then
         WarfrontRareTracker:CancelTimer(newPetAdedTimer)
         newPetAdedTimer = nil
     end
     for mapid, content in pairs(rareDB) do
         for k, rare in pairs(content.rares) do
-            --isNPCPlayerFaction(mapid, npcid)?
             if #rare.loot > 0 then
                 local i
                 for i = 1, #rare.loot do
@@ -1053,31 +1046,24 @@ local function getCoordsForPhase(mapid, npcid, tomtom)
     return x, y
 end
 
-local function announceTomTom(mapid, npcid, skipchat)
-    local announced = false
-    if skipchat ~= nil and skipchat == true then
-        announced = true
-    else
-        skipchat = false
-    end
-
+local function announceTomTom(mapid, npcid, clicked)
     if type(rareDB[mapid].rares[npcid]) ~= "table" then return end
-
-    if WarfrontRareTracker.db.profile.tomtom.tomtomAnnounce then
-        if not IsInGroup() or IsInRaid() then return end -- Allow Raid?
+    if clicked ~= nil and clicked == true then
+        -- Announce
         local x, y = getCoordsForPhase(mapid, npcid)
         if x <= 0 or y <= 0 then return end
-
         if WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == true and UnitIsGroupLeader("player") or WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == false then
-            local text = format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y)
-
-            SendChatMessage(text, "PARTY", nil, nil)
-            announced = true
+            if IsInRaid() then
+                SendChatMessage(format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y), "RAID", nil, nil)
+            elseif IsInGroup() then
+                SendChatMessage(format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y), "PARTY", nil, nil)
+            end
         end
-    end
-    -- Chat Message
-    if WarfrontRareTracker.db.profile.tomtom.enableChatMessage and announced == false then
-        WarfrontRareTracker:Print(colorText("Added waypoint to: ", colors.turqoise) .. getColoredRareName(mapid, npcid))
+    else
+        -- Chat Message
+        if WarfrontRareTracker.db.profile.tomtom.enableChatMessage then
+            WarfrontRareTracker:Print(colorText("Added waypoint to: ", colors.turqoise) .. getColoredRareName(mapid, npcid))
+        end
     end
 end
 
@@ -1239,10 +1225,10 @@ function WarfrontRareTracker:OnInitialize()
 end
 
 local delayedInitializeDone = false
-function WarfrontRareTracker:DelayedInitialize(auto)
-    -- if auto == true and delayedInitializeDone == false then
-    --     return
-    -- end
+function WarfrontRareTracker:DelayedInitialize(init)
+    if init == false and delayedInitializeDone == false then
+        return
+    end
     WarfrontRareTracker:DelayedConfigInitialize()
     if IsAddOnLoaded("TomTom") then
         isTomTomloaded = true
@@ -1274,7 +1260,7 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterBucketEvent("ENCOUNTER_LOOT_RECEIVED", 2, "BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("TOYS_UPDATED", 2,"TOYS_UPDATED")
     -- Set variables and Worldmap Icons
-    --self:DelayedInitialize(false)
+    self:DelayedInitialize(false)
 end
 
 function WarfrontRareTracker:OnDisable()
@@ -1438,14 +1424,13 @@ function WarfrontRareTracker:CheckWarfrontPhaseChange()
     if type(rareDB[currentPlayerMapid]) == "table" then -- If we are in a Warfont zone we need to keep track of it
         if currentPhaseID == 0 then
             currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
-            --checkIconsForPhase()
         end
         previousPhaseID = currentPhaseID
         currentPhaseID = C_Map.GetMapArtID(currentPlayerMapid)
 
         if currentPhaseID > 0 and currentPhaseID ~= previousPhaseID then
-            checkIconsForPhase()
-            -- C_Timer.After(1, function() checkIconsForPhase() end) -- 1 second delay, is this needed for slower computers?
+            --checkIconsForPhase()
+            C_Timer.After(1, function() checkIconsForPhase() end)
         end
     end
 end
@@ -1590,15 +1575,6 @@ function WarfrontRareTracker:MenuOnClick(self, button)
         if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
             return
         end
-        -- if WarfrontRareTracker.db.profile.menu.useMasterfilter then
-        --     if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
-        --         return
-        --     end
-        -- else
-        --     if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
-        --         return
-        --     end
-        -- end
         if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
             return
         end
@@ -1617,15 +1593,6 @@ function WarfrontRareTracker:MenuOnEnter(self)
     if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
         return
     end
-    -- if WarfrontRareTracker.db.profile.menu.useMasterfilter then
-    --     if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
-    --         return
-    --     end
-    -- else
-    --     if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
-    --         return
-    --     end
-    -- end
     if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
         return
     end
@@ -1705,13 +1672,18 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
         WarfrontRareTracker:WarfrontStatusInfoTooltip(true)
     end
 
-    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
         line = menuTooltip:AddLine()
         menuTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 3)
-        line = menuTooltip:AddLine()
-        menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce a TomTom Waypoint.", colors.turqoise), "LEFT", 3)
+        if IsInRaid() then
+            line = menuTooltip:AddLine()
+            menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Raid Chat.", colors.turqoise), "LEFT", 3)
+        elseif IsInGroup() then
+            line = menuTooltip:AddLine()
+            menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 3)
+        end
     end
-    -- menuTooltip:AddSeparator()
+
     line = menuTooltip:AddLine()
     menuTooltip:SetCell(line, 1, colorText("Right-Click the icon to open Options.", colors.turqoise), "LEFT", 3)
     line = menuTooltip:AddLine()
@@ -1726,7 +1698,7 @@ function WarfrontRareTracker:MenuTooltipOnLineClick(self, info, button)
 
         if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
             if IsShiftKeyDown() then
-                announceTomTom(mapid, npcid)
+                announceTomTom(mapid, npcid, true)
             else
                 addToTomTom(mapid, npcid)
             end
@@ -1825,7 +1797,7 @@ function WarfrontRareTracker:MenuTooltipOnLineLeave()
     end
 end
 
-local function addLootInfoToTooltip(tooltip, mapid, npcid, lootindex) -- New, usable is more tooltips
+local function addLootInfoToTooltip(tooltip, mapid, npcid, lootindex) -- Usable in multiple tooltips
     if rareDB[mapid].rares[npcid].loot[lootindex] == nil then
         return
     end
@@ -1877,6 +1849,10 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
     lootTooltip:SetClampedToScreen(true)
     lootTooltip:SetPoint("RIGHT", self, "LEFT", -15, -18)
 
+    lootTooltip:AddHeader(getColoredRareName(mapid, npcid))
+    line = lootTooltip:AddLine()
+    lootTooltip:SetCell(line, 1, " ", nil, nil, 2)
+
     if rareHasLoot(mapid, npcid) then
         if #rareDB[mapid].rares[npcid].loot > 0 then
             local i
@@ -1896,12 +1872,18 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
         lootTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
     end
 
-    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
         lootTooltip:AddSeparator()
         line = lootTooltip:AddLine()
         lootTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
-        line = lootTooltip:AddLine()
-        lootTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+        
+        if IsInRaid() then
+            line = lootTooltip:AddLine()
+            lootTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Raid Chat.", colors.turqoise), "LEFT", 2)
+        elseif IsInGroup() then
+            line = lootTooltip:AddLine()
+            lootTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+        end
     end
 
     if lootTooltip:GetLineCount() > 1 then
@@ -2087,7 +2069,7 @@ local function checkItemNameIsValid(itemname, drop)
     end
 end
 
-function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, minimap) -- rewritten
+function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, minimap)
     if LibQTip:IsAcquired("WarfrontRareTrackerWorldmapTip") and worldmapTooltip then
         LibQTip.Release(worldmapTooltip)
         worldmapTooltip = nil
@@ -2192,12 +2174,17 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
             if rareDB[mapid].rares[npcid].note and not WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
                 line = worldmapTooltip:AddLine()
                 worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 280)
-                if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+                if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
                     worldmapTooltip:AddSeparator()
                     line = worldmapTooltip:AddLine()
                     worldmapTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
-                    line = worldmapTooltip:AddLine()
-                    worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+                    if IsInRaid() then
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Raid Chat.", colors.turqoise), "LEFT", 2)
+                    elseif IsInGroup() then
+                        line = worldmapTooltip:AddLine()
+                        worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+                    end
                 end
             end
         elseif not minimap then
@@ -2239,12 +2226,17 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
                     worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.grey), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
                 end
             end
-            if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration and WarfrontRareTracker.db.profile.masterfilter.showFooter then
+            if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
                 worldmapTooltip:AddSeparator()
                 line = worldmapTooltip:AddLine()
                 worldmapTooltip:SetCell(line, 1, colorText("Left-Click to add TomTom Waypoint.", colors.turqoise), "LEFT", 2)
-                line = worldmapTooltip:AddLine()
-                worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+                if IsInRaid() then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Raid Chat.", colors.turqoise), "LEFT", 2)
+                elseif IsInGroup() then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
+                end
             end
         else
             if rareDB[mapid].rares[npcid].warning then
@@ -2447,7 +2439,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
     if self.db.profile.worldmapicons.showWorldmapIcons then
         local worldmapicon = getNewPin()
         worldmapicon:SetParent(WorldMapFrame)
-        worldmapicon:SetHeight(getWorldMapIconSizeForRare(mapid, npcid, "worldmap")) -- ?
+        worldmapicon:SetHeight(getWorldMapIconSizeForRare(mapid, npcid, "worldmap"))
         worldmapicon:SetWidth(getWorldMapIconSizeForRare(mapid, npcid, "worldmap"))
         worldmapicon:SetAlpha(getWorldMapIconAlphaForRare(mapid, npcid, "worldmap"))
         worldmapicon.texture:SetTexCoord(0, 1, 0, 1)
@@ -2512,7 +2504,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
     if UnitIsPlayer(unit) then return end -- A player
     if UnitIsPVP(unit) then return end -- A PVP flagged unit
 
-    --local mapid = currentPlayerMapid
     local npcid = getNPCIDFromGUID(guid)
     if rareDB[currentPlayerMapid] and type(rareDB[currentPlayerMapid].rares[npcid]) == "table" then
         local rare = rareDB[currentPlayerMapid].rares[npcid]
@@ -2532,7 +2523,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                             text = text .. colorText("No know drop", colors.lightcyan)
                         elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
                             itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
-                            --itemName = checkItemNameIsValid(itemName, rareDB[mapid].rares[npcid].loot[1].droptype)
                             if itemLink or itemName then
                                 if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
                                     text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " already known", colors.red)
@@ -2546,7 +2536,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                             local i
                             for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
                                 itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
-                                --itemName = checkItemNameIsValid(itemName, rareDB[mapid].rares[npcid].loot[i].droptype)
                                 if itemLink or itemName then
                                     if i > 1 then
                                         text = text .. "\n"
@@ -2580,7 +2569,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                             GameTooltip:AddLine(colorText("No know drop", colors.lightcyan))
                         elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
                             itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
-                            --itemName = checkItemNameIsValid(itemName, rareDB[mapid].rares[npcid].loot[1].droptype)
                             if itemLink or itemName then
                                 GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
                                 if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
@@ -2593,7 +2581,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                             local i
                             for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
                                 itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
-                                --itemName = checkItemNameIsValid(itemName, rareDB[mapid].rares[npcid].loot[i].droptype)
                                 if itemLink or itemName then
                                     GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
                                     if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
@@ -2606,19 +2593,6 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
                         end
                     end
                 end
-
-                -- -- Ignore Goliaths
-                -- if rare.type ~= TYPE_GOLIATH and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rare.isKnown and rare.itemID > 0 then
-                --     GameTooltip:AddLine(colorText(rare.drop .. " already known", colors.red))
-                -- elseif rare.type ~= TYPE_GOLIATH and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rare.isKnown and rare.itemID > 0  then
-                --     GameTooltip:AddLine(colorText(rare.drop .. " still needed", colors.green))
-                -- end
-                -- Ignore Drop: Item (if needed with a new Warfront)
-                -- if rare.drop ~= DROP_ITEM and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rare.isKnown then
-                --     GameTooltip:AddLine(colorText(rare.drop .. " already known", colors.red))
-                -- elseif rare.drop ~= DROP_ITEM and WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rare.isKnown then
-                --     GameTooltip:AddLine(colorText(rare.drop .. " still needed", colors.green))
-                -- end
             end
         end
     end
