@@ -194,62 +194,84 @@ local rareDB = {
         minimapIcons = {},
         index = 3,
         rares = {
-                [151870] = { name = "Sandcastle", npcid = 151870, questId = { 56276 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 78003280 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169369, petID = 154842, speciesID = 2703, isKnown = false } } },
-                    [152561] = { name = "Banescale the Packfather", npcid = 152561, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71605420 }, bothphases = true, note="Spawns after you kill Siltstalker", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152291] = { name = "Tidelord", npcid = 152291, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56204360 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                    [152323] = { name = "Deepglider", npcid = 152323, questId = { 55671 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28802900 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } },
-                [152359] = { name = "King Gakula", npcid = 152359, questId = { 56297 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71405480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169371, petID = 154820, speciesID = 2681, isKnown = false } } },
-                [152360] = { name = "Siltstalker the Packmother", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 64604700 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170179, isKnown = false } } },
-                [152414] = { name = "Elder Unu", npcid = 152414, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63803260 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152415] = { name = "Alga the Eyeless", npcid = 152415, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52404200 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152416] = { name = "Allseer Oma'kil", npcid = 152416, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 69204020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152448] = { name = "Iridescent Glimmershell", npcid = 152448, questId = { 56286 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 47205500 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169352, petID = 154825, speciesID = 2686, isKnown = false } } },
-                [152465] = { name = "Needlespine", npcid = 152465, questId = { 56275 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 45602560 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169355, petID = 154828, speciesID = 2689, isKnown = false } } },
-                [144644] = { name = "Scale Matriarch Gratinax", npcid = 144644, questId = { 56292 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 35604120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
+            -- Fully Checked!!!
+            -- Bosses
+            [152566] = { name = "Anemonar", npcid = 152566, questId = { 56281 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 58605320 }, bothphases = true, note = "You need to kite a \"Colossal Sky Ray\" and kill it in front of Anemonar.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- Moved from Mechagon!!!
+            [152567] = { name = "Kelpwillow", npcid = 152567, questId = { 56287 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 50206950 }, bothphases = true, note = "You need to charm a \"Muck Slug\" by using a \"Prismatic Crystal\" and then bring the charmed Muck Slug to Kelpwillow's foot.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- Moved from Mechagon!!!
+            [152397] = { name = "Oronu", npcid = 152397, questId = { 56288 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 78102490 }, bothphases = true, note = "Yyou need to bring a \"Drowned Hatchling\" and summon the battle pet on top of him.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- Moved from Mechagon!!!
+            [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 31302660 }, bothphases = true, note = "You need to kite a \"Staghorn Reefwalker\" to Urduu's location, then kill it in front of Urduu.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- Moved from Mechagon!!!
+            
+            -- Gear Only
+            [152416] = { name = "Allseer Oma'kil", npcid = 152416, questId = { 56280 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65433921 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Also Quest 56603?. could be horde of other mob!
 
-                [151719] = { name = "Voice in the Deeps", npcid = 151719, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67603460 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152729] = { name = "Moon Priestess Liara", npcid = 152729, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83403300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [152736] = { name = "Guardian Tannin", npcid = 152736, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83603740 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153296] = { name = "Shalan'ali Stormtongue", npcid = 153296, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33204000 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153299] = { name = "Bonebreaker Szun", npcid = 153299, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63805700 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153300] = { name = "Iron Zoko", npcid = 153300, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 42804300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153301] = { name = "Shirakess Starseeker", npcid = 153301, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33203920 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153302] = { name = "Glacier Mage Zhiela", npcid = 153302, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43004240 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153303] = { name = "Voidblade Kassar", npcid = 153303, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33603020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153304] = { name = "Undana Frostbarb", npcid = 153304, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68203300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153305] = { name = "Zanj'ir Brutalizer", npcid = 153305, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68403340 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153309] = { name = "Alzana, Arrow of Thunder", npcid = 153309, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61202440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153310] = { name = "Qalina, Spear of Ice", npcid = 153310, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61801220 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153311] = { name = "Slitherblade Azanz", npcid = 153311, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33403020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153312] = { name = "Kyx'zhul the Deepspeaker", npcid = 153312, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 41402400 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [153314] = { name = "Aldrantiss", npcid = 153314, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 60401440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [155811] = { name = "Commander Minzera", npcid = 155811, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33402940 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [155836] = { name = "Theurgist Nitara", npcid = 155836, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49406580 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                [150468] = { name = "Vor'koth", npcid = 150468, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48352400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169376, petID = 154848, speciesID = 2709, isKnown = false } } },
-                [150191] = { name = "Avarius", npcid = 150191, questId = { 55584 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36901120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169373, petID = 154845, speciesID = 2706, isKnown = false } } },
-                [149653] = { name = "Carniverous Lasher", npcid = 149653, questId = { 55366 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 54804200 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169375, petID = 154847, speciesID = 2708, isKnown = false } } },
+            -- Pet drop
+            [152795] = { name = "Sandclaw Stoneshell", npcid = 152795, questId = { 56277 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 73504584 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169350, petID = 154823, speciesID = 2684, isKnown = false } } }, -- old coords:64804060, found myself at 73504584
+                        
 
-                [152545] = { name = "Scale Matriarch Vynara", npcid = 152545, questId = { 56293 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 27403720 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
-                [152553] = { name = "Scale Matriarch Zodia", npcid = 152553, questId = { 56294 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28704630 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
-                [144644] = { name = "Mirecrawler", npcid = 144644, questId = { 56274 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37201320 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169366, petID = 154839, speciesID = 2700, isKnown = false } } },
-                [152553] = { name = "Garnetscale", npcid = 152553, questId = { 56273 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36003960 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170180, isKnown = false } } },
-                [152555] = { name = "Elderspawn Nalaada", npcid = 152555, questId = { 56285 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52207400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169359, petID = 154832, speciesID = 2693, isKnown = false } } },
-                    [152556] = { name = "Chasm-Haunter", npcid = 152556, questId = { 56270 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49008800 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } },
-                [152681] = { name = "Prince Typhonus", npcid = 152681, questId = { 56289 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43008760 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169367, petID = 154840, speciesID = 2701, isKnown = false } } },
-                [152682] = { name = "Prince Vortran", npcid = 152682, questId = { 56290 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 42807480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169368, petID = 154841, speciesID = 2702, isKnown = false } } },
-                [152712] = { name = "Blindlight", npcid = 152712, questId = { 56269 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36408000 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169372, petID = 154821, speciesID = 2682, isKnown = false } } },
-                [152794] = { name = "Amethyst Spireshell", npcid = 152794, questId = { 56268 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 72203620 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169363, petID = 154836, speciesID = 2697, isKnown = false } } },
-                [152795] = { name = "Sandclaw Stoneshell", npcid = 152795, questId = { 56277 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 64804060 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169350, petID = 154823, speciesID = 2684, isKnown = false } } },
-                [153658] = { name = "Shiz'narasz the Consumer", npcid = 153658, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37801440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-                    [153898] = { name = "Tidelord Aquatus", npcid = 153898, questId = { 56122 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62402960 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
-                    [153928] = { name = "Tidelord Dispersius", npcid = 153928, questId = { 56123 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57602600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
-                [152756] = { name = "Daggertooth Terror", npcid = 152756, questId = { 56271 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 39005930 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169361, petID = 154834, speciesID = 2605, isKnown = false } } },
-                [152552] = { name = "Shassera", npcid = 152552, questId = { 56295 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63401160 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 170187, isKnown = false } } },
-                [154148] = { name = "Tidemistress Leth'sindra", npcid = 154148, questId = { 56106 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67152325 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 170196, isKnown = false } } },
-                [152464] = { name = "Caverndark Terror", npcid = 152464, questId = { 56283 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 40805950 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169356, petID = 154829, speciesID = 2690, isKnown = false } } },
-                [150583] = { name = "Rockweed Shambler", npcid = 150583, questId = { 56291 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62405950 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169374, petID = 154846, speciesID = 2707, isKnown = false } } },
-                [152290] = { name = "Soundless", npcid = 152290, questId = { 56298 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57605220 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 169163, mountID = 1257, isKnown = false }, { droptype = DROP_ITEM, itemID = 170176, isKnown = false } } },
-                [152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } },
+            -- Updated:
+            -- Pet drop
+                [152464] = { name = "Caverndark Terror", npcid = 152464, questId = { 56283 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 40800950 }, bothphases = true, note = "Inside cave",loot = { { droptype = DROP_PET, itemID = 169356, petID = 154829, speciesID = 2690, isKnown = false } } }, -- coords update, mob too strong to check questID
+            
+            -- Item Drop
+                [152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67804620 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- Only changed Coords. Has 3 spawm coords: 64804640, 67804620, 65205020
+                [152360] = { name = "Siltstalker the Packmother", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 72205550 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170179, isKnown = false } } }, -- Only changed Coords. Old=64604700
+            
+            -- Unchecked
+            [151870] = { name = "Sandcastle", npcid = 151870, questId = { 56276 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 78003280 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169369, petID = 154842, speciesID = 2703, isKnown = false } } },
+            
+            [152561] = { name = "Banescale the Packfather", npcid = 152561, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71605420 }, bothphases = true, note="Spawns after you kill Siltstalker", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152291] = { name = "Tidelord", npcid = 152291, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56204360 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152323] = { name = "Deepglider", npcid = 152323, questId = { 55671 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28802900 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } },
+            [152359] = { name = "King Gakula", npcid = 152359, questId = { 56297 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71405480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169371, petID = 154820, speciesID = 2681, isKnown = false } } },
+            [152414] = { name = "Elder Unu", npcid = 152414, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63803260 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152415] = { name = "Alga the Eyeless", npcid = 152415, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52404200 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152448] = { name = "Iridescent Glimmershell", npcid = 152448, questId = { 56286 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 47205500 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169352, petID = 154825, speciesID = 2686, isKnown = false } } },
+            [152465] = { name = "Needlespine", npcid = 152465, questId = { 56275 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 45602560 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169355, petID = 154828, speciesID = 2689, isKnown = false } } },
+            [144644] = { name = "Scale Matriarch Gratinax", npcid = 144644, questId = { 56292 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 35604120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
+
+            [151719] = { name = "Voice in the Deeps", npcid = 151719, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67603460 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152729] = { name = "Moon Priestess Liara", npcid = 152729, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83403300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152736] = { name = "Guardian Tannin", npcid = 152736, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83603740 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153296] = { name = "Shalan'ali Stormtongue", npcid = 153296, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33204000 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153299] = { name = "Bonebreaker Szun", npcid = 153299, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63805700 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153300] = { name = "Iron Zoko", npcid = 153300, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 42804300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153301] = { name = "Shirakess Starseeker", npcid = 153301, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33203920 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153302] = { name = "Glacier Mage Zhiela", npcid = 153302, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43004240 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153303] = { name = "Voidblade Kassar", npcid = 153303, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33603020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153304] = { name = "Undana Frostbarb", npcid = 153304, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68203300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153305] = { name = "Zanj'ir Brutalizer", npcid = 153305, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68403340 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153309] = { name = "Alzana, Arrow of Thunder", npcid = 153309, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61202440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153310] = { name = "Qalina, Spear of Ice", npcid = 153310, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61801220 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153311] = { name = "Slitherblade Azanz", npcid = 153311, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33403020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153312] = { name = "Kyx'zhul the Deepspeaker", npcid = 153312, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 41402400 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153314] = { name = "Aldrantiss", npcid = 153314, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 60401440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [155811] = { name = "Commander Minzera", npcid = 155811, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33402940 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [155836] = { name = "Theurgist Nitara", npcid = 155836, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49406580 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [150468] = { name = "Vor'koth", npcid = 150468, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48352400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169376, petID = 154848, speciesID = 2709, isKnown = false } } },
+            [150191] = { name = "Avarius", npcid = 150191, questId = { 55584 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36901120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169373, petID = 154845, speciesID = 2706, isKnown = false } } },
+            [149653] = { name = "Carniverous Lasher", npcid = 149653, questId = { 55366 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 54804200 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169375, petID = 154847, speciesID = 2708, isKnown = false } } },
+
+            [152545] = { name = "Scale Matriarch Vynara", npcid = 152545, questId = { 56293 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 27403720 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
+            [152553] = { name = "Scale Matriarch Zodia", npcid = 152553, questId = { 56294 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28704630 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
+            [144644] = { name = "Mirecrawler", npcid = 144644, questId = { 56274 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37201320 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169366, petID = 154839, speciesID = 2700, isKnown = false } } },
+            [152553] = { name = "Garnetscale", npcid = 152553, questId = { 56273 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36003960 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170180, isKnown = false } } },
+            [152555] = { name = "Elderspawn Nalaada", npcid = 152555, questId = { 56285 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52207400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169359, petID = 154832, speciesID = 2693, isKnown = false } } },
+            [152556] = { name = "Chasm-Haunter", npcid = 152556, questId = { 56270 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49008800 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } },
+            [152681] = { name = "Prince Typhonus", npcid = 152681, questId = { 56289 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43008760 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169367, petID = 154840, speciesID = 2701, isKnown = false } } },
+            [152682] = { name = "Prince Vortran", npcid = 152682, questId = { 56290 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 42807480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169368, petID = 154841, speciesID = 2702, isKnown = false } } },
+            [152712] = { name = "Blindlight", npcid = 152712, questId = { 56269 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36408000 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169372, petID = 154821, speciesID = 2682, isKnown = false } } },
+            [152794] = { name = "Amethyst Spireshell", npcid = 152794, questId = { 56268 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 72203620 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169363, petID = 154836, speciesID = 2697, isKnown = false } } },
+            [153658] = { name = "Shiz'narasz the Consumer", npcid = 153658, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37801440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153898] = { name = "Tidelord Aquatus", npcid = 153898, questId = { 56122 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62402960 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
+            [153928] = { name = "Tidelord Dispersius", npcid = 153928, questId = { 56123 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57602600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
+            [152756] = { name = "Daggertooth Terror", npcid = 152756, questId = { 56271 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 39005930 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169361, petID = 154834, speciesID = 2605, isKnown = false } } },
+            [152552] = { name = "Shassera", npcid = 152552, questId = { 56295 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63401160 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 170187, isKnown = false } } },
+            [154148] = { name = "Tidemistress Leth'sindra", npcid = 154148, questId = { 56106 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67152325 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 170196, isKnown = false } } },
+            [150583] = { name = "Rockweed Shambler", npcid = 150583, questId = { 56291 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62405950 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169374, petID = 154846, speciesID = 2707, isKnown = false } } },
+            [152290] = { name = "Soundless", npcid = 152290, questId = { 56298 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57605220 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 169163, mountID = 1257, isKnown = false }, { droptype = DROP_ITEM, itemID = 170176, isKnown = false } } },
+            
+
+            
         },
     },
     [1462] = {
@@ -267,7 +289,28 @@ local rareDB = {
         minimapIcons = {},
         index = 4,
         rares = {
-                [150342] = { name = "Earthbreaker Gulroc", npcid = 150342, questId = { 55814 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62802600 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167042, isKnown = false } } },--qx1
+            -- Fully Checked!!!
+
+
+
+            -- Updated:
+
+            -- Pet drops
+            [152113] = { name = "The Kleptoboss", npcid = 152113, questId = { 55858 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68865435 }, bothphases = true, cave = { 68384814 }, note = "Inside cave", loot = { { droptype = DROP_PET, itemID = 169886, petID = 155600, speciesID = 2753, isKnown = false } } }, -- in cave, coord=68, 48
+
+            -- Quest drops
+            [153200] = { name = "Boilburn", npcid = 153200, questId = { 55857 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51205000 }, bothphases = true, cave = { 51445025 }, note = "Inside cave", loot = { { droptype = DROP_QUEST, itemID = 167042, isKnown = false } } },
+                [151884] = { name = "Fungarian Furor", npcid = 151884, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48704760 }, bothphases = true, note = "Only available when Mylune's daily quest is active!", loot = { { droptype = DROP_QUEST, itemID = 167793, isKnown = false } } }, -- questID=55367. Set to 0 until I can read out if the WQ is enabled!!!
+            [154153] = { name = "Enforcer KX-T57", npcid = 154153, questId = { 56207 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 55555555 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 169174, isKnown = false } } }, -- Coord update only, Old=53806180
+            [153205] = { name = "Gemicide", npcid = 153205, questId = { 55855 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59606730 }, bothphases = true, cave = { 59656720 }, note = "Inside cave", loot = { { droptype = DROP_QUEST, itemID = 168908, isKnown = false } } },
+            [154701] = { name = "Gorged Gear-Cruncher", npcid = 154701, questId = { 56367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 69205340 }, bothphases = true, cave = { 72635385 }, note = "Inside cave", loot = { { droptype = DROP_QUEST, itemID = 167846, isKnown = false } } }, -- in cave, coord=79, 52
+            [153206] = { name = "Ol' Big Tusk", npcid = 153206, questId = { 55853 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56103600 }, bothphases = true, cave = { 56153632 }, note = "Inside cave", loot = { { droptype = DROP_QUEST, itemID = 169691, isKnown = false } } },
+            [150342] = { name = "Earthbreaker Gulroc", npcid = 150342, questId = { 55814 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62802600 }, bothphases = true, cave = { 63532500 }, note = "Inside cave", loot = { { droptype = DROP_QUEST, itemID = 167042, isKnown = false } } },--qx1
+            -- Gear Only
+            [154739] = { name = "Caustic Mechaslime", npcid = 154739, questId = { 56368 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 66505870 }, bothphases = true, cave = { 66405884 }, note = "Inside cave", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },--q + punchcards
+
+            -- Unchecked
+            
             [150394] = { name = "Armored Vaultbot", npcid = 150394, questId = { 55546 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 60604460 }, bothphases = true, note="Only drops the pet when kited to the Magnet in Bondo's Scrap Yard", loot = { { droptype = DROP_ITEM, itemID = 168001, petID = 155829, speciesID = 2547, isKnown = false } } },-- petID + speciesID
             [150575] = { name = "Rumblerocks", npcid = 150575, questId = { 55368 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 38805320 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168001, isKnown = false } } },--q>pet
             [150937] = { name = "Seaspit", npcid = 150937, questId = { 55545 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 19207940 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168063, isKnown = false } } },
@@ -281,41 +324,30 @@ local rareDB = {
             [151672] = { name = "Mecharantula", npcid = 151672, questId = { 55386 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 86801940 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169393, petID = 154894, speciesID = 2720, isKnown = false } } },--q
             [151684] = { name = "Jawbreaker", npcid = 151684, questId = { 55399 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 75404400 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 198908, isKnown = false } } },
             [151702] = { name = "Paol Pondwader", npcid = 151702, questId = { 55405 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 23006860 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [151884] = { name = "Fungarian Furor", npcid = 151884, questId = { 55367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48704760 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167793, isKnown = false } } },
+            
             [151933] = { name = "Malfunctioning Beastbot", npcid = 151933, questId = { 55544 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61004120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169382, petID = 154854, speciesID = 2715, isKnown = false } } },--q
             [151934] = { name = "Arachnoid Harvester", npcid = 151934, questId = { 55512 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51604160 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168823, mountID = 1229, isKnown = false } } },-- mountID
             [151940] = { name = "Uncle T'Rogg", npcid = 151940, questId = { 55538 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57002140 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [152001] = { name = "Bonepicker", npcid = 152001, questId = { 55537 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65202320 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169392, petID = 154893, speciesID = 2719, isKnown = false } } },--
             [152007] = { name = "Killsaw", npcid = 152007, questId = { 55369 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43404900 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 167931, isKnown = false } } },-- +q
-            [152113] = { name = "The Kleptoboss", npcid = 152113, questId = { 55858 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68905430 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169886, petID = 155600, speciesID = 2753, isKnown = false } } },
+            
             [152182] = { name = "Rustfeather", npcid = 152182, questId = { 55811 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63807800 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168370, mountID = 1248, isKnown = false } } },--mountID
             [149847] = { name = "Crazed Trogg", npcid = 149847, questId = { 55812 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82202100 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 169167, isKnown = false } } },--q x 3, OLDnpcid = 152570
             [152764] = { name = "Oxidized Leachbeast", npcid = 152764, questId = { 55856 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57206260 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [153000] = { name = "Sparkqueen P'Emp", npcid = 153000, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 78203080 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [153200] = { name = "Boilburn", npcid = 153200, questId = { 55857 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51205000 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167042, isKnown = false } } },--q Drop Starts Quest, more available. Onload check quest completed!
-            [153205] = { name = "Gemicide", npcid = 153205, questId = { 55855 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59606730 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168908, isKnown = false } } },
-            [153206] = { name = "Ol' Big Tusk", npcid = 153206, questId = { 55853 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56103600 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 169691, isKnown = false } } }, 
+            [153000] = { name = "Sparkqueen P'Emp", npcid = 153000, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82202300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            --q Drop Starts Quest, more available. Onload check quest completed!
+            
+            
             [153226] = { name = "Steel Singer Freza", npcid = 153226, questId = { 55854 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 24807720 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168062, isKnown = false } } },
             [153228] = { name = "Gear Checker Cogstar", npcid = 153228, questId = { 55852 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 40203960 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167847, isKnown = false } } },
-            [154153] = { name = "Enforcer KX-T57", npcid = 154153, questId = { 56207 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 53806180 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 169174, isKnown = false } } },
+            
             [154225] = { name = "The Rusty Prince", npcid = 154225, questId = { 56182 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 58305690 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [154701] = { name = "Gorged Gear-Cruncher", npcid = 154701, questId = { 56367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 69205340 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167846, isKnown = false } } },
-            [154739] = { name = "Caustic Mechaslime", npcid = 154739, questId = { 56368 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 66505870 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },--q + punchcards
+            
+            
             [155060] = { name = "Doppel Ganger", npcid = 155060, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 80902020 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [155583] = { name = "Scrapclaw", npcid = 155583, questId = { 56737 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168490, isKnown = false } } },
-
-                [152566] = { name = "Anemonar", npcid = 152566, questId = { 56281 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
-                [152567] = { name = "Kelpwillow", npcid = 152567, questId = { 56287 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
-                [152397] = { name = "Oronu", npcid = 152397, questId = { 56288 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
-                --[152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- Moved to Nazjatar ?
-                [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
+            [155583] = { name = "Scrapclaw", npcid = 155583, questId = { 56737 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82677740 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168490, isKnown = false } } },
         },
     },
-    -- End New Zones
-    --COME BACK
-
-  
-    --=============
 }
 
 -- Colors
@@ -332,6 +364,18 @@ local colors = {
     orange = { 1, 0.49, 0.04, 1 },
     lightcyan = { 0, 1 , 0.59, 1 },
 }
+
+-- Test new filter system
+local HIDE_ALREADY_KNOWN = "AlreadyKnown"
+local HIDE_UNKNOWN_LOOT = "UnknowLoot"
+local HIDE_UNTRACKABLE = "Untrackable"
+local HIDE_GOLIATHS = "Goliaths"
+local HIDE_UNAVAILABLE = "Unavailable"
+local HIDE_GEAR_ONLY = "GearOnly"
+local HIDE_QUEST_ONLY = "QuestOnly"
+local HIDE_ITEM_ONLY = "ItemOnly"
+
+
 -- Default options
 local dbDefaults = {
     profile = {
@@ -359,6 +403,7 @@ local dbDefaults = {
             hideGoliaths = false,
             hideGearOnly = false,
             hideQuestOnly = false,
+            hideItemOnly = false,
             showAtMaxLevel = false,
             showWarfrontOnZoneName = true,
             showWarfrontTitle = "all",
@@ -376,6 +421,7 @@ local dbDefaults = {
             alwaysShowWorldboss = true,
         },
         masterfilter = {
+            hide = { [HIDE_ALREADY_KNOWN] = false, [HIDE_UNKNOWN_LOOT] = false, [HIDE_UNTRACKABLE] = false, [HIDE_GOLIATHS] = false, [HIDE_UNAVAILABLE] = false, [HIDE_GEAR_ONLY] = false, [HIDE_QUEST_ONLY] = false, [HIDE_ITEM_ONLY] = false },
             hideAlreadyKnown = false,
             hideUnknowLoot = false,
             hideUntrackable = false,
@@ -383,6 +429,7 @@ local dbDefaults = {
             hideUnavailable = false,
             hideGearOnly = false,
             hideQuestOnly = false,
+            hideItemOnly = false,
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_QUEST] = false },
             worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
@@ -433,6 +480,7 @@ local dbDefaults = {
             hideGoliaths = false,
             hideGearOnly = false,
             hideQuestOnly = false,
+            hideItemOnly = false,
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_QUEST] = false },
             alwaysShowWorldboss = true,
         },
@@ -950,7 +998,7 @@ local function rareHasLegitQuests(mapid, npcid)
     end
 end
 
-local function showRare(mapid, npcid, mode)
+local function showRare(mapid, npcid, mode)  --  
     if isNPCPlayerFaction(mapid, npcid) then
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
             if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].hidden == true  then
@@ -976,6 +1024,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
                 return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.hideItemOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_ITEM then
+                return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.worldmapicons.whitelist)
             else
@@ -997,6 +1047,8 @@ local function showRare(mapid, npcid, mode)
             elseif WarfrontRareTracker.db.profile.menu.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
+                return false
+            elseif WarfrontRareTracker.db.profile.menu.hideItemOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_ITEM then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.menu.whitelist)
@@ -1028,6 +1080,8 @@ local function showRare(mapid, npcid, mode)
             elseif WarfrontRareTracker.db.profile.masterfilter.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
+                return false
+            elseif WarfrontRareTracker.db.profile.masterfilter.hideItemOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_ITEM then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.masterfilter.whitelist)
@@ -1228,12 +1282,12 @@ local function getCoordsForPhase(mapid, npcid, tomtom)
     return x, y
 end
 
-local function announceTomTom(mapid, npcid, clicked)
+local function announceRare(mapid, npcid, mode)
+    if mode == nil or mapid == nil and npcid == nil then return end
     if type(rareDB[mapid].rares[npcid]) ~= "table" then return end
-    if clicked ~= nil and clicked == true then
-        -- Announce
-        local x, y = getCoordsForPhase(mapid, npcid)
-        if x <= 0 or y <= 0 then return end
+    local x, y = getCoordsForPhase(mapid, npcid)
+    if x <= 0 or y <= 0 then return end
+    if mode == "group" then
         if WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == true and UnitIsGroupLeader("player") or WarfrontRareTracker.db.profile.tomtom.tomtomAnnounceLeader == false then
             if IsInRaid() then
                 SendChatMessage(format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y), "RAID", nil, nil)
@@ -1241,7 +1295,15 @@ local function announceTomTom(mapid, npcid, clicked)
                 SendChatMessage(format("We're now heading to  '%s'! Coords x = %.2f, y = %.2f", rareDB[mapid].rares[npcid].name, x, y), "PARTY", nil, nil)
             end
         end
-    else
+    elseif mode == "local" then
+        -- Local announce in /1
+        if isPlayerInWarfront() and mapid == currentPlayerMapid then
+            --print(format("%s is up. /way %.0f, %.0f", rareDB[mapid].rares[npcid].name, x, y))
+            SendChatMessage(format("%s is up. /way %.0f, %.0f", rareDB[mapid].rares[npcid].name, x, y), "CHANNEL", nil, 1)
+        else
+            print(colorText("Warning: ", colors.orange) .. colorText("The rare you've selected is from a different zone. Message isn't send to prevent spam!", colors.yellow))
+        end
+    elseif mode == "tomtom" then
         -- Chat Message
         if WarfrontRareTracker.db.profile.tomtom.enableChatMessage then
             WarfrontRareTracker:Print(colorText("Added waypoint to: ", colors.turqoise) .. getColoredRareName(mapid, npcid))
@@ -1289,7 +1351,7 @@ local function addToTomTom(mapid, npcid)
                 world = true,
             })
         end
-        announceTomTom(mapid, npcid)
+        announceRare(mapid, npcid, "tomtom")
     end
 end
 
@@ -1803,6 +1865,7 @@ function WarfrontRareTracker:ShowMenu(self)
     WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
 
 	if menuTooltip:GetLineCount() >= 1 then
+        menuTooltip:UpdateScrolling()
         menuTooltip:Show()
     end
 end
@@ -1866,26 +1929,30 @@ function WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
             menuTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 3)
         end
     end
-
+    
     line = menuTooltip:AddLine()
     menuTooltip:SetCell(line, 1, colorText("Right-Click the icon to open Options.", colors.turqoise), "LEFT", 3)
+    line = menuTooltip:AddLine()
+    menuTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 3)
     line = menuTooltip:AddLine()
     menuTooltip:SetCell(line, 1, colorText("Shift Left-Click the icon to cycle Warfront.", colors.turqoise), "LEFT", 3)
 end
 
 function WarfrontRareTracker:MenuTooltipOnLineClick(self, info, button)
+    local mapid, npcid = strsplit(':', info)
+    mapid = tonumber(mapid)
+    npcid = tonumber(npcid)
+    if mapid == nil or npcid == nil then return end
     if button == "LeftButton" then
-        local mapid, npcid = strsplit(':', info)
-        mapid = tonumber(mapid)
-        npcid = tonumber(npcid)
-
-        if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
+       if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
             if IsShiftKeyDown() then
-                announceTomTom(mapid, npcid, true)
+                announceRare(mapid, npcid, "group")
             else
                 addToTomTom(mapid, npcid)
             end
         end
+    elseif button == "RightButton" and IsShiftKeyDown() then
+        announceRare(mapid, npcid, "local")
     end
 end
 
@@ -2068,6 +2135,8 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
             lootTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
         end
     end
+    line = lootTooltip:AddLine()
+    lootTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
 
     if lootTooltip:GetLineCount() > 1 then
         lootTooltip:Show()
@@ -2224,14 +2293,17 @@ end
 -------------------
 -- Worldmap Tooltip
 function WarfrontRareTracker:WorldmapTooltipOnClick(self, mapid, npcid, button)
-    if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
-        if button == "LeftButton" then
+    if mapid == nil or npcid == nil then return end
+    if button == "LeftButton" then
+       if isTomTomloaded and WarfrontRareTracker.db.profile.tomtom.enableIntegration then
             if IsShiftKeyDown() then
-                announceTomTom(mapid, npcid, true)
+                announceRare(mapid, npcid, "group")
             else
                 addToTomTom(mapid, npcid)
             end
         end
+    elseif button == "RightButton" and IsShiftKeyDown() then
+        announceRare(mapid, npcid, "local")
     end
 end
 
@@ -2254,7 +2326,7 @@ local function checkItemNameIsValid(itemname, drop)
     end
 end
 
-function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, minimap)
+function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, minimap)
     if LibQTip:IsAcquired("WarfrontRareTrackerWorldmapTip") and worldmapTooltip then
         LibQTip.Release(worldmapTooltip)
         worldmapTooltip = nil
@@ -2265,7 +2337,10 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
     worldmapTooltip:SetPoint("TOPRIGHT", self, "BOTTOM")
 
     local line
-    if NPC then
+    if cave then
+        worldmapTooltip:AddLine(colorText("Cave entrance for: " .. getColoredRareName(mapid, npcid), colors.yellow))
+        worldmapTooltip:Show()
+    else
         local itemName, itemLink, itemTexture
         if minimap and WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover then
             if WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
@@ -2371,6 +2446,8 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
                         worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
                     end
                 end
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
             end
         elseif not minimap then
             worldmapTooltip:AddHeader(getColoredRareName(mapid, npcid))
@@ -2423,6 +2500,8 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
                     worldmapTooltip:SetCell(line, 1, colorText("Shift Left-Click to announce in Party Chat.", colors.turqoise), "LEFT", 2)
                 end
             end
+            line = worldmapTooltip:AddLine()
+            worldmapTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
         else
             if rareDB[mapid].rares[npcid].warning then
                 if worldmapTooltip:GetLineCount() > 1 then
@@ -2440,9 +2519,6 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, NPC, min
         if worldmapTooltip:GetLineCount() >= 1 then
             worldmapTooltip:Show()
         end
-    else
-        worldmapTooltip:AddLine(colorText("Cave entrance for: " .. getColoredRareName(mapid, npcid), colors.yellow))
-        worldmapTooltip:Show()
     end
 end
 
@@ -2634,7 +2710,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
         worldmapicon.mapid = mapid
         worldmapicon.cave = caveicon
         worldmapicon:SetScript("OnClick", function(self, button) WarfrontRareTracker:WorldmapTooltipOnClick(self, worldmapicon.mapid, worldmapicon.npcid, button) end)
-        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, true, false) end)
+        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, caveicon, false) end)
         worldmapicon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
         table.insert(rareDB[mapid].worldmapIcons, worldmapicon)
         HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, worldmapicon, mapid, x, y, 1)
@@ -2652,7 +2728,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
         minimapIcon.mapid = mapid
         minimapIcon.cave = caveicon
         if self.db.profile.minimapIcons.onMinimapHoover then
-            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, true, true) end)
+            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, false, true) end)
             minimapIcon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
         end
         table.insert(rareDB[mapid].minimapIcons, minimapIcon)
