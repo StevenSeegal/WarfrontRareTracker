@@ -1,6 +1,6 @@
-## Interface: 80100
+## Interface: 80200
 ## Title: Warfront Rare Tracker
-## Version: 1.0.0
+## Version: 1.0.1b
 ## Notes: Tracks your kills of the Rare's in Warfront zones.
 ## Author: StevenSeegal / Dora
 ## SavedVariables: WarfrontRareTrackerDB
