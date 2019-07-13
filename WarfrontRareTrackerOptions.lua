@@ -2,7 +2,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 
 local isTomTomlocked = true
 local hasMultipleRareDB = false
-local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys" }
+local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests" }
 local defeatModes = { ["hide"] = "Hide Icon", ["change"] = "Change Icon", ["none"] = "Nothing" }
 local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
@@ -357,6 +357,25 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideGearOnly = value
                                         end,
                                 },
+                                hideQuestOnly = {
+                                    name = "Hide Quest Only",
+                                    desc = "Hides the Rare's that only drops Quest items.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 7,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideQuestOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideQuestOnly = value
+                                        end,
+                                },
+                                description = {
+                                    name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
+                                    type = "description",
+                                    width = "full",
+                                    order = 8,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides Rare's of which drop you already know.",
@@ -696,6 +715,26 @@ configOptions = {
                                     WarfrontRareTracker.db.profile.masterfilter.hideGearOnly = value
                                     refreshWorldmapIcons(true)
                                 end,
+                        },
+                        hideQuestOnly = {
+                            name = "Hide Quest Only",
+                            desc = "Hides the Rare's that only drops Quest items.",
+                            type = "toggle",
+                            width = "full",
+                            order = 7,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        description = {
+                            name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
+                            type = "description",
+                            width = "full",
+                            order = 8,
                         },
                         hideAlreadyKnown = {
                             name = "Hide Known Items",
@@ -1381,7 +1420,7 @@ configOptions = {
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.worldmapicons.hideUntrackable = value
-                                            refreshWorldmapIcons(true)
+                                            refreshWorldmapIcons(false)
                                         end,
                                 },
                                 hideUnknowLoot = {
@@ -1403,7 +1442,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drops Gear.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 6,
+                                    order = 7,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly
                                         end,
@@ -1412,12 +1451,32 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                hideQuestOnly = {
+                                    name = "Hide Quest Only",
+                                    desc = "Hides the Rare's that only drops Quest items.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 8,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                description = {
+                                    name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
+                                    type = "description",
+                                    width = "full",
+                                    order = 9,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides the Icon of the Rare's which drop you already know.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 9,
+                                    order = 19,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown
                                         end,
@@ -1431,7 +1490,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 10,
+                                    order = 20,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.worldmapicons.whitelist[key]

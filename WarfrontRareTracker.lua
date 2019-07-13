@@ -307,7 +307,7 @@ local rareDB = {
                 [152566] = { name = "Anemonar", npcid = 152566, questId = { 56281 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
                 [152567] = { name = "Kelpwillow", npcid = 152567, questId = { 56287 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
                 [152397] = { name = "Oronu", npcid = 152397, questId = { 56288 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
-                --[152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- NYI
+                --[152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- Moved to Nazjatar ?
                 [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 81407600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- NYI
         },
     },
@@ -358,6 +358,7 @@ local dbDefaults = {
             hideUnavailable = false,
             hideGoliaths = false,
             hideGearOnly = false,
+            hideQuestOnly = false,
             showAtMaxLevel = false,
             showWarfrontOnZoneName = true,
             showWarfrontTitle = "all",
@@ -365,7 +366,7 @@ local dbDefaults = {
             showWarfrontMenu = "current",
             autoChangeZone = true,
             autoSaveZone = false,
-            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false},
+            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false, [DROP_QUEST] = false },
             sortRaresOn = "drop",
             groupDropSortOn = "type",
             groupTypeSortOn = "drop",
@@ -381,7 +382,8 @@ local dbDefaults = {
             hideGoliaths = false,
             hideUnavailable = false,
             hideGearOnly = false,
-            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false },
+            hideQuestOnly = false,
+            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_QUEST] = false },
             worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
@@ -430,7 +432,8 @@ local dbDefaults = {
             hideUnavailable = false,
             hideGoliaths = false,
             hideGearOnly = false,
-            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_TOY] = false },
+            hideQuestOnly = false,
+            whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_QUEST] = false },
             alwaysShowWorldboss = true,
         },
         tomtom = {
@@ -971,6 +974,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
                 return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
+                return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.worldmapicons.whitelist)
             else
@@ -990,6 +995,8 @@ local function showRare(mapid, npcid, mode)
             elseif WarfrontRareTracker.db.profile.menu.hideUntrackable and rareHasLoot(mapid, npcid) and rareDB[mapid].rares[npcid].questId[1] == -1 then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
+                return false
+            elseif WarfrontRareTracker.db.profile.menu.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.menu.whitelist)
@@ -1019,6 +1026,8 @@ local function showRare(mapid, npcid, mode)
             elseif WarfrontRareTracker.db.profile.masterfilter.hideUntrackable and rareHasLoot(mapid, npcid) and rareDB[mapid].rares[npcid].questId[1] == -1 then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_GEAR_ONLY then
+                return false
+            elseif WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROP_QUEST then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
                 return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.masterfilter.whitelist)
@@ -2894,8 +2903,6 @@ function WarfrontRareTracker:SortRares()
                     min = i
                     for j = i + 1, n, 1 do
                         if WarfrontRareTracker.db.profile.menu.groupDropSortOn == "type" then
-                            --COME BACK
-                            --print("Sort mapid="..mapid.."| name=" .. normalTable[j].name .. " droptype=" .. "!!!") -- .. "  <====>  " .. getAllLootConcatinated(mapid, normalTable[j].npcid) .. " - " .. normalTable[min].name .. ": " .. getAllLootConcatinated(mapid, normalTable[min].npcid))
                             if (compareString(getAllLootConcatinated(mapid, normalTable[j].npcid), getAllLootConcatinated(mapid, normalTable[min].npcid))) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and compareString(normalTable[j].type, normalTable[min].type)) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and normalTable[j].type == normalTable[min].type and compareString(normalTable[j].name, normalTable[min].name)) then min = j end
                         else
                             if (compareString(getAllLootConcatinated(mapid, normalTable[j].npcid), getAllLootConcatinated(mapid, normalTable[min].npcid))) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and compareString(normalTable[j].name, normalTable[min].name)) then min = j end
