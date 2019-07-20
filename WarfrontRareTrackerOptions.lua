@@ -2,7 +2,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 
 local isTomTomlocked = true
 local hasMultipleRareDB = false
-local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests" }
+local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests", ["Blueprint"] = "Blueprints" }
 local defeatModes = { ["hide"] = "Hide Icon", ["change"] = "Change Icon", ["none"] = "Nothing" }
 local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
@@ -389,6 +389,19 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideItemOnly = value
                                         end,
                                 },
+                                hideBlueprintOnly = {
+                                    name = "Hide Blueprint Only",
+                                    desc = "Hides the Rare's that only drop Blueprints.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 10,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideBlueprintOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideBlueprintOnly = value
+                                        end,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides Rare's of which drop you already know.",
@@ -407,7 +420,7 @@ configOptions = {
                                     desc = "Select which 'Already Know' drop you still want to show.",
                                     type = "multiselect",
                                     width = "half",
-                                    order = 10,
+                                    order = 20,
                                     values = whitelist,
                                     get = function(info, key)
                                             return WarfrontRareTracker.db.profile.menu.whitelist[key]
@@ -760,6 +773,20 @@ configOptions = {
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.masterfilter.hideItemOnly = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideBlueprintOnly = {
+                            name = "Hide Blueprint Only",
+                            desc = "Hides the Rare's that only drop Blueprints.",
+                            type = "toggle",
+                            width = "full",
+                            order = 10,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideBlueprintOnly
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideBlueprintOnly = value
                                     refreshWorldmapIcons(true)
                                 end,
                         },
@@ -1509,6 +1536,20 @@ configOptions = {
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.worldmapicons.hideItemOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideBlueprintOnly = {
+                                    name = "Hide Blueprint Only",
+                                    desc = "Hides the Rare's that only drop Blueprints.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 11,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideBlueprintOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideBlueprintOnly = value
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
