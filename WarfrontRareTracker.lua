@@ -215,27 +215,32 @@ local rareDB = {
             [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 31302940 }, bothphases = true, note = "You need to kite a \"Staghorn Reefwalker\" to Urduu's location, then kill it in front of Urduu.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } }, -- Moved from Mechagon!!!
             -- ===============
 
+            -- QuestID: 56894, Coords: 73.82, 31.26 = Prob one of the Commanders as I killed one!
+
             -- Updated:
             -- Pet drop
-                [152464] = { name = "Caverndark Terror", npcid = 152464, questId = { 56283 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 40800950 }, bothphases = true, note = "Inside cave",loot = { { droptype = DROP_PET, itemID = 169356, petID = 154829, speciesID = 2690, isKnown = false } } }, -- coords update, mob too strong to check questID
+            [152464] = { name = "Caverndark Terror", npcid = 152464, questId = { 56283 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 40800950 }, bothphases = true, note = "Inside cave",loot = { { droptype = DROP_PET, itemID = 169356, petID = 154829, speciesID = 2690, isKnown = false } } }, -- coords update, mob too strong to check questID
             
             -- Item Drop
-                [152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67804620 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- Only changed Coords. Has 3 spawm coords: 64804640, 67804620, 65205020
-                [152360] = { name = "Siltstalker the Packmother", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71695489 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170179, isKnown = false } } }, -- Only changed Coords. Old=64604700
+            [152360] = { name = "Toxigore the Alpha", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67804620 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170178, isKnown = false } } }, -- Only changed Coords. Has 3 spawm coords: 64804640, 67804620, 65205020
+            [152360] = { name = "Siltstalker the Packmother", npcid = 152360, questId = { 56278 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71695489 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170179, isKnown = false } } }, -- Only changed Coords. Old=64604700
             
             -- Unchecked
             [151870] = { name = "Sandcastle", npcid = 151870, questId = { 56276 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 78003280 }, bothphases = true, note = "Multiple spawn points. Has a random chance to spawn when using Scrying Stone.", loot = { { droptype = DROP_PET, itemID = 169369, petID = 154842, speciesID = 2703, isKnown = false } } },
-            [152561] = { name = "Banescale the Packfather", npcid = 152561, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71605420 }, bothphases = true, note="Has a chance to spawn after killing Siltstalker the Packmother.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [152291] = { name = "Tidelord", npcid = 152291, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56204360 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [152323] = { name = "Deepglider", npcid = 152323, questId = { 55671 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28802900 }, bothphases = true, note = "Spawns in multiple places south of Azsh'ari Terrace. mostly in Coral Forest.", loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } },
-            [152359] = { name = "King Gakula", npcid = 152359, questId = { 56297 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71405480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169371, petID = 154820, speciesID = 2681, isKnown = false } } },
-            [152414] = { name = "Elder Unu", npcid = 152414, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63803260 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [152415] = { name = "Alga the Eyeless", npcid = 152415, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52404200 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152561] = { name = "Banescale the Packfather", npcid = 152561, questId = { 56282 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 73995395 }, bothphases = true, note="Has a chance to spawn after killing Siltstalker the Packmother.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            
+            [152291] = { name = "Deepglider", npcid = 152291, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56204360 }, bothphases = true, note = "Spawns in multiple places south of Azsh'ari Terrace. mostly in Coral Forest.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- OLD Tidelord
+
+            [152323] = { name = "King Gakula", npcid = 152323, questId = { 55671 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 28802900 }, bothphases = true, note = "Spawns after a number of Bloodfin Tadpoles are clicked on to shoo them.", loot = { { droptype = DROP_ITEM, itemID = 167077, isKnown = false } } }, -- OLD Deepglider
+        [152359] = { name = "Tidelord?", npcid = 152359, questId = { 56297 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71405480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169371, petID = 154820, speciesID = 2681, isKnown = false } } }, -- OLD King Gakula
+            
+            [152414] = { name = "Elder Unu", npcid = 152414, questId = { 56284 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63803260 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [152415] = { name = "Alga the Eyeless", npcid = 152415, questId = { 56279 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 52404200 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [152448] = { name = "Iridescent Glimmershell", npcid = 152448, questId = { 56286 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 47205500 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169352, petID = 154825, speciesID = 2686, isKnown = false } } },
             [152465] = { name = "Needlespine", npcid = 152465, questId = { 56275 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 45602560 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169355, petID = 154828, speciesID = 2689, isKnown = false } } },
             [144644] = { name = "Scale Matriarch Gratinax", npcid = 144644, questId = { 56292 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 35604120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } },
 
-            [151719] = { name = "Voice in the Deeps", npcid = 151719, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67603460 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [151719] = { name = "Voice in the Deeps", npcid = 151719, questId = { 56300 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 67603460 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [152729] = { name = "Moon Priestess Liara", npcid = 152729, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83403300 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [152736] = { name = "Guardian Tannin", npcid = 152736, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 83603740 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [153296] = { name = "Shalan'ali Stormtongue", npcid = 153296, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33204000 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
@@ -253,7 +258,7 @@ local rareDB = {
             [153314] = { name = "Aldrantiss", npcid = 153314, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 60401440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [155811] = { name = "Commander Minzera", npcid = 155811, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 33402940 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [155836] = { name = "Theurgist Nitara", npcid = 155836, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49406580 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
-            [150468] = { name = "Vor'koth", npcid = 150468, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48352400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169376, petID = 154848, speciesID = 2709, isKnown = false } } },
+            [150468] = { name = "Vor'koth", npcid = 150468, questId = { 55603 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48352400 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169376, petID = 154848, speciesID = 2709, isKnown = false } } },
             [150191] = { name = "Avarius", npcid = 150191, questId = { 55584 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36901120 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169373, petID = 154845, speciesID = 2706, isKnown = false } } },
             [149653] = { name = "Carniverous Lasher", npcid = 149653, questId = { 55366 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 54804200 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169375, petID = 154847, speciesID = 2708, isKnown = false } } },
 
@@ -267,7 +272,7 @@ local rareDB = {
             [152682] = { name = "Prince Vortran", npcid = 152682, questId = { 56290 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 42807480 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169368, petID = 154841, speciesID = 2702, isKnown = false } } },
             [152712] = { name = "Blindlight", npcid = 152712, questId = { 56269 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 36408000 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169372, petID = 154821, speciesID = 2682, isKnown = false } } },
             [152794] = { name = "Amethyst Spireshell", npcid = 152794, questId = { 56268 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 72203620 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169363, petID = 154836, speciesID = 2697, isKnown = false } } },
-            [153658] = { name = "Shiz'narasz the Consumer", npcid = 153658, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37801440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [153658] = { name = "Shiz'narasz the Consumer", npcid = 153658, questId = { 56296 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 37801440 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } },
             [153898] = { name = "Tidelord Aquatus", npcid = 153898, questId = { 56122 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62402960 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
             [153928] = { name = "Tidelord Dispersius", npcid = 153928, questId = { 56123 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57602600 }, bothphases = true, loot = { { droptype = DROP_ITEM, itemID = 170502, isKnown = false } } },
             [152756] = { name = "Daggertooth Terror", npcid = 152756, questId = { 56271 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 39005930 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169361, petID = 154834, speciesID = 2605, isKnown = false } } },
@@ -292,25 +297,25 @@ local rareDB = {
         index = 4,
         rares = {
             -- Mount Drops:
-            [151934] = { name = "Arachnoid Harvester", npcid = 151934, questId = { 55512 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51604160 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168823, mountID = 1229, isKnown = false } } },-- mountID
+            [151934] = { name = "Arachnoid Harvester", npcid = 151934, questId = { 55512 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51604160 }, bothphases = true, cave = { 63123921 }, caveNote = "Kite \"Arachnoid Harvester\" here to get a chance for a drop!", loot = { { droptype = DROP_MOUNT, itemID = 168823, mountID = 1229, isKnown = false } } },-- mountID
             [152182] = { name = "Rustfeather", npcid = 152182, questId = { 55811 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63807800 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168370, mountID = 1248, isKnown = false } } }, -- Mount: Junkheap Drifter
 
             -- Pet Drops:
-            [150394] = { name = "Armored Vaultbot", npcid = 150394, questId = { 55546 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 60604460 }, bothphases = true, note="Only drops the pet if kited to the Robot Cruncher Zapper at Bondo's yard or by using a \"Armored Vaultbot Key\".", loot = { { droptype = DROP_PET, itemID = 168001, petID = 155829, speciesID = 2547, isKnown = false }, { droptype = DROP_BLUEPRINT, itemID = 167843, checkId = 55058, isKnown = false }, { droptype = DROP_QUEST, itemID = 167796, checkId = 55455, isKnown = false } } }, -- Blueprint: Vaultbot Key, Pet, Paint Vial: Mechagon Gold
-            [152001] = { name = "Bonepicker", npcid = 152001, questId = { 55537 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65202320 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169392, petID = 154893, speciesID = 2719, isKnown = false } } },--
-            [151933] = { name = "Malfunctioning Beastbot", npcid = 151933, questId = { 55544 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61004120 }, bothphases = true, note = "Requires \"Beastbot Powerpack\" to activate.", loot = { { droptype = DROP_PET, itemID = 169382, petID = 154854, speciesID = 2715, isKnown = false } } },--q
-            [151672] = { name = "Mecharantula", npcid = 151672, questId = { 55386 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 86801940 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169393, petID = 154894, speciesID = 2720, isKnown = false } } },--q
-            [152113] = { name = "The Kleptoboss", npcid = 152113, questId = { 55858 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68865435 }, bothphases = true, cave = { 68384814 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-CC88.", loot = { { droptype = DROP_PET, itemID = 169886, petID = 155600, speciesID = 2753, isKnown = false }, { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- Pet, Vinyl: Depths of Ulduar
+            [150394] = { name = "Armored Vaultbot", npcid = 150394, questId = { 55546 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57564801 }, bothphases = true, note="Only drops the pet if kited to the Robot Cruncher Zapper at Bondo's yard or by using a \"Armored Vaultbot Key\".", loot = { { droptype = DROP_PET, itemID = 170072, petID = 155829, speciesID = 2766, isKnown = false }, { droptype = DROP_BLUEPRINT, itemID = 167843, checkId = 55058, isKnown = false }, { droptype = DROP_QUEST, itemID = 167796, checkId = 55455, isKnown = false } } }, -- pet: Snowsoft Nibbler, Blueprint: Vaultbot Key, Paint Vial: Mechagon Gold
+            [152001] = { name = "Bonepicker", npcid = 152001, questId = { 55537 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65202320 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169392, petID = 154893, speciesID = 2719, isKnown = false } } }, -- Pet: Bonebiter
+            [151933] = { name = "Malfunctioning Beastbot", npcid = 151933, questId = { 55544 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 61004120 }, bothphases = true, note = "Requires \"Beastbot Powerpack\" to activate.", loot = { { droptype = DROP_PET, itemID = 169382, petID = 154854, speciesID = 2715, isKnown = false } } },  -- Pet: Lost Robogrip
+            [151672] = { name = "Mecharantula", npcid = 151672, questId = { 55386 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 86801940 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 169393, petID = 154894, speciesID = 2720, isKnown = false } } }, -- Pet: Arachnoid Skitterbot
+            [152113] = { name = "The Kleptoboss", npcid = 152113, questId = { 55858 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 68865435 }, bothphases = true, cave = { 68384814 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-CC88.", loot = { { droptype = DROP_PET, itemID = 169886, petID = 155600, speciesID = 2753, isKnown = false }, { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- Pet: Spraybot 0D, Vinyl: Depths of Ulduar
 
             -- Toy Drops:
             [152007] = { name = "Killsaw", npcid = 152007, questId = { 55369 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 43404900 }, bothphases = true, loot = { { droptype = DROP_TOY, itemID = 167931, isKnown = false } } }, -- Mechagonian Sawblades
             [154225] = { name = "The Rusty Prince", npcid = 154225, questId = { 56182 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 58305690 }, bothphases = true, note = "Only available in the alternate future of Mechagon. Accept the daily quest \"The Other Place\" in Rustbolt or use \"Personal Time Displacer\" to displace you in time.", loot = { { droptype = DROP_TOY, itemID = 169347, isKnown = false } } }, -- Judgment of Mechagon
 
             -- Gear Only:
-            [155060] = { name = "Doppel Ganger", npcid = 155060, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 80902020 }, bothphases = true, note = "Requires 3 pieces of \"Pressure Relief Valve\" from the quest \"Cogfrenzy's Construction Frenzy\" to start the event.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Event
+            [155060] = { name = "The Doppel Ganger", npcid = 155060, questId = { 55623 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 80902020 }, bothphases = true, note = "Requires 3 pieces of \"Pressure Relief Valve\" from the quest \"Cogfrenzy's Construction Frenzy\" to start the event.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Event
             [151702] = { name = "Paol Pondwader", npcid = 151702, questId = { 55405 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 23006860 }, bothphases = true, note = "Likely available only when Reclamation Rig daily construction project is up.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Supervolt Zapper { droptype = DROP_ITEM, itemID = 170468, isKnown = false }
             [152764] = { name = "Oxidized Leachbeast", npcid = 152764, questId = { 55856 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57206260 }, bothphases = true, note = "When it's raining small oxidized slimes spawn in Junkwatt Depot. Kill those until the rare mob spawns.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Oxidized Refuse Remover { droptype = DROP_ITEM, itemID = 170273, isKnown = false }
-            [153000] = { name = "Sparkqueen P'Emp", npcid = 153000, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82202300 }, bothphases = true, note = "Only available when Razak Ironsides is in Rustbolt.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Yellow punchcards
+            [153000] = { name = "Sparkqueen P'Emp", npcid = 153000, questId = { 55810 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82202300 }, bothphases = true, note = "Only available when Razak Ironsides is in Rustbolt.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Yellow punchcards
             [151940] = { name = "Uncle T'Rogg", npcid = 151940, questId = { 55538 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57002140 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Yellow punchcards
             
             -- Quest Drops:
@@ -322,7 +327,7 @@ local rareDB = {
             [150342] = { name = "Earthbreaker Gulroc", npcid = 150342, questId = { 55814 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 62802600 }, bothphases = true, cave = { 63532500 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-TR35.", loot = { { droptype = DROP_BLUEPRINT, itemID = 167042, checkId = 55030, isKnown = false }, { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- Blueprint: Scrap Trap, Vinyl: Depths of Ulduar
             [154153] = { name = "Enforcer KX-T57", npcid = 154153, questId = { 56207 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 55555555 }, bothphases = true, note = "Spawns in Junkwatt Depot when it's raining.", loot = { { droptype = DROP_BLUEPRINT, itemID = 169174, checkId = 55082, isKnown = false } } }, -- Blueprint: Rustbolt Pocket Turret,  (item Whirring Chainblade?)
             [151202] = { name = "Foul Manifestation", npcid = 151202, questId = { 55513 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65605100 }, bothphases = true, note = "Use the Circuit Breaker at 67.31 , 55.54 then attach Alpha, Beta and Delta wires to their pylons to make the rare spawn.", loot = { { droptype = DROP_BLUEPRINT, itemID = 167871, checkId = 55063, isKnown = false }, { droptype = DROP_BLUEPRINT, itemID = 167042, checkId = 55030, isKnown = false } } }, -- Blueprint: G99.99 Landshark, Blueprint: Scrap Trap
-            [151884] = { name = "Fungarian Furor", npcid = 151884, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48704760 }, bothphases = true, note = "Pet is only available when Mylune's daily quest \"Aid From Nordrassil \" is active!", loot = { { droptype = DROP_QUEST, itemID = 167793, checkId = 55457, isKnown = false }, { droptype = DROP_PET, itemID = 169379, petID = 154851, speciesID = 2715, isKnown = false } } }, -- Paint Vial: Overload Orange, pet SPECIE ID !!!!!
+            [151884] = { name = "Fungarian Furor", npcid = 151884, questId = { 55367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 48704760 }, bothphases = true, note = "Pet is only available when Mylune's daily quest \"Aid From Nordrassil \" is active!", loot = { { droptype = DROP_QUEST, itemID = 167793, checkId = 55457, isKnown = false }, { droptype = DROP_PET, itemID = 169379, petID = 154851, speciesID = 2712, isKnown = false } } }, -- Paint Vial: Overload Orange, pet 
             [153228] = { name = "Gear Checker Cogstar", npcid = 153228, questId = { 55852 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 40203960 }, bothphases = true, note = "Spawns after a certain amount of Upgraded Sentry were killed. Can spawn in multiple areas.", loot = { { droptype = DROP_BLUEPRINT, itemID = 167847, checkId = 55062, isKnown = false } } }, -- Blueprint: Ultrasafe Transporter - Mechagon
             [153205] = { name = "Gemicide", npcid = 153205, questId = { 55855 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59606730 }, bothphases = true, cave = { 59656720 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-JD99.", loot = { { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- , Vinyl: Depths of Ulduar
             [154701] = { name = "Gorged Gear-Cruncher", npcid = 154701, questId = { 56367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 69205340 }, bothphases = true, cave = { 72635385 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-CC61.", loot = { { droptype = DROP_BLUEPRINT, itemID = 167846, checkId = 55061, isKnown = false } } }, -- Blueprint: Mechano-Treat
@@ -330,7 +335,7 @@ local rareDB = {
             [151124] = { name = "Mechagonian Nullifier", npcid = 151124, questId = { 55207 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56905330 }, bothphases = true, note = "Obtain and wear \"Remote Circuit Bypasser\" to be able to hack the Frenzied Elemental in Junkwatt Depot. The punchcard drops from The Scrap King.", loot = { { droptype = DROP_BLUEPRINT, itemID = 168490, checkId = 55069, isKnown = false }, { droptype = DROP_QUEST, itemID = 169688, checkId = 56515, isKnown = false } } }, -- Blueprint: Protocol Transference Device, Vinyl: Gnomeregan Forever
             [151627] = { name = "Mr. Fixthis", npcid = 151627, questId = { 55859 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59806080 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168248, checkId = 55068, isKnown = false }, { droptype = DROP_QUEST, itemID = 167794, checkId = 55454, isKnown = false } } }, -- Blueprint: BAWLD-371, Paint Vial: Lemonade Steel
             [153206] = { name = "Ol' Big Tusk", npcid = 153206, questId = { 55853 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56103600 }, bothphases = true, cave = { 56153632 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-TR28.", loot = { { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- Vinyl: Depths of Ulduar
-            [151296] = { name = "OOX-Avenger/MG", npcid = 151296, questId = { 0 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56803990 }, bothphases = true, note = "Only available, when Oglethorpe Obnoticus is in the town. Find and kill OOX-Fleetfoot/MG to make the overstuffed rare chicken spawn.", loot = { { droptype = DROP_BLUEPRINT, itemID = 168492, checkId = 55071, isKnown = false } } }, -- Blueprint: Emergency Rocket Chicken
+            [151296] = { name = "OOX-Avenger/MG", npcid = 151296, questId = { 55515 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56803990 }, bothphases = true, note = "Only available, when Oglethorpe Obnoticus is in the town. Find and kill OOX-Fleetfoot/MG to make the overstuffed rare chicken spawn.", loot = { { droptype = DROP_BLUEPRINT, itemID = 168492, checkId = 55071, isKnown = false } } }, -- Blueprint: Emergency Rocket Chicken
             [150575] = { name = "Rumblerocks", npcid = 150575, questId = { 55368 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 38805320 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168001, checkId = 55517, isKnown = false } } }, -- Paint Vial: Big-ol Bronze
             [155583] = { name = "Scrapclaw", npcid = 155583, questId = { 56737 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82677740 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168490, checkId = 55069, isKnown = false } } }, -- Blueprint: Protocol Transference Device
             [150937] = { name = "Seaspit", npcid = 150937, questId = { 55545 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 19207940 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168063, checkId = 55065, isKnown = false } } }, -- Blueprint: Rustbolt Kegerator
@@ -994,7 +999,7 @@ local function rareHasLegitQuests(mapid, npcid)
     end
 end
 
-local function showRare(mapid, npcid, mode)  --  
+local function showRare(mapid, npcid, mode)
     if isNPCPlayerFaction(mapid, npcid) then
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
             if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].hidden == true  then
@@ -1348,7 +1353,11 @@ local function addToTomTom(mapid, npcid)
             if #rare.cave > 1 and factionControlling == FACTION_HORDE then
                 coord = rare.cave[2]
             end
-            name = name .. " Cave Entrance"
+            if rare.caveNote and type(caveNote) == "string" then
+                name = name .. rare.caveNote
+            else
+                name = name .. " Cave Entrance"
+            end
             x, y = floor(coord / 10000) / 10000, (coord % 10000) / 10000
             TomTom:AddWaypoint(mapid, x, y, {
                 title = name,
@@ -2344,8 +2353,13 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
 
     local line
     if cave then
-        worldmapTooltip:AddLine(colorText("Cave entrance for: " .. getColoredRareName(mapid, npcid), colors.yellow))
-        worldmapTooltip:Show()
+        if rareDB[mapid].rares[npcid].caveNote and type(rareDB[mapid].rares[npcid].caveNote) == "string" then
+            worldmapTooltip:AddLine(colorText(rareDB[mapid].rares[npcid].caveNote, colors.orange))
+            worldmapTooltip:Show()
+        else
+            worldmapTooltip:AddLine(colorText("Cave entrance for: " .. getColoredRareName(mapid, npcid), colors.yellow))
+            worldmapTooltip:Show()
+        end
     else
         local itemName, itemLink, itemTexture
         if minimap and WarfrontRareTracker.db.profile.minimapIcons.onMinimapHoover then
@@ -2583,7 +2597,11 @@ end
 
 local function getWorldMapIconForRare(mapid, npcid, caveicon)
     if caveicon ~= nil and caveicon == true then
-        return "Interface\\MINIMAP\\Suramar_Door_Icon"
+        if rareDB[mapid].rares[npcid].caveNote and type(rareDB[mapid].rares[npcid].caveNote) == "string" then
+            return "Interface\\ICONS\\Ability_Hunter_MarkedForDeath"
+        else
+            return "Interface\\MINIMAP\\Suramar_Door_Icon"
+        end
     end
     if not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "change" and isQuestCompleted(mapid, npcid) then
         return "Interface\\Worldmap\\X_Mark_64Grey"
@@ -2716,7 +2734,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
         worldmapicon.mapid = mapid
         worldmapicon.cave = caveicon
         worldmapicon:SetScript("OnClick", function(self, button) WarfrontRareTracker:WorldmapTooltipOnClick(self, worldmapicon.mapid, worldmapicon.npcid, button) end)
-        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, caveicon, false) end)
+        worldmapicon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, worldmapicon.mapid, worldmapicon.npcid, worldmapicon.cave, false) end)
         worldmapicon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
         table.insert(rareDB[mapid].worldmapIcons, worldmapicon)
         HBDPins:AddWorldMapIconMap("WarfrontRareTracker"..rareDB[mapid].zonename, worldmapicon, mapid, x, y, 1)
