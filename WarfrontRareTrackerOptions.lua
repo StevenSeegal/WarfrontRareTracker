@@ -1074,6 +1074,27 @@ configOptions = {
                                 end,
                             disabled = function() return not WarfrontRareTracker.db.profile.colors.colorizeRares end,
                         },
+                        seperator2 = {
+                            name = "",
+                            type = "description",
+                            order = 7,
+                        },
+                        rare = {
+                            name = "Color Of 'Uncommon'",
+                            desc = "Set the color of the 'Uncommon' Rare's. This is the old Warfront's 'Rare' color as the new ones have quite some more HP.",
+                            type = "color",
+                            order = 8,
+                            hasAlpha = false,
+                            get = function(info)
+                                    local color = WarfrontRareTracker.db.profile.colors.uncommon
+                                    return color[1], color[2], color[3], color[4]
+                                end,
+                            set = function(info, r, g, b, a)
+                                    local color = WarfrontRareTracker.db.profile.colors.uncommon
+                                    color[1], color[2], color[3], color[4] = r, g, b, a
+                                end,
+                            disabled = function() return not WarfrontRareTracker.db.profile.colors.colorizeRares end,
+                        },
                     },
                 },
             },
