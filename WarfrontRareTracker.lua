@@ -83,7 +83,7 @@ local rareDB = {
         scenarioname = "Battle for Stromgarde",
         gatheringname = "Contributing",
         hidden = false,
-        zoneType = 1,
+        zoneType = DB_ZONE_TYPE_TRACKED,
         zonephaseID = 1137, -- ArtID
         zoneContributionMapID = 11,
         allianceContributionMapID = 116,
@@ -131,7 +131,7 @@ local rareDB = {
         scenarioname = "Battle for Darkshore",
         gatheringname = "Contributing",
         hidden = false,
-        zoneType = 1,
+        zoneType = DB_ZONE_TYPE_TRACKED,
         zonephaseID = 1176, -- ArtID
         zoneContributionMapID = 118,
         allianceContributionMapID = 117,
@@ -190,7 +190,7 @@ local rareDB = {
         scenarioname = "Unknown", -- Change!
         gatheringname = "Unknown", -- Change!
         hidden = false,
-        zoneType = 0,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
         zonephaseID = 1186, -- ArtID
         zoneContributionMapID = 0, -- Change!
         allianceContributionMapID = 0, -- Change!     116?
@@ -279,7 +279,7 @@ local rareDB = {
         scenarioname = "Unknown", -- Change!
         gatheringname = "Unknown", -- Change!
         hidden = false,
-        zoneType = 0,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
         zonephaseID = 1276, -- ArtID
         zoneContributionMapID = 0, -- Change!
         allianceContributionMapID = 0, -- Change!     116?
@@ -488,6 +488,7 @@ local dbDefaults = {
         },
         general = {
             enableZoneChangeSound = true,
+            enableZoneChangeMessage = true,
             enableLevelUpSound = true,
             enableLevelUpChatMessage = true,
         },
@@ -788,7 +789,7 @@ local function getDBZoneType(mapid)
         return DB_ZONE_TYPE_UNKNOWN
     elseif rareDB[mapid].zoneType == nil then
         return DB_ZONE_TYPE_UNKNOWN
-    elseif rareDB[mapid].zoneType == DB_ZONE_TYPE_UNKNOWN or rareDB[mapid].zoneType == DB_ZONE_TYPE_UNTRACKED or rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED then
+    elseif rareDB[mapid].zoneType == DB_ZONE_TYPE_UNTRACKED or rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED then
         return rareDB[mapid].zoneType
     else
         return DB_ZONE_TYPE_UNKNOWN
@@ -889,18 +890,20 @@ local function checkFactionWarfrontControl(mapid)
             rareDB[mapid].warfrontControlledByFaction = factionControlling
             WarfrontRareTracker:OnFactionChange(mapid)
 
-            local prefix = factionControlling == currentPlayerFaction and "Good" or "Bad"
-            local faction = rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE and colorText(FACTION_HORDE, colors.red) or colorText(FACTION_ALLIANCE, colors.blue)
-            WarfrontRareTracker:Print(colorText(format("%s news eveyone. The ", prefix), colors.turqoise) .. faction .. colorText(" has gained control over ", colors.turqoise) .. colorText(rareDB[mapid].zonename, colors.lightcyan) .. colorText("!", colors.turqoise))
-            if WarfrontRareTracker.db.profile.general.enableZoneChangeSound then
-                playSound(prefix)
+            if WarfrontRareTracker.db.profile.general.enableZoneChangeMessage then
+                local prefix = factionControlling == currentPlayerFaction and "Good" or "Bad"
+                local faction = rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE and colorText(FACTION_HORDE, colors.red) or colorText(FACTION_ALLIANCE, colors.blue)
+                WarfrontRareTracker:Print(colorText(format("%s news eveyone. The ", prefix), colors.turqoise) .. faction .. colorText(" has gained control over ", colors.turqoise) .. colorText(rareDB[mapid].zonename, colors.lightcyan) .. colorText("!", colors.turqoise))
+                if WarfrontRareTracker.db.profile.general.enableZoneChangeSound then
+                    playSound(prefix)
+                end
             end
         end
         rareDB[mapid].warfrontControlledByFaction = factionControlling
     end
 end
 
-local checkWarfrontControlDone = fasle
+local checkWarfrontControlDone = false
 local function checkWarfrontControl(mapid)
     local checkAll = false
     if mapid == nil then
@@ -1369,19 +1372,11 @@ local function addToTomTom(mapid, npcid)
 end
 
 local function currentPlayerLeveledUp(newLevel)
-    if isPlayerMaxLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpSound then
-        playSound("good")
-    end
     if isPlayerMaxLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
-        local zones = ""
-        for mapid, c in pairs(rareDB) do
-            if string.len(zones) > 1 then
-                zones = zones .. colorText(", ", colors.turqoise)
-            end
-            zones = zones .. colorText(rareDB[mapid].zonename, colors.lightcyan)
+        WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise))
+        if WarfrontRareTracker.db.profile.general.enableLevelUpSound then
+            playSound("good")
         end
-        zones = zones .. colorText("!", colors.turqoise)
-        WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight the Rare's in: ", colors.turqoise) .. zones)
     end
 end
 

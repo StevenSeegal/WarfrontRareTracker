@@ -1693,17 +1693,33 @@ configOptions = {
                     order = 1,
                     inline = true,
                     args = {
+                        enableZoneChangeMessage = {
+                            name = "Enable Notifications on Warfront Change",
+                            desc = "Prints a message in your chat window when the controlling faction changes in a Warfront.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.general.enableZoneChangeMessage
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.general.enableZoneChangeMessage = value
+                                end,
+                        },
                         enableZoneChangeSound = {
                             name = "Play Sound On Warfront Change",
                             desc = "Plays a sound when the controlling faction changes in a Warfront.",
                             type = "toggle",
                             width = "full",
-                            order = 1,
+                            order = 2,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.general.enableZoneChangeSound
                                 end,
                             set = function(info, value)
-                                WarfrontRareTracker.db.profile.general.enableZoneChangeSound = value
+                                    WarfrontRareTracker.db.profile.general.enableZoneChangeSound = value
+                                end,
+                            disabled = function(info)
+                                    return not WarfrontRareTracker.db.profile.general.enableZoneChangeMessage
                                 end,
                         },
                     },
@@ -1714,30 +1730,33 @@ configOptions = {
                     order = 2,
                     inline = true,
                     args = {
+                        enableLevelUpChatMessage = {
+                            name = "Enable Notification on Max Level",
+                            desc = "Prints a message in your chat window when the player reaches Max Level, letting them know they now egliable to enter the Warfront.",
+                            type = "toggle",
+                            width = "full",
+                            order = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage = value
+                                end,
+                        },
                         enableLevelUpSound = {
                             name = "Play Sound On Max Level",
                             desc = "Plays a sound when the player reaches Max Level controlling faction changes in a Warfront, letting them know they now egliable to enter the Warfront.",
                             type = "toggle",
                             width = "full",
-                            order = 1,
+                            order = 2,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.general.enableLevelUpSound
                                 end,
                             set = function(info, value)
-                                WarfrontRareTracker.db.profile.general.enableLevelUpSound = value
+                                    WarfrontRareTracker.db.profile.general.enableLevelUpSound = value
                                 end,
-                        },
-                        enableLevelUpChatMessage = {
-                            name = "Get Chat Message on Max Level",
-                            desc = "Prints a message in your Chat window when the player reaches Max Level, letting them know they now egliable to enter the Warfront.",
-                            type = "toggle",
-                            width = "full",
-                            order = 2,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
-                                end,
-                            set = function(info, value)
-                                WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage = value
+                            disabled = function(info)
+                                    return not WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
                                 end,
                         },
                     },
