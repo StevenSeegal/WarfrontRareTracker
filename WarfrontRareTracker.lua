@@ -33,6 +33,7 @@ local BROKER_ICON_ALLIANCE = "Interface\\Icons\\INV_AllianceWarEffort"
 local BROKER_ICON_HORDE = "Interface\\Icons\\INV_HordeWarEffort"
 local BROKER_ICON_UNKNOWN = "Interface\\Icons\\ability_ensnare"
 local TYPE_GOLIATH = "Goliath"
+local TYPE_ANCIENT = "Ancient"
 local TYPE_WORLDBOSS = "WorldBoss"
 local TYPE_ELITE = "Elite"
 local TYPE_RARE = "Rare"
@@ -202,10 +203,10 @@ local rareDB = {
         index = 3,
         rares = {
             -- Bosses:
-            [152566] = { name = "Anemonar", npcid = 152566, questId = { 56281 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 58605320 }, bothphases = true, note = "You need to kite a \"Colossal Sky Ray\" and kill it in front of Anemonar.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
-            [152567] = { name = "Kelpwillow", npcid = 152567, questId = { 56287 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 50206950 }, bothphases = true, note = "You need to charm a \"Muck Slug\" by using a \"Prismatic Crystal\" and then bring the charmed Muck Slug to Kelpwillow's foot.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
-            [152397] = { name = "Oronu", npcid = 152397, questId = { 56288 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 78102490 }, bothphases = true, note = "You need to bring a \"Drowned Hatchling\" and summon the battle pet on top of him.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
-            [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_WORLDBOSS, faction = FACTION_ALL, coord = { 31302940 }, bothphases = true, note = "You need to kite a \"Staghorn Reefwalker\" to Urduu's location, then kill it in front of Urduu.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
+            [152566] = { name = "Anemonar", npcid = 152566, questId = { 56281 }, type = TYPE_ANCIENT, faction = FACTION_ALL, coord = { 58605320 }, bothphases = true, note = "You need to kite a \"Colossal Sky Ray\" and kill it in front of Anemonar.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
+            [152567] = { name = "Kelpwillow", npcid = 152567, questId = { 56287 }, type = TYPE_ANCIENT, faction = FACTION_ALL, coord = { 50206950 }, bothphases = true, note = "You need to charm a \"Muck Slug\" by using a \"Prismatic Crystal\" and then bring the charmed Muck Slug to Kelpwillow's foot.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
+            [152397] = { name = "Oronu", npcid = 152397, questId = { 56288 }, type = TYPE_ANCIENT, faction = FACTION_ALL, coord = { 78102490 }, bothphases = true, note = "You need to bring a \"Drowned Hatchling\" and summon the battle pet on top of him.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
+            [152568] = { name = "Urduu", npcid = 152568, questId = { 56299 }, type = TYPE_ANCIENT, faction = FACTION_ALL, coord = { 31302940 }, bothphases = true, note = "You need to kite a \"Staghorn Reefwalker\" to Urduu's location, then kill it in front of Urduu.", loot = { { droptype = DROP_ITEM, itemID = 170184, isKnown = false } } },
 
             -- Mount Drops:
             [152290] = { name = "Soundless", npcid = 152290, questId = { 56298 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 57605220 }, bothphases = true, note = "Can spawn in multiple parts of Coral Forest on top of the Coral Reefs. (Center to South-East)", loot = { { droptype = DROP_MOUNT, itemID = 169163, mountID = 1257, isKnown = false } } }, -- Silent Glider
@@ -310,7 +311,6 @@ local rareDB = {
             -- Gear Only:
             [155060] = { name = "The Doppel Ganger", npcid = 155060, questId = { 55623 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 80902020 }, bothphases = true, note = "Requires 3 pieces of \"Pressure Relief Valve\" from the quest \"Cogfrenzy's Construction Frenzy\" to start the event.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Event
             [151702] = { name = "Paol Pondwader", npcid = 151702, questId = { 55405 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 23006860 }, bothphases = true, note = "Likely available only when Reclamation Rig daily construction project is up.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Supervolt Zapper { droptype = DROP_ITEM, itemID = 170468, isKnown = false }
-            [152764] = { name = "Oxidized Leachbeast", npcid = 152764, questId = { 55856 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57206260 }, bothphases = true, note = "When it's raining small oxidized slimes spawn in Junkwatt Depot. Kill those until the rare mob spawns.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Oxidized Refuse Remover { droptype = DROP_ITEM, itemID = 170273, isKnown = false }
             [153000] = { name = "Sparkqueen P'Emp", npcid = 153000, questId = { 55810 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 82202300 }, bothphases = true, note = "Only available when Razak Ironsides is in Rustbolt.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Yellow punchcards
             [151940] = { name = "Uncle T'Rogg", npcid = 151940, questId = { 55538 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57002140 }, bothphases = true, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Yellow punchcards
             
@@ -329,14 +329,15 @@ local rareDB = {
             [154701] = { name = "Gorged Gear-Cruncher", npcid = 154701, questId = { 56367 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 69205340 }, bothphases = true, cave = { 72635385 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-CC61.", loot = { { droptype = DROP_BLUEPRINT, itemID = 167846, checkId = 55061, isKnown = false } } }, -- Blueprint: Mechano-Treat
             [151684] = { name = "Jawbreaker", npcid = 151684, questId = { 55399 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 75404400 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 198908, checkId = 56087, isKnown = false } } }, -- Blueprint: Experimental Adventurer Augment + Yellow punchcards
             [151124] = { name = "Mechagonian Nullifier", npcid = 151124, questId = { 55207 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 56905330 }, bothphases = true, note = "Obtain and wear \"Remote Circuit Bypasser\" to be able to hack the Frenzied Elemental in Junkwatt Depot. The punchcard drops from The Scrap King.", loot = { { droptype = DROP_BLUEPRINT, itemID = 168490, checkId = 55069, isKnown = false }, { droptype = DROP_QUEST, itemID = 169688, checkId = 56515, isKnown = false } } }, -- Blueprint: Protocol Transference Device, Vinyl: Gnomeregan Forever
-            [151627] = { name = "Mr. Fixthis", npcid = 151627, questId = { 55859 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59806080 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168248, checkId = 55068, isKnown = false }, { droptype = DROP_QUEST, itemID = 167794, checkId = 55454, isKnown = false } } }, -- Blueprint: BAWLD-371, Paint Vial: Lemonade Steel
+            [151627] = { name = "Mr. Fixthis", npcid = 151627, questId = { 55859 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59806080 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168248, checkId = 55068, isKnown = false } } }, -- Blueprint: BAWLD-371
             [153206] = { name = "Ol' Big Tusk", npcid = 153206, questId = { 55853 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 56103600 }, bothphases = true, cave = { 56153632 }, note = "Inside cave. Only available when Drill Rigs are up as a daily Construction Project. Drill Rig DR-TR28.", loot = { { droptype = DROP_QUEST, itemID = 169691, checkId = 56518, isKnown = false } } }, -- Vinyl: Depths of Ulduar
             [151296] = { name = "OOX-Avenger/MG", npcid = 151296, questId = { 55515 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 56803990 }, bothphases = true, note = "Only available, when Oglethorpe Obnoticus is in the town. Find and kill OOX-Fleetfoot/MG to make the overstuffed rare chicken spawn.", loot = { { droptype = DROP_BLUEPRINT, itemID = 168492, checkId = 55071, isKnown = false } } }, -- Blueprint: Emergency Rocket Chicken
+            [152764] = { name = "Oxidized Leachbeast", npcid = 152764, questId = { 55856 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 57206260 }, bothphases = true, note = "When it's raining small oxidized slimes spawn in Junkwatt Depot. Kill those until the rare mob spawns.", loot = { { droptype = DROP_QUEST, itemID = 167794, checkId = 55454, isKnown = false } } }, -- Paint Vial: Lemonade Steel
             [150575] = { name = "Rumblerocks", npcid = 150575, questId = { 55368 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 38805320 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168001, checkId = 55517, isKnown = false } } }, -- Paint Vial: Big-ol Bronze
             [155583] = { name = "Scrapclaw", npcid = 155583, questId = { 56737 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 82677740 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168490, checkId = 55069, isKnown = false } } }, -- Blueprint: Protocol Transference Device
             [150937] = { name = "Seaspit", npcid = 150937, questId = { 55545 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 19207940 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168063, checkId = 55065, isKnown = false } } }, -- Blueprint: Rustbolt Kegerator
             [153226] = { name = "Steel Singer Freza", npcid = 153226, questId = { 55854 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 24807720 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 168062, checkId = 55064, isKnown = false } } }, -- Blueprint: Rustbolt Gramophone
-            [151625] = { name = "The Scrap King", npcid = 151625, questId = { 55364 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71204840 }, bothphases = true, loot = { { droptype = DROP_QUEST, itemID = 167794, checkId = 55454, isKnown = false } } }, -- Paint Vial: Lemonade Steel, Item: Remote Circuit Bypasser { droptype = DROP_ITEM, itemID = 168435, isKnown = false }
+            [151625] = { name = "The Scrap King", npcid = 151625, questId = { 55364 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 71204840 }, bothphases = true, loot = { { droptype = DROP_BLUEPRINT, itemID = 168908, checkId = 56087, isKnown = false } } }, -- Blueprint: Experimental Adventurer Augment
 
         },
     },
@@ -393,6 +394,7 @@ local dbDefaults = {
             hideUntrackable = false,
             hideUnavailable = false,
             hideGoliaths = false,
+            hideAncients = false,
             hideGearOnly = false,
             hideQuestOnly = false,
             hideBlueprintOnly = false,
@@ -419,6 +421,7 @@ local dbDefaults = {
             hideUnknowLoot = false,
             hideUntrackable = false,
             hideGoliaths = false,
+            hideAncients = false,
             hideUnavailable = false,
             hideGearOnly = false,
             hideQuestOnly = false,
@@ -473,6 +476,7 @@ local dbDefaults = {
             hideUntrackable = false,
             hideUnavailable = false,
             hideGoliaths = false,
+            hideAncients = false,
             hideGearOnly = false,
             hideQuestOnly = false,
             hideBlueprintOnly = false,
@@ -663,7 +667,7 @@ end
 local function getColoredRareName(mapid, npcid)
     local rare = rareDB[mapid].rares[npcid]
     if WarfrontRareTracker.db.profile.colors.colorizeRares then
-        if rare.type == TYPE_WORLDBOSS then
+        if rare.type == TYPE_WORLDBOSS or rare.type == TYPE_ANCIENT then
             return colorText(rare.name, WarfrontRareTracker.db.profile.colors.worldboss)
         elseif rare.type == TYPE_ELITE then
             return colorText(rare.name, WarfrontRareTracker.db.profile.colors.elite)
@@ -1015,6 +1019,8 @@ local function showRare(mapid, npcid, mode)
                 return true
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
                 return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.hideAncients and rareDB[mapid].rares[npcid].type == TYPE_ANCIENT then
+                return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot and not rareHasLegitQuests(mapid, npcid) then
@@ -1040,6 +1046,8 @@ local function showRare(mapid, npcid, mode)
             if WarfrontRareTracker.db.profile.menu.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
                 return true
             elseif WarfrontRareTracker.db.profile.menu.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+                return false
+            elseif WarfrontRareTracker.db.profile.menu.hideAncients and rareDB[mapid].rares[npcid].type == TYPE_ANCIENT then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
@@ -1075,6 +1083,8 @@ local function showRare(mapid, npcid, mode)
             if WarfrontRareTracker.db.profile.masterfilter.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS then
                 return true
             elseif WarfrontRareTracker.db.profile.masterfilter.hideGoliaths and rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
+                return false
+            elseif WarfrontRareTracker.db.profile.masterfilter.hideAncients and rareDB[mapid].rares[npcid].type == TYPE_ANCIENT then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot and not rareHasLoot(mapid, npcid) then
                 return false
@@ -1739,7 +1749,7 @@ function WarfrontRareTracker:SetWorldmapIconSize(size, minimap)
         self.db.profile.minimapIcons.minimapIconSize = size
         for mapid, content in pairs(rareDB) do
             for k, icon in pairs(content.minimapIcons) do
-                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE then
+                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE or rareDB[mapid].rares[icon.npcid].type == TYPE_ANCIENT then
                     icon:SetHeight(size + 3)
                     icon:SetWidth(size + 3)
                 else
@@ -1752,7 +1762,7 @@ function WarfrontRareTracker:SetWorldmapIconSize(size, minimap)
         self.db.profile.worldmapicons.worldmapIconSize = size
         for mapid, content in pairs(rareDB) do
             for k, icon in pairs(content.worldmapIcons) do
-                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE then
+                if rareDB[mapid].rares[icon.npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[icon.npcid].type == TYPE_ELITE or rareDB[mapid].rares[icon.npcid].type == TYPE_ANCIENT then
                     icon:SetHeight(size + 3)
                     icon:SetWidth(size + 3)
                 else
@@ -2604,7 +2614,7 @@ local function getWorldMapIconForRare(mapid, npcid, caveicon)
 
     if rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction ~= currentPlayerFaction and not rareDB[mapid].rares[npcid].bothphases then
          return "Interface\\Worldmap\\GlowSkull_64Red"
-    elseif rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[npcid].type == TYPE_ELITE then
+    elseif rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[npcid].type == TYPE_ELITE or rareDB[mapid].rares[npcid].type == TYPE_ANCIENT then
         return "Interface\\Worldmap\\GlowSkull_64Purple"
     elseif rareDB[mapid].rares[npcid].type == TYPE_GOLIATH then
         return "Interface\\Worldmap\\GlowSkull_64Grey"
@@ -2614,7 +2624,7 @@ local function getWorldMapIconForRare(mapid, npcid, caveicon)
 end
 
 local function getWorldMapIconSizeForRare(mapid, npcid, mode)
-    if rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[npcid].type == TYPE_ELITE then
+    if rareDB[mapid].rares[npcid].type == TYPE_WORLDBOSS or rareDB[mapid].rares[npcid].type == TYPE_ELITE or rareDB[mapid].rares[npcid].type == TYPE_ANCIENT then
         if mode == "minimap" then
             return WarfrontRareTracker.db.profile.minimapIcons.minimapIconSize + 3
         else
@@ -2926,7 +2936,7 @@ function WarfrontRareTracker:SortRares()
             if WarfrontRareTracker.db.profile.menu.worldbossOnTop then
                 for k, v in pairs(contents.rares) do
                     if type(v) == "table" and v.type then
-                        if v.type ~= TYPE_WORLDBOSS then
+                        if v.type ~= TYPE_WORLDBOSS or v.type ~= TYPE_ANCIENT then
                             n = n + 1
                             normalTable[n] = v
                         else
@@ -2976,7 +2986,7 @@ function WarfrontRareTracker:SortRares()
             if WarfrontRareTracker.db.profile.menu.worldbossOnTop then
                 for k, v in pairs(contents.rares) do
                     if type(v) == "table" then
-                        if v.type ~= TYPE_WORLDBOSS then
+                        if v.type ~= TYPE_WORLDBOSS or v.type ~= TYPE_ANCIENT then
                             n = n + 1
                             normalTable[n] = v
                         else
@@ -3026,7 +3036,7 @@ function WarfrontRareTracker:SortRares()
             if WarfrontRareTracker.db.profile.menu.worldbossOnTop then
                 for k, v in pairs(contents.rares) do
                     if type(v) == "table" then
-                        if v.type ~= TYPE_WORLDBOSS then
+                        if v.type ~= TYPE_WORLDBOSS or v.type ~= TYPE_ANCIENT then
                             n = n + 1
                             normalTable[n] = v
                         else

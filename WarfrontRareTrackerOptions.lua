@@ -305,12 +305,25 @@ configOptions = {
                                             WarfrontRareTracker.db.profile.menu.hideGoliaths = value
                                         end,
                                 },
+                                hideAncients = {
+                                    name = "Hide Ancients",
+                                    desc = "Hides the Icons of the Ancients in Nazjatar.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 3,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideAncients
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideAncients = value
+                                        end,
+                                },
                                 hideUnavailable = {
                                     name = "Hide Unavailable Rares",
                                     desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 3,
+                                    order = 4,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUnavailable
                                         end,
@@ -323,7 +336,7 @@ configOptions = {
                                     desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 4,
+                                    order = 5,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUntrackable
                                         end,
@@ -336,7 +349,7 @@ configOptions = {
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 5,
+                                    order = 6,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideUnknowLoot
                                         end,
@@ -349,7 +362,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drops Gear.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 6,
+                                    order = 7,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideGearOnly
                                         end,
@@ -362,7 +375,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drops Quest items.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 7,
+                                    order = 8,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideQuestOnly
                                         end,
@@ -374,14 +387,14 @@ configOptions = {
                                     name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
                                     type = "description",
                                     width = "full",
-                                    order = 8,
+                                    order = 9,
                                 },
                                 hideItemOnly = {
                                     name = "Hide Item Only",
                                     desc = "Hides the Rare's that only drop Items.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 9,
+                                    order = 10,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideItemOnly
                                         end,
@@ -394,7 +407,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drop Blueprints.",
                                     type = "toggle",
                                     width = 1.2,
-                                    order = 10,
+                                    order = 11,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.menu.hideBlueprintOnly
                                         end,
@@ -674,7 +687,7 @@ configOptions = {
                         },
                         hideGoliaths = {
                             name = "Hide Goliaths",
-                            desc = "Hides the Icon of the Goliaths.",
+                            desc = "Hides the Icons of the Goliaths.",
                             type = "toggle",
                             width = "full",
                             order = 2,
@@ -686,12 +699,26 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
+                        hideAncients = {
+                            name = "Hide Ancients",
+                            desc = "Hides the Icons of the Ancients in Nazjatar.",
+                            type = "toggle",
+                            width = "full",
+                            order = 3,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideAncients
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideAncients = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         hideUnavailable = {
                             name = "Hide Unavailable Rares",
                             desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                             type = "toggle",
                             width = "full",
-                            order = 3,
+                            order = 4,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnavailable
                                 end,
@@ -705,7 +732,7 @@ configOptions = {
                             desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                             type = "toggle",
                             width = "full",
-                            order = 4,
+                            order = 5,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUntrackable
                                 end,
@@ -719,7 +746,7 @@ configOptions = {
                             desc = "Hides the Rare's that don't drop a learnable item.",
                             type = "toggle",
                             width = "full",
-                            order = 5,
+                            order = 6,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideUnknowLoot
                                 end,
@@ -733,7 +760,7 @@ configOptions = {
                             desc = "Hides the Rare's that only drops Gear.",
                             type = "toggle",
                             width = "full",
-                            order = 6,
+                            order = 7,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideGearOnly
                                 end,
@@ -747,7 +774,7 @@ configOptions = {
                             desc = "Hides the Rare's that only drops Quest items.",
                             type = "toggle",
                             width = "full",
-                            order = 7,
+                            order = 8,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly
                                 end,
@@ -760,14 +787,14 @@ configOptions = {
                             name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
                             type = "description",
                             width = "full",
-                            order = 8,
+                            order = 9,
                         },
                         hideItemOnly = {
                             name = "Hide Item Only",
                             desc = "Hides the Rare's that only drop Items.",
                             type = "toggle",
                             width = "full",
-                            order = 9,
+                            order = 10,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideItemOnly
                                 end,
@@ -781,7 +808,7 @@ configOptions = {
                             desc = "Hides the Rare's that only drop Blueprints.",
                             type = "toggle",
                             width = "full",
-                            order = 10,
+                            order = 11,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideBlueprintOnly
                                 end,
@@ -1458,7 +1485,7 @@ configOptions = {
                                 },
                                 hideGoliaths = {
                                     name = "Hide Goliaths",
-                                    desc = "Hides the Icon of the Goliaths.",
+                                    desc = "Hides the Icons of the Goliaths.",
                                     type = "toggle",
                                     width = "full",
                                     order = 3,
@@ -1470,12 +1497,26 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                hideAncients = {
+                                    name = "Hide Ancients",
+                                    desc = "Hides the Icons of the Ancients in Nazjatar.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 4,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideAncients
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideAncients = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
                                 hideUnavailable = {
                                     name = "Hide Unavailable Rares",
                                     desc = "An Unavailable Rare is a Rare who is only up when your faction has control over the Warfront Zone, but the opposite side has currently control. This indicates you cannot pay him a visit at this moment. It can in some cases be a rare with missing information.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 4,
+                                    order = 5,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUnavailable
                                         end,
@@ -1489,7 +1530,7 @@ configOptions = {
                                     desc = "An Untrackable Rare is a Rare without a QuestID attached to test if you have killed him or not. Currently only the 'Frightened Kodo' in Darkshore is one of them",
                                     type = "toggle",
                                     width = "full",
-                                    order = 5,
+                                    order = 6,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUntrackable
                                         end,
@@ -1503,7 +1544,7 @@ configOptions = {
                                     desc = "Hides the Rare's that don't drop a learnable item.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 6,
+                                    order = 7,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideUnknowLoot
                                         end,
@@ -1517,7 +1558,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drops Gear.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 7,
+                                    order = 8,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly
                                         end,
@@ -1531,7 +1572,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drops Quest items.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 8,
+                                    order = 9,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly
                                         end,
@@ -1544,14 +1585,14 @@ configOptions = {
                                     name = "I personally think you will have to do the quest but you can use this option for the menu only so the icons stay. I'm working on an implementation on checking wheter the quest has been completed and markt it as \"Complete\", but before that you can manually disable the big quest list in the Menu Options",
                                     type = "description",
                                     width = "full",
-                                    order = 9,
+                                    order = 10,
                                 },
                                 hideItemOnly = {
                                     name = "Hide Item Only",
                                     desc = "Hides the Rare's that only drop Items.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 10,
+                                    order = 11,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideItemOnly
                                         end,
@@ -1565,7 +1606,7 @@ configOptions = {
                                     desc = "Hides the Rare's that only drop Blueprints.",
                                     type = "toggle",
                                     width = "full",
-                                    order = 11,
+                                    order = 12,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideBlueprintOnly
                                         end,
