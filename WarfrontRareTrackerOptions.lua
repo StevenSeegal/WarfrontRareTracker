@@ -1124,6 +1124,29 @@ configOptions = {
                         },
                     },
                 },
+                menu = {
+                    name = "Menu's",
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        menuAlpha = {
+                            name = "Menu Alpha",
+                            desc = "Set the Menu Alpha.",
+                            type = "range",
+                            order = 1,
+                            min = 1,
+                            max = 100,
+                            step = 1,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.colors.menuAlpha * 100
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker:SetMenuAlpha(value)
+                                end,
+                        },
+                    },
+                },
             },
         },
         unitframes = {

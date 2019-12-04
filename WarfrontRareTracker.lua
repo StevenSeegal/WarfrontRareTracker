@@ -64,6 +64,13 @@ local updateBrokerTimer, newPetAdedTimer
 -- Tooltips
 local lootTooltip, menuTooltip, warfrontStatusTooltip, worldmapTooltip
 local isWarfrontSelectionMenuCollapsed = true
+local tooltipBackDrop = {
+    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", 
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
+    tile = true, tileSize = 16, edgeSize = 16, 
+    insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    --backdropColor = { r=0.2, g=0.2, b=0.2, a=1 }
+}
 -- Other vars
 local isTomTomloaded = false
 local autoChangeZone = nil
@@ -292,7 +299,7 @@ local rareDB = {
         rares = {
             -- Mount Drops:
             [151934] = { name = "Arachnoid Harvester", npcid = 151934, questId = { 55512 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 51604160 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168823, mountID = 1229, isKnown = false } } },-- mountID
-            [152182] = { name = "Rustfeather", npcid = 152182, questId = { 55811 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63807800 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168370, mountID = 1248, isKnown = false } } }, -- Mount: Junkheap Drifter
+            [152182] = { name = "Rustfeather", npcid = 152182, questId = { 55811 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 65877880 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168370, mountID = 1248, isKnown = false } } }, -- Mount: Junkheap Drifter
             --[151934] = { name = L["arachnoid_harvester"], npcid = 151934, questId = { 55512 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 51604160 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168823, mountID = 1229, isKnown = false } } },-- mountID
             --[152182] = { name = L["rustfeather"], npcid = 152182, questId = { 55811 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 63807800 }, bothphases = true, loot = { { droptype = DROP_MOUNT, itemID = 168370, mountID = 1248, isKnown = false } } }, -- Mount: Junkheap Drifter
 
@@ -446,6 +453,7 @@ local dbDefaults = {
             rare = { 0, 0.44, 0.87, 1 },
             uncommon = { 0, 1, 0, 1 },
             goliath = { 1, 1, 1, 1 },
+            menuAlpha = 0.7,
         },
         unitframe = {
             enableUnitframeIntegration = true,
@@ -1801,6 +1809,10 @@ function WarfrontRareTracker:GetWorldmapIconAlpha(minimap)
     end
 end
 
+function WarfrontRareTracker:SetMenuAlpha(alpha)
+    self.db.profile.colors.menuAlpha = alpha / 100
+end
+
 ---------------
 -- Tooltips
 ---------------
@@ -1884,6 +1896,8 @@ function WarfrontRareTracker:ShowMenu(self)
 
 	if menuTooltip:GetLineCount() >= 1 then
         menuTooltip:UpdateScrolling()
+        menuTooltip:SetBackdrop(tooltipBackDrop)
+        menuTooltip:SetBackdropColor(0.2, 0.2, 0.2, WarfrontRareTracker.db.profile.colors.menuAlpha)
         menuTooltip:Show()
     end
 end
@@ -2157,6 +2171,8 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
     lootTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
 
     if lootTooltip:GetLineCount() > 1 then
+        lootTooltip:SetBackdrop(tooltipBackDrop)
+        lootTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
         lootTooltip:Show()
     end
 end
@@ -2191,6 +2207,8 @@ function WarfrontRareTracker:WarfrontStatusTooltipOnEnter(self)
     else
         local line = warfrontStatusTooltip:AddHeader()
         warfrontStatusTooltip:SetCell(line, 1, colorText("Click to select different Warfront", colors.yellow), warfrontStatusTooltip:GetHeaderFont())
+        warfrontStatusTooltip:SetBackdrop(tooltipBackDrop)
+        warfrontStatusTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
         warfrontStatusTooltip:Show()
     end
 end
@@ -2358,10 +2376,10 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
     if cave then
         if rareDB[mapid].rares[npcid].caveNote and type(rareDB[mapid].rares[npcid].caveNote) == "string" then
             worldmapTooltip:AddLine(colorText(rareDB[mapid].rares[npcid].caveNote, colors.orange))
-            worldmapTooltip:Show()
+            --worldmapTooltip:Show()
         else
             worldmapTooltip:AddLine(colorText("Cave entrance for: " .. getColoredRareName(mapid, npcid), colors.yellow))
-            worldmapTooltip:Show()
+            --worldmapTooltip:Show()
         end
     else
         local itemName, itemLink, itemTexture
@@ -2538,10 +2556,11 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
                 worldmapTooltip:SetCell(line, 1, colorText("No know drop", colors.lightcyan), nil, nil, 2)
             end
         end
-
-        if worldmapTooltip:GetLineCount() >= 1 then
-            worldmapTooltip:Show()
-        end
+    end
+    if worldmapTooltip:GetLineCount() >= 1 then
+        worldmapTooltip:SetBackdrop(tooltipBackDrop)
+        worldmapTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        worldmapTooltip:Show()
     end
 end
 
@@ -2755,7 +2774,7 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
         minimapIcon.mapid = mapid
         minimapIcon.cave = caveicon
         if self.db.profile.minimapIcons.onMinimapHoover then
-            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, false, true) end)
+            minimapIcon:SetScript("OnEnter", function(self) WarfrontRareTracker:WorldmapTooltipOnEnter(self, minimapIcon.mapid, minimapIcon.npcid, minimapIcon.cave, true) end)
             minimapIcon:SetScript("OnLeave", function() WarfrontRareTracker:WorldmapTooltipOnLeave() end)
         end
         table.insert(rareDB[mapid].minimapIcons, minimapIcon)
