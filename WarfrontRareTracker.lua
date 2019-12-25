@@ -503,6 +503,7 @@ local dbDefaults = {
             enableZoneChangeMessage = true,
             enableLevelUpSound = true,
             enableLevelUpChatMessage = true,
+            disableBackground = false,
         },
     },
     char = {
@@ -1896,8 +1897,10 @@ function WarfrontRareTracker:ShowMenu(self)
 
 	if menuTooltip:GetLineCount() >= 1 then
         menuTooltip:UpdateScrolling()
-        menuTooltip:SetBackdrop(tooltipBackDrop)
-        menuTooltip:SetBackdropColor(0.2, 0.2, 0.2, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        if WarfrontRareTracker.db.profile.general.disableBackground == false then
+            menuTooltip:SetBackdrop(tooltipBackDrop)
+            menuTooltip:SetBackdropColor(0.2, 0.2, 0.2, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        end
         menuTooltip:Show()
     end
 end
@@ -2171,8 +2174,10 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
     lootTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
 
     if lootTooltip:GetLineCount() > 1 then
-        lootTooltip:SetBackdrop(tooltipBackDrop)
-        lootTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        if WarfrontRareTracker.db.profile.general.disableBackground == false then
+            lootTooltip:SetBackdrop(tooltipBackDrop)
+            lootTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        end
         lootTooltip:Show()
     end
 end
@@ -2207,8 +2212,10 @@ function WarfrontRareTracker:WarfrontStatusTooltipOnEnter(self)
     else
         local line = warfrontStatusTooltip:AddHeader()
         warfrontStatusTooltip:SetCell(line, 1, colorText("Click to select different Warfront", colors.yellow), warfrontStatusTooltip:GetHeaderFont())
-        warfrontStatusTooltip:SetBackdrop(tooltipBackDrop)
-        warfrontStatusTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        if WarfrontRareTracker.db.profile.general.disableBackground == false then
+            warfrontStatusTooltip:SetBackdrop(tooltipBackDrop)
+            warfrontStatusTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        end
         warfrontStatusTooltip:Show()
     end
 end
@@ -2558,8 +2565,10 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
         end
     end
     if worldmapTooltip:GetLineCount() >= 1 then
-        worldmapTooltip:SetBackdrop(tooltipBackDrop)
-        worldmapTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        if WarfrontRareTracker.db.profile.general.disableBackground == false then
+            worldmapTooltip:SetBackdrop(tooltipBackDrop)
+            worldmapTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        end
         worldmapTooltip:Show()
     end
 end
