@@ -72,7 +72,7 @@ local tooltipBackDrop = {
     insets = { left = 4, right = 4, top = 4, bottom = 4 },
     --backdropColor = { r=0.2, g=0.2, b=0.2, a=1 }
 }
-local assaultType = { none = 0, blackEmpire = 1, amathet = 2, aqir = 3, mantid = 4, mogu = 5 }
+local assaultType = { unknown = 0, blackEmpire = 1, amathet = 2, aqir = 3, mantid = 4, mogu = 5, all = 6 }
 -- Other vars
 local isTomTomloaded = false
 local autoChangeZone = nil
@@ -368,7 +368,7 @@ local rareDB = {
             -- Bosses:
             -- Mount Drops:
             [162147] = { name = L["corpse_eater"], npcid = 162147, questId = { 58696 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 30854971 }, bothphases = true, assault = assaultType.aqir, loot = { { droptype = DROP_MOUNT, itemID = 174769, mountID = 1319, isKnown = false } } }, -- Corpse Eater | Invasion Type: Aqir
-            [157134] = { name = L["ishak_of_the_four_winds"], npcid = 157134, questId = { 57259 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 73418484 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_MOUNT, itemID = 174641, mountID = 1314, isKnown = false } } }, -- Ishak of the Four Winds | Invasion Type: Black Empire
+            [157134] = { name = L["ishak_of_the_four_winds"], npcid = 157134, questId = { 57259 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 73918364 }, bothphases = true, assault = assaultType.all, loot = { { droptype = DROP_MOUNT, itemID = 174641, mountID = 1314, isKnown = false } } }, -- Ishak of the Four Winds | Invasion Type: Black Empire
             [157146] = { name = L["rotfeaster"], npcid = 157146, questId = { 57273 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 68593204 }, bothphases = true, assault = assaultType.amathet, loot = { { droptype = DROP_MOUNT, itemID = 174753, mountID = 1317, isKnown = false } } }, -- Rotfeaster | Invasion Type: Amathet
             -- Pet Drops:
             [157593] = { name = L["amalgamation_of_flesh"], npcid = 157593, questId = { 57667 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 0 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_PET, itemID = 174478, petID = 162012, speciesID = 2851, isKnown = false } } }, -- Amalgamation of Flesh | Invasion Type: Black Empire !Coords
@@ -385,11 +385,11 @@ local rareDB = {
             [157170] = { name = L["acolyte_taspu"], npcid = 157170, questId = { 57281 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 64572623 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Acolyte Taspu
             [151883] = { name = L["actiss_the_deceiver"], npcid = 151883, questId = { 57669 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 66817436 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Actiss the Deceiver
             [151883] = { name = L["anaua"], npcid = 151883, questId = { 55468 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 69205059 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Anaua
-            [155703] = { name = L["anquri_the_titanic"], npcid = 155703, questId = { 56834 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 32436446 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Anq'uri the Titanic
-            [157472] = { name = L["aphrom_the_guise_of_madness"], npcid = 157472, questId = { 57437 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007868 }, bothphases = true, loot = {  } }, -- Aphrom the Guise of Madness !No known assault!
-            [154578] = { name = L["aqir_flayer"], npcid = 154578, questId = { 58612 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40833822 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Aqir Flayer
-            [154576] = { name = L["aqir_titanus"], npcid = 154576, questId = { 58614 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 41924440 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Aqir Titanus
-            [162172] = { name = L["aqir_warcaster"], npcid = 162172, questId = { 58694 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40284141 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Aqir Warcaster
+            [155703] = { name = L["anquri_the_titanic"], npcid = 155703, questId = { 56834 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 32436446 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Anq'uri the Titanic
+            [157472] = { name = L["aphrom_the_guise_of_madness"], npcid = 157472, questId = { 57437 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007868 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Aphrom the Guise of Madness !Special quest!
+            [154578] = { name = L["aqir_flayer"], npcid = 154578, questId = { 58612 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40833822 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Aqir Flayer
+            [154576] = { name = L["aqir_titanus"], npcid = 154576, questId = { 58614 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 41924440 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Aqir Titanus
+            [162172] = { name = L["aqir_warcaster"], npcid = 162172, questId = { 58694 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40284141 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Aqir Warcaster
             [162370] = { name = L["armagedillo"], npcid = 162370, questId = { 58718 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 44814267 }, bothphases = true, assault = { assaultType.amathet, assaultType.aqir }, loot = {  } }, -- Armagedillo
             [152757] = { name = L["atekhramun"], npcid = 152757, questId = { 55710 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 65035129 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Atekhramun
             [162171] = { name = L["captain_dunewalker"], npcid = 162171, questId = { 58699 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 45565782 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- Captain Dunewalker
@@ -401,14 +401,14 @@ local rareDB = {
             [162163] = { name = L["high_priest_ytaessis"], npcid = 162163, questId = { 58701 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 42405803 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- High Priest Ytaessis
             [151995] = { name = L["hik_ten_the_taskmaster"], npcid = 151995, questId = { 55502 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 80864755 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Hik-ten the Taskmaster
             [160623] = { name = L["hungering_miasma"], npcid = 160623, questId = { 58206 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 60043952 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Hungering Miasma
-            [155531] = { name = L["infested_wastewander_captain"], npcid = 155531, questId = { 56823 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 23205852 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Infested Wastewander Captain
+            [155531] = { name = L["infested_wastewander_captain"], npcid = 155531, questId = { 56823 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 23205852 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Infested Wastewander Captain
             [156655] = { name = L["korzaran_the_slaughterer"], npcid = 156655, questId = { 57433 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 71247373 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Korzaran the Slaughterer
             [156078] = { name = L["magus_rehleth"], npcid = 156078, questId = { 56952 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 31246546 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- Magus Rehleth
             [157157] = { name = L["muminah_the_incandescent"], npcid = 157157, questId = { 57277 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67301947 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Muminah the Incandescent
             [152677] = { name = L["nebet_the_ascended"], npcid = 152677, questId = { 55684 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 61982567 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Nebet the Ascended
-            [162196] = { name = L["obsidian_annihilator"], npcid = 162196, questId = { 58681 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 35061729 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Obsidian Annihilator
+            [162196] = { name = L["obsidian_annihilator"], npcid = 162196, questId = { 58681 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 35061729 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Obsidian Annihilator
             [162142] = { name = L["qho"], npcid = 162142, questId = { 58693 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 37826028 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- Qho
-            [157470] = { name = L["raas_the_anima_devourer"], npcid = 157470, questId = { 57436 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50578832 }, bothphases = true, loot = {  } }, -- R'aas the Anima Devourer !No known assault!
+            [157470] = { name = L["raas_the_anima_devourer"], npcid = 157470, questId = { 57436 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50578832 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- R'aas the Anima Devourer
             [156299] = { name = L["rkhuzj_the_unfathomable"], npcid = 156299, questId = { 57430 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 57957664 }, bothphases = true, assault = { assaultType.blackEmpire, assaultType.aqir }, loot = {  } }, -- R'khuzj The Unfathomable
             [162173] = { name = L["rkrox_the_runt"], npcid = 162173, questId = { 58864 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 28901765 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- R'krox the Runt
             [152040] = { name = L["scoutmaster_moswen"], npcid = 152040, questId = { 55518 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 69924214 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Scoutmaster Moswen
@@ -416,9 +416,9 @@ local rareDB = {
             [161033] = { name = L["shadowmaw"], npcid = 161033, questId = { 58333 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 52053798 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Shadowmaw
             [156654] = { name = L["sholthoss_the_doomspeaker"], npcid = 156654, questId = { 57432 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 58548282 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Shol'thoss the Doomspeaker
             [160532] = { name = L["shoth_the_darkened"], npcid = 160532, questId = { 58169 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 60917478 }, bothphases = true, assault = { assaultType.blackEmpire, assaultType.aqir }, loot = {  } }, -- Shoth the Darkened
-            [157476] = { name = L["shugshul_the_flesh_gorger"], npcid = 157476, questId = { 57439 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 55497972 }, bothphases = true, loot = {  } }, -- Shugshul the Flesh Gorger !No known assault!
+            [157476] = { name = L["shugshul_the_flesh_gorger"], npcid = 157476, questId = { 57439 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 55497972 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Shugshul the Flesh Gorger !Special quest!
             [162372] = { name = L["spirit_of_cyrus_the_black"], npcid = 162372, questId = { 58715 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 66687074 }, bothphases = true, assault = { assaultType.amathet, assaultType.aqir }, loot = {  } }, -- Spirit of Cyrus the Black
-            [151878] = { name = L["sun_king_nahkotep"], npcid = 151878, questId = { 58613 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 79016393 }, bothphases = true, assault = assaultType.none, loot = {  } }, -- Sun King Nahkotep
+            [151878] = { name = L["sun_king_nahkotep"], npcid = 151878, questId = { 58613 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 79016393 }, bothphases = true, assault = assaultType.all, loot = {  } }, -- Sun King Nahkotep
             [151897] = { name = L["sun_priestess_nubitt"], npcid = 151897, questId = { 55479 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 84595708 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Sun Priestess Nubitt
             [151609] = { name = L["sun_prophet_epaphos"], npcid = 151609, questId = { 55353 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 73327463 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Sun Prophet Epaphos
             [152657] = { name = L["sun_prophet_epaphos"], npcid = 152657, questId = { 55682 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67073413 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Tat the Bonechewer
@@ -426,15 +426,15 @@ local rareDB = {
             [151852] = { name = L["watcher_rehu"], npcid = 151852, questId = { 55461 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 80185204 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Watcher Rehu
             [157164] = { name = L["zealot_tekem"], npcid = 157164, questId = { 57279 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 79805771 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Zealot Tekem
             [162141] = { name = L["zuythiz"], npcid = 162141, questId = { 58695 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40864226 }, bothphases = true, assault = assaultType.aqir, loot = {  } }, -- Zuythiz
-            [157167] = { name = L["champion_sen_mat"], npcid = 157167, questId = { 57280 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 75495219 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Champion Sen-mat
-            [152431] = { name = L["kaneb_ti"], npcid = 152431, questId = { 55629 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 77005200 }, bothphases = true, loot = {  } }, -- Kaneb-ti !No known assault!
+            [157167] = { name = L["champion_sen_mat"], npcid = 157167, questId = { 57280 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 75495219 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Champion Sen-mat  amathet too?
+            [152431] = { name = L["kaneb_ti"], npcid = 152431, questId = { 55629 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 77105040 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Kaneb-ti
             [152788] = { name = L["uat_ka_the_suns_wrath"], npcid = 152788, questId = { 55716 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67606360 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Uat-ka the Sun's Wrath
             [157188] = { name = L["the_tomb_widow"], npcid = 157188, questId = { 57285 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 84404720 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- The Tomb Widow
             [162352] = { name = L["spirit_of_dark_ritualist_zakahn"], npcid = 162352, questId = { 58716 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50004000 }, bothphases = true, cave = { 52154012 }, assault = { assaultType.amathet, assaultType.aqir }, loot = {  } }, -- Spirit of Dark Ritualist Zakahn
-            [158531] = { name = L["corrupted_neferset_guard"], npcid = 158531, questId = { 57665 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007900 }, bothphases = true, loot = {  } }, -- Corrupted Neferset Guard !No known assault!
-            [158595] = { name = L["thoughtstealer_vos"], npcid = 158595, questId = { 57673 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 65007200 }, bothphases = true, loot = {  } }, -- Thoughtstealer Vos !No known assault!
-            [157469] = { name = L["zothrum_the_intellect_pillager"], npcid = 157469, questId = { 57435 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, loot = {  } }, -- Zoth'rum the Intellect Pillager !Coords !No known assault!
-            [157390] = { name = L["royolok_the_reality_eater"], npcid = 157390, questId = { 57434 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, loot = {  } }, -- R'oyolok the Reality Eater !Coords !No known assault!
+            [158531] = { name = L["corrupted_neferset_guard"], npcid = 158531, questId = { 57665 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007900 }, bothphases = true, note = "To generate the corrupted creatures you must kill their normal versions", assault = assaultType.blackEmpire, loot = {  } }, -- Corrupted Neferset Guard
+            [158595] = { name = L["thoughtstealer_vos"], npcid = 158595, questId = { 57673 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 65007200 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Thoughtstealer Vos
+            [157469] = { name = L["zothrum_the_intellect_pillager"], npcid = 157469, questId = { 57435 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Zoth'rum the Intellect Pillager !Coords !Special quest!
+            [157390] = { name = L["royolok_the_reality_eater"], npcid = 157390, questId = { 57434 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- R'oyolok the Reality Eater !Coords !Special quest!
         },
     },
     [1530] = {
@@ -458,10 +458,10 @@ local rareDB = {
             -- Mount Drops:
             [157160] = { name = L["houndlord_ren"], npcid = 157160, questId = { 57345 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 09823288 }, bothphases = true, assault = assaultType.mogu, loot = { { droptype = DROP_MOUNT, itemID = 174841, mountID = 1327, isKnown = false } } }, -- Houndlord Ren | Invasion Type: Mogu
             [157153] = { name = L["ha_li"], npcid = 157153, questId = { 57344 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 29513800 }, bothphases = true, assault = assaultType.mogu, loot = { { droptype = DROP_MOUNT, itemID = 173887, mountID = 1297, isKnown = false } } }, -- Ha-Li | Invasion Type: Mogu
-            [163042] = { name = L["ivory_cloud_serpent"], npcid = 163042, questId = { 57349 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 42205630 }, bothphases = true, note = "NPC can be activated using a 'Zan-Tien Lasso', dropped by Dokani Bloodshapers.", loot = { { droptype = DROP_MOUNT, itemID = 174752, mountID = 1311, isKnown = false } } }, -- Ivory Cloud Serpent | Unlock lika Alani!!!
+            [163042] = { name = L["ivory_cloud_serpent"], npcid = 163042, questId = { 57349 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 42205630 }, bothphases = true, assault = assaultType.mogu, note = "NPC can be activated using a 'Zan-Tien Lasso', dropped by Dokani Bloodshapers.", loot = { { droptype = DROP_MOUNT, itemID = 174752, mountID = 1311, isKnown = false } } }, -- Ivory Cloud Serpent | Unlock lika Alani!!!
             [157466] = { name = L["anh_de_the_loyal"], npcid = 157466, questId = { 57363 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 34136858 }, bothphases = true, assault = assaultType.mogu, loot = { { droptype = DROP_MOUNT, itemID = 174840, mountID = 1328, isKnown = false } } }, -- Anh-De the Loyal
             -- Pet Drops:
-            [154495] = { name = L["will_of_nzoth"], npcid = 154495, questId = { 56303 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 54266272 }, bothphases = true, loot = { { droptype = DROP_PET, itemID = 174474, petID = 161992, speciesID = 2846, isKnown = false }, { droptype = DROP_TOY, itemID = 175140, note = "Toy is crafted with an 'All-Seeing Right Eye' and an 'All-Seeing Left Eye'.", isKnown = false } } }, -- Will of N'Zoth | Invasion Type: Black Empire
+            [154495] = { name = L["will_of_nzoth"], npcid = 154495, questId = { 56303 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 54266272 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_PET, itemID = 174474, petID = 161992, speciesID = 2846, isKnown = false }, { droptype = DROP_TOY, itemID = 175140, note = "Toy is crafted with an 'All-Seeing Right Eye' and an 'All-Seeing Left Eye'.", isKnown = false } } }, -- Will of N'Zoth | Invasion Type: Black Empire
             [157176] = { name = L["the_forgotten"], npcid = 157176, questId = { 57342 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 51884116 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_PET, itemID = 174473, petID = 161954, speciesID = 2845, isKnown = false } } }, -- The Forgotten | Invasion Type: Black Empire
             -- Toy Drops:
             [155958] = { name = L["tashara"], npcid = 155958, questId = { 58507 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 30842398 }, bothphases = true, assault = assaultType.mogu, loot = { { droptype = DROP_TOY, itemID = 174873, isKnown = false } } }, -- Tashara | Invasion Type: Black Empire
@@ -470,10 +470,10 @@ local rareDB = {
             -- Gear Only:
             -- Quest Drops:
             -- Unknown:
-            [154087] = { name = L["zrorum_the_infinite"], npcid = 154087, questId = { 56084 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 71644174 }, bothphases = true, loot = {  } }, -- Zror'um the Infinite
+            [154087] = { name = L["zrorum_the_infinite"], npcid = 154087, questId = { 56084 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 71644174 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Zror'um the Infinite
             [154106] = { name = L["quid"], npcid = 154106, questId = { 56094 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 90164597 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Quid
-            [154332] = { name = L["voidtender_malketh"], npcid = 154332, questId = { 56183 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67082964 }, bothphases = true, loot = {  } }, -- Voidtender Malketh
-            [154394] = { name = L["veskan_the_fallen"], npcid = 154394, questId = { 56213 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 85934196 }, bothphases = true, loot = {  } }, -- Veskan the Fallen
+            [154332] = { name = L["voidtender_malketh"], npcid = 154332, questId = { 56183 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67082964 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Voidtender Malketh
+            [154394] = { name = L["veskan_the_fallen"], npcid = 154394, questId = { 56213 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 85934196 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Veskan the Fallen No known assault
             [154447] = { name = L["brother_meller"], npcid = 154447, questId = { 56237 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 56854136 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Brother Meller
             [154467] = { name = L["chief_mek_mek"], npcid = 154467, questId = { 56255 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 81086542 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Chief Mek-mek
             [154490] = { name = L["rijzx_the_devourer"], npcid = 154490, questId = { 56302 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 64405166 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Rijz'x the Devourer
@@ -486,10 +486,10 @@ local rareDB = {
             [157266] = { name = L["kilxl_the_gaping_maw"], npcid = 157266, questId = { 57341 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 45005800 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Kilxl the Gaping Maw
             [157267] = { name = L["escaped_mutation"], npcid = 157267, questId = { 57343 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 46144226 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Escaped Mutation
             [157279] = { name = L["stormhowl"], npcid = 157279, questId = { 57348 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 27277432 }, bothphases = true, assault = assaultType.mogu, loot = {  } }, -- Stormhowl
-            [157290] = { name = L["jade_watcher"], npcid = 157290, questId = { 57350 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 26821109 }, bothphases = true, assault = assaultType.mogu, loot = {  } }, -- Jade Watcher
+            [157290] = { name = L["jade_watcher"], npcid = 157290, questId = { 57350 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 26821109 }, bothphases = true, note = "In a cave", assault = assaultType.mogu, loot = {  } }, -- Jade Watcher
             [157291] = { name = L["spymaster_hulach"], npcid = 157291, questId = { 57351 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 17863748 }, bothphases = true, assault = assaultType.mogu, loot = {  } }, -- Spymaster Hul'ach
-            [157443] = { name = L["xiln_the_mountain"], npcid = 157443, questId = { 57358 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 53804886 }, bothphases = true, loot = {  } }, -- Xiln the Mountain
-            [157468] = { name = L["tisiphon"], npcid = 157468, questId = { 57364 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 10456907 }, bothphases = true, loot = {  } }, -- Tisiphon
+            [157443] = { name = L["xiln_the_mountain"], npcid = 157443, questId = { 57358 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 53804886 }, bothphases = true, assault = assaultType.mogu, loot = {  } }, -- Xiln the Mountain
+            [157468] = { name = L["tisiphon"], npcid = 157468, questId = { 57364 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 10456907 }, bothphases = true, assault = { assaultType.mantid, assaultType.mogu }, loot = {  } }, -- Tisiphon
             [160810] = { name = L["harbinger_ilkoxik"], npcid = 160810, questId = { 58299 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 29065767 }, bothphases = true, assault = assaultType.mantid, loot = {  } }, -- Harbinger Il'koxik
             [160825] = { name = L["amber_shaper_eshri"], npcid = 160825, questId = { 58300 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 19997468 }, bothphases = true, assault = assaultType.mantid, loot = {  } }, -- Amber-Shaper Esh'ri
             [160826] = { name = L["hive_guard_nazruzek"], npcid = 160826, questId = { 58301 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 21276263 }, bothphases = true, assault = assaultType.mantid, loot = {  } }, -- Hive-Guard Naz'ruzek
@@ -504,8 +504,8 @@ local rareDB = {
             [160922] = { name = L["needler_zhesalla"], npcid = 160922, questId = { 58311 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 14933998 }, bothphases = true, assault = assaultType.mantid, loot = {  } }, -- Needler Zhesalla
             [160930] = { name = L["infused_amber_ooze"], npcid = 160930, questId = { 58312 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 18746346 }, bothphases = true, assault = assaultType.mantid, loot = {  } }, -- Infused Amber Ooze
             [160968] = { name = L["jade_colossus"], npcid = 160968, questId = { 58295 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 17151201 }, bothphases = true, assault = assaultType.mogu, loot = {  } }, -- Jade Colossus
-            [159087] = { name = L["corrupted_bonestripper"], npcid = 159087, questId = { 57834 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, loot = {  } }, -- Corrupted Bonestripper
-            [160906] = { name = L["skiver"], npcid = 160906, questId = { 58309 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 26664333 }, bothphases = true, loot = {  } }, -- Skiver
+            [159087] = { name = L["corrupted_bonestripper"], npcid = 159087, questId = { 57834 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 0 }, bothphases = true, assault = assaultType.unknown, note = "To generate the corrupted creatures you must kill their normal versions", loot = {  } }, -- Corrupted Bonestripper No known assault
+            [160906] = { name = L["skiver"], npcid = 160906, questId = { 58309 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 25074411 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Skiver No known assault
         },
     },
 }
@@ -734,7 +734,7 @@ local function getCurrentAssault(mapid)
     end
 
     --print("Unknown")
-    return assaultType.none
+    return assaultType.unknown
 end
 
 local function checkAssaults()
@@ -744,7 +744,7 @@ local function checkAssaults()
             -- check which assault is up and write in DB! Also set to none?    currentAssault
             if contents.currentAssault then
                 local assault = getCurrentAssault(mapid)
-                --print("checkAssaults(): assault = " .. ass)
+                --print("checkAssaults(): assault = " .. assault)
                 contents.currentAssault = assault
             end
         end
@@ -760,7 +760,7 @@ local function checkAssault(mapid, npcid)
                 --print("checkAssault(..mapid.., ..npcid..) Asault not active for: " .. rareDB[mapid].rares[npcid].name)
                 return false
             end
-            if assault[i] == rareDB[mapid].currentAssault or assault[i] == assaultType.none then
+            if assault[i] == rareDB[mapid].currentAssault or assault[i] == assaultType.unknown or assault[i] == assaultType.all then
                 --print("checkAssault(..mapid.., ..npcid..) " .. rareDB[mapid].rares[npcid].name .. " Active!!!!")
                 return true
             end
@@ -1874,7 +1874,7 @@ end
 
 function WarfrontRareTracker:QUEST_ACCEPTED(_, _, id)
     if id == 56540 then
-        printg('Vale assaults unlock detected')
+        print('Vale assaults unlock detected')
         C_Timer.After(1, function()
             checkAssaults()
         end)
@@ -2861,6 +2861,14 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
             end
         end
     end
+
+    -- check assault = assaultType.unknown
+    if rareDB[mapid].zoneType == DB_ZONE_TYPE_ASSAULT and rareDB[mapid].rares[npcid].assault == assaultType.unknown then
+        worldmapTooltip:AddSeparator()
+        line = worldmapTooltip:AddLine()
+        worldmapTooltip:SetCell(line, 1, colorText("Unknown Assaul, please report.", colors.orange), "LEFT", 2)
+    end
+
     if worldmapTooltip:GetLineCount() >= 1 then
         if WarfrontRareTracker.db.profile.general.disableBackground == false then
             worldmapTooltip:SetBackdrop(tooltipBackDrop)
