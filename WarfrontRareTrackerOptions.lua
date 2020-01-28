@@ -817,6 +817,20 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
+                        hideBlueprintOnly = {
+                            name = "Ignore Assaults",
+                            desc = "Shows all Rare's in Uldum and Vale of Eternal Blossoms.",
+                            type = "toggle",
+                            width = "full",
+                            order = 11,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.ignoreAssault
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.ignoreAssault = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
                         hideAlreadyKnown = {
                             name = "Hide Known Items",
                             desc = "Hides the Icon of the Rare's which drop you already know.",
