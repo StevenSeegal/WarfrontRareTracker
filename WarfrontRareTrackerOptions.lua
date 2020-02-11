@@ -656,6 +656,23 @@ configOptions = {
                             type = "description",
                             order = 10,
                         },
+                        
+                    },
+                },
+                lootTypeOrder = {
+                    name = "Loot Type Order",
+                    order = 11,
+                    type = "group",
+                    inline = true,
+                    hidden = function(info)
+                        return WarfrontRareTracker.db.profile.menu.sortRaresOn ~= "drop"
+                    end,
+                    args = { -- Script generates this
+                        seperator = {
+                            name = "Test",
+                            type = "description",
+                            order = 1,
+                        },
                     },
                 },
             },
@@ -1864,6 +1881,49 @@ configOptions = {
     },
 }
 
+local refreshMenuLootTypeOrder
+local function lootTypeOrderButtonPress(a, b)
+    if a.option and a.option.type and a.option.type == "execute" and a.option.name and a.option.desc then
+        local action = string.lower(a.option.name)
+        local name = a.option.desc
+        if action == "up" or action == "down" then
+            for order, lootType in pairs(WarfrontRareTracker.db.profile.menu.lootTypeOrder) do
+                if lootType == name then
+                    if action == "up" then
+                        WarfrontRareTracker.db.profile.menu.lootTypeOrder[order], WarfrontRareTracker.db.profile.menu.lootTypeOrder[order-1] = WarfrontRareTracker.db.profile.menu.lootTypeOrder[order-1], WarfrontRareTracker.db.profile.menu.lootTypeOrder[order]
+                        refreshMenuLootTypeOrder()
+                        WarfrontRareTracker:SortRares()
+                        break
+                    elseif action == "down" then
+                        WarfrontRareTracker.db.profile.menu.lootTypeOrder[order], WarfrontRareTracker.db.profile.menu.lootTypeOrder[order+1] = WarfrontRareTracker.db.profile.menu.lootTypeOrder[order+1], WarfrontRareTracker.db.profile.menu.lootTypeOrder[order]
+                        refreshMenuLootTypeOrder()
+                        WarfrontRareTracker:SortRares()
+                        break
+                    end
+                end
+            end 
+        end
+    end
+end
+
+function refreshMenuLootTypeOrder()
+    wipe(configOptions.args.menusorting.args.lootTypeOrder.args)
+    local lst = configOptions.args.menusorting.args.lootTypeOrder.args
+
+    for order, lootType in pairs(WarfrontRareTracker.db.profile.menu.lootTypeOrder) do
+        lst[lootType] = {
+            type = "group", name = "", order = order, inline = true,
+            args = {
+                label = {
+                    type = "description", name = WarfrontRareTracker:ColorizeText(lootType, colors.yellow), width = "normal", order = 1, fontSize = "medium"
+                },
+                up = { type = "execute", order = 2, width = "half", name = "Up", desc = lootType, func = function(info, value) lootTypeOrderButtonPress(info, value) end, disabled = (order == 1) },
+                down = { type = "execute", order = 3, width = "half", name = "Down", desc = lootType, func = function(info, value) lootTypeOrderButtonPress(info, value) end, disabled = (order == #WarfrontRareTracker.db.profile.menu.lootTypeOrder) },
+            },
+        }
+    end
+end
+
 local currentConfigVersion = 3
 local function checkConfigChanges()
     if WarfrontRareTracker.db.profile.profileversion == nil then
@@ -1909,7 +1969,7 @@ function WarfrontRareTracker:RegisterOptions()
     configOptions.args.profiles.order = -1
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("WarfrontRareTracker", configOptions)
     checkConfigChanges()
-
+    refreshMenuLootTypeOrder()
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("WarfrontRareTracker", "WarfrontRareTracker")
     LibStub("AceConfigDialog-3.0"):SetDefaultSize("WarfrontRareTracker", 700, 575)
     WarfrontRareTracker:RegisterChatCommand("warfront", function() LibStub("AceConfigDialog-3.0"):Open("WarfrontRareTracker") end)

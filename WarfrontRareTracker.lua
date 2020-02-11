@@ -348,14 +348,14 @@ local rareDB = {
         },
     },
     --------
-    [1527] = {
+    [1527] = { -- Old Uldum: 249
         zonename = "Uldum",
         scenarioname = "Unknown", -- Change!
         gatheringname = "Unknown", -- Change!
         hidden = false,
         zoneType = DB_ZONE_TYPE_ASSAULT,
         currentAssault = 0,
-        zonephaseID = 1276, -- ArtID
+        zonephaseID = 1343, -- ArtID, Old Uldum: 289
         zoneContributionMapID = 0, -- Change!
         allianceContributionMapID = 0, -- Change!     116?
         hordeContributionMapID = 0, -- Change!        11?
@@ -379,10 +379,10 @@ local rareDB = {
             [158636] = { name = L["the_grand_executor"], npcid = 158636, questId = { 57688 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 49358229 }, bothphases = true, assault = assaultType.blackEmpire, note = "Spawns on the platforms atop Neferset.", loot = { { droptype = DROP_TOY, itemID = 169303, isKnown = false } } }, -- The Grand Executor | Invasion Type: Black Empire
             [157473] = { name = L["yiphrim_the_will_ravager"], npcid = 157473, questId = { 57438 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 50907866 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_TOY, itemID = 174874, isKnown = false } } }, -- Yiphrim the Will Ravager | Invasion Type: Black Empire !Coords !Neferset Shared Rares!
             -- Item Only:
-            [152788] = { name = L["uat_ka_the_suns_wrath"], npcid = 152788, questId = { 55716 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67606360 }, bothphases = true, assault = assaultType.amathet, note = "To spawn, bring 3 people with  Suntouched Amulet and activate the machine at the area.", loot = { { droptype = DROP_ITEM, itemID = 174875, isKnown = false } } }, -- Uat-ka the Sun's Wrath 1111111
+            [152788] = { name = L["uat_ka_the_suns_wrath"], npcid = 152788, questId = { 55716 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 67606360 }, bothphases = true, assault = assaultType.amathet, note = "To spawn, bring 3 people with  Suntouched Amulet and activate the machine at the area.", loot = { { droptype = DROP_ITEM, itemID = 174875, isKnown = false } } }, -- Uat-ka the Sun's Wrath
             -- Gear Only:
             [157170] = { name = L["acolyte_taspu"], npcid = 157170, questId = { 57281 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 64572623 }, bothphases = true, assault = assaultType.amathet, note = "Located on the underground level of the Obelisk of the Stars.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Acolyte Taspu
-            [151883] = { name = L["actiss_the_deceiver"], npcid = 151883, questId = { 57669 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 66917436 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Actiss the Deceiver (Weak Rare)
+            [158557] = { name = L["actiss_the_deceiver"], npcid = 158557, questId = { 57669 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 66917436 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Actiss the Deceiver (Weak Rare)
             [151883] = { name = L["anaua"], npcid = 151883, questId = { 55468 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 69205059 }, bothphases = true, assault = assaultType.amathet, note = "Flies high around the Halls of Origination.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Anaua
             [155703] = { name = L["anquri_the_titanic"], npcid = 155703, questId = { 56834 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 32436446 }, bothphases = true, assault = assaultType.all, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Anq'uri the Titanic
             [162370] = { name = L["armagedillo"], npcid = 162370, questId = { 58718 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 44814267 }, bothphases = true, assault = assaultType.all, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Armagedillo
@@ -419,6 +419,7 @@ local rareDB = {
             [162141] = { name = L["zuythiz"], npcid = 162141, questId = { 58695 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 40864226 }, bothphases = true, assault = assaultType.aqir, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Zuythiz
             [157167] = { name = L["champion_sen_mat"], npcid = 157167, questId = { 57280 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 75495219 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Champion Sen-mat  amathet too?
             [162352] = { name = L["spirit_of_dark_ritualist_zakahn"], npcid = 162352, questId = { 58716 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50004000 }, bothphases = true, cave = { 52154012 }, assault = { assaultType.amathet, assaultType.aqir }, note = "Can spawn in multiple locations.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Spirit of Dark Ritualist Zakahn
+            [158595] = { name = L["thoughtstealer_vos"], npcid = 158595, questId = { 57673 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 65227389 }, bothphases = true, assault = assaultType.blackEmpire, note = " is stealthed.", loot = { { droptype = DROP_GEAR_ONLY, itemID = 0, isKnown = false } } }, -- Thoughtstealer Vos
             -- Quest Drops:
             -- Unknown:
             [157472] = { name = L["aphrom_the_guise_of_madness"], npcid = 157472, questId = { 57437 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007868 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Aphrom the Guise of Madness !Neferset Shared Rares!
@@ -432,7 +433,6 @@ local rareDB = {
             [152431] = { name = L["kaneb_ti"], npcid = 152431, questId = { 55629 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 77105040 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- Kaneb-ti
             [157188] = { name = L["the_tomb_widow"], npcid = 157188, questId = { 57285 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 84404720 }, bothphases = true, assault = assaultType.amathet, loot = {  } }, -- The Tomb Widow
             [158531] = { name = L["corrupted_neferset_guard"], npcid = 158531, questId = { 57665 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50007900 }, bothphases = true, note = "To generate the corrupted creatures you must kill their normal versions", assault = assaultType.blackEmpire, loot = {  } }, -- Corrupted Neferset Guard
-            [158595] = { name = L["thoughtstealer_vos"], npcid = 158595, questId = { 57673 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 65007200 }, bothphases = true, assault = assaultType.blackEmpire, loot = {  } }, -- Thoughtstealer Vos
             [157469] = { name = L["zothrum_the_intellect_pillager"], npcid = 157469, questId = { 57435 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 50908366 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- Zoth'rum the Intellect Pillager !Neferset Shared Rares!
             [157390] = { name = L["royolok_the_reality_eater"], npcid = 157390, questId = { 57434 }, type = TYPE_UNCOMMON, faction = FACTION_ALL, coord = { 52907866 }, bothphases = true, assault = assaultType.unknown, loot = {  } }, -- R'oyolok the Reality Eater !Neferset Shared Rares!
         },
@@ -509,6 +509,7 @@ local rareDB = {
         },
     },
 }
+WarfrontRareTracker.rareDB = rareDB
 
 -- Colors
 local colors = {
@@ -581,6 +582,7 @@ local dbDefaults = {
             worldbossOnTop = true,
             keepSelectionMenuOpen = false,
             alwaysShowWorldboss = true,
+            lootTypeOrder = { [1] = "Mount", [2] = "Pet", [3] = "Toy", [4] = "Quest", [5] = "Blueprint", [6] = "Item", [7] = "Gear only", [8] = "Unknown" }
         },
         masterfilter = {
             hide = { [HIDE_ALREADY_KNOWN] = false, [HIDE_UNKNOWN_LOOT] = false, [HIDE_UNTRACKABLE] = false, [HIDE_GOLIATHS] = false, [HIDE_UNAVAILABLE] = false, [HIDE_GEAR_ONLY] = false, [HIDE_QUEST_ONLY] = false, [HIDE_ITEM_ONLY] = false },
@@ -1870,7 +1872,7 @@ end
 function WarfrontRareTracker:QUEST_WATCH_UPDATE(_, index)
     local _, _, _, _, _, _, _, questID = GetQuestLogTitle(index)
     if questID == 56376 then
-        print('Uldum assaults unlock detected')
+        --print('Uldum assaults unlock detected')
         C_Timer.After(1, function()
             checkAssaults()
         end)
@@ -1879,7 +1881,7 @@ end
 
 function WarfrontRareTracker:QUEST_ACCEPTED(_, _, id)
     if id == 56540 then
-        print('Vale assaults unlock detected')
+        --print('Vale assaults unlock detected')
         C_Timer.After(1, function()
             checkAssaults()
         end)
@@ -3261,6 +3263,31 @@ local function getAllLootConcatinated(mapid, npcid)
     end
 end
 
+local lootTypeIndex={}
+local function getLootIndex(name)
+    for k,v in pairs(WarfrontRareTracker.db.profile.menu.lootTypeOrder) do
+        lootTypeIndex[v]=k
+     end
+     return lootTypeIndex[name] or 10
+end
+
+local function getHighestLootPriority(mapid, npcid)
+    if rareDB[mapid].rares[npcid].loot == nil or #rareDB[mapid].rares[npcid].loot == 0 then
+        return 100
+    end
+    if #rareDB[mapid].rares[npcid].loot == 1 then
+        return getLootIndex(rareDB[mapid].rares[npcid].loot[1].droptype)
+    else
+        local prio = 10
+        for index, loot in pairs(rareDB[mapid].rares[npcid].loot)do
+            if getLootIndex(loot.droptype) < prio then
+                prio = getLootIndex(loot.droptype)
+            end
+        end
+        return prio
+    end
+end
+
 function WarfrontRareTracker:SortRares()
     for mapid, contents in pairs(rareDB) do
         if sortedRareDB[mapid] == nil then
@@ -3347,7 +3374,7 @@ function WarfrontRareTracker:SortRares()
                     min = i
                     for j = i + 1, n, 1 do
                         if WarfrontRareTracker.db.profile.menu.groupDropSortOn == "type" then
-                            if (compareString(getAllLootConcatinated(mapid, normalTable[j].npcid), getAllLootConcatinated(mapid, normalTable[min].npcid))) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and compareString(normalTable[j].type, normalTable[min].type)) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and normalTable[j].type == normalTable[min].type and compareString(normalTable[j].name, normalTable[min].name)) then min = j end
+                            if (getHighestLootPriority(mapid, normalTable[j].npcid) < getHighestLootPriority(mapid, normalTable[min].npcid)) or (getHighestLootPriority(mapid, normalTable[j].npcid) == getHighestLootPriority(mapid, normalTable[min].npcid)) and compareString(normalTable[j].type, normalTable[min].type) or (getHighestLootPriority(mapid, normalTable[j].npcid) == getHighestLootPriority(mapid, normalTable[min].npcid)) and (normalTable[j].type == normalTable[min].type) and compareString(normalTable[j].name, normalTable[min].name) then min = j end
                         else
                             if (compareString(getAllLootConcatinated(mapid, normalTable[j].npcid), getAllLootConcatinated(mapid, normalTable[min].npcid))) or (getAllLootConcatinated(mapid, normalTable[j].npcid) == getAllLootConcatinated(mapid, normalTable[min].npcid) and compareString(normalTable[j].name, normalTable[min].name)) then min = j end
                         end
@@ -3365,7 +3392,7 @@ function WarfrontRareTracker:SortRares()
                     min = i
                     for j = i + 1, n, 1 do
                         if WarfrontRareTracker.db.profile.menu.groupDropSortOn == "type" then
-                            if (compareString(getAllLootConcatinated(mapid, tempTable[j].npcid), getAllLootConcatinated(mapid, tempTable[min].npcid))) or (getAllLootConcatinated(mapid, tempTable[j].npcid) == getAllLootConcatinated(mapid, tempTable[min].npcid) and compareString(tempTable[j].type, tempTable[min].type)) or (getAllLootConcatinated(mapid, tempTable[j].npcid) == getAllLootConcatinated(mapid, tempTable[min].npcid) and tempTable[j].type == tempTable[min].type and compareString(tempTable[j].name, tempTable[min].name)) then min = j end
+                            if (getHighestLootPriority(mapid, tempTable[j].npcid) < getHighestLootPriority(mapid, tempTable[min].npcid)) or (getHighestLootPriority(mapid, tempTable[j].npcid) == getHighestLootPriority(mapid, tempTable[min].npcid)) and compareString(tempTable[j].type, tempTable[min].type) or (getHighestLootPriority(mapid, tempTable[j].npcid) == getHighestLootPriority(mapid, tempTable[min].npcid)) and (tempTable[j].type == tempTable[min].type) and compareString(tempTable[j].name, tempTable[min].name) then min = j end
                         else
                             if (compareString(getAllLootConcatinated(mapid, tempTable[j].npcid), getAllLootConcatinated(mapid, tempTable[min].npcid))) or (getAllLootConcatinated(mapid, tempTable[j].npcid) == getAllLootConcatinated(mapid, tempTable[min].npcid) and compareString(tempTable[j].name, tempTable[min].name)) then min = j end
                         end
