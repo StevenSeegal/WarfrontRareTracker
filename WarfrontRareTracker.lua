@@ -586,16 +586,16 @@ local dbDefaults = {
         },
         masterfilter = {
             hide = { [HIDE_ALREADY_KNOWN] = false, [HIDE_UNKNOWN_LOOT] = false, [HIDE_UNTRACKABLE] = false, [HIDE_GOLIATHS] = false, [HIDE_UNAVAILABLE] = false, [HIDE_GEAR_ONLY] = false, [HIDE_QUEST_ONLY] = false, [HIDE_ITEM_ONLY] = false },
-            hideAlreadyKnown = false,
-            hideUnknowLoot = false,
-            hideUntrackable = false,
-            hideGoliaths = false,
-            hideAncients = false,
-            hideUnavailable = false,
-            hideGearOnly = false,
-            hideQuestOnly = false,
-            hideBlueprintOnly = false,
-            hideItemOnly = false,
+            hideAlreadyKnown = false, -- Loot?
+            hideUnknowLoot = false, -- Loot
+            hideUntrackable = false, -- NPC/Rare Type
+            hideGoliaths = false, -- NPC/Rare Type
+            hideAncients = false, -- NPC/Rare Type
+            hideUnavailable = false, -- NPC/Rare Type
+            hideGearOnly = false, -- Loot
+            hideQuestOnly = false, -- Loot
+            hideBlueprintOnly = false, -- Loot
+            hideItemOnly = false, -- Loot
             whitelist = { [DROP_MOUNT] = false, [DROP_PET] = false, [DROP_BLUEPRINT] = false, [DROP_QUEST] = false },
             worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
@@ -1148,7 +1148,7 @@ local function checkFactionWarfrontControl(mapid)
             if WarfrontRareTracker.db.profile.general.enableZoneChangeMessage then
                 local prefix = factionControlling == currentPlayerFaction and "Good" or "Bad"
                 local faction = rareDB[mapid].warfrontControlledByFaction == FACTION_HORDE and colorText(FACTION_HORDE, colors.red) or colorText(FACTION_ALLIANCE, colors.blue)
-                WarfrontRareTracker:Print(colorText(format("%s news eveyone. The ", prefix), colors.turqoise) .. faction .. colorText(" has gained control over ", colors.turqoise) .. colorText(rareDB[mapid].zonename, colors.lightcyan) .. colorText("!", colors.turqoise))
+                WarfrontRareTracker:Print(colorText(format("%s news everyone. The ", prefix), colors.turqoise) .. faction .. colorText(" has gained control over ", colors.turqoise) .. colorText(rareDB[mapid].zonename, colors.lightcyan) .. colorText("!", colors.turqoise))
                 if WarfrontRareTracker.db.profile.general.enableZoneChangeSound then
                     playSound(prefix)
                 end
