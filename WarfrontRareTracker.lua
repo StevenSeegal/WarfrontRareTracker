@@ -16,7 +16,7 @@ local HBDPins = LibStub("HereBeDragons-Pins-2.0")
 local floor, mod, format, strsplit, table, tonumber, type, pairs, next = floor, mod, format, strsplit, table, tonumber, type, pairs, next
 local UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel = UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel
 local C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver = C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver
-
+local _G = _G
 ------------
 -- Constants
 ------------
@@ -371,7 +371,7 @@ local rareDB = {
             [157134] = { name = L["ishak_of_the_four_winds"], npcid = 157134, questId = { 57259 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 73918364 }, bothphases = true, assault = assaultType.all, loot = { { droptype = DROP_MOUNT, itemID = 174641, mountID = 1314, isKnown = false } } }, -- Ishak of the Four Winds | Invasion Type: Black Empire
             [157146] = { name = L["rotfeaster"], npcid = 157146, questId = { 57273 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 68593204 }, bothphases = true, assault = assaultType.amathet, loot = { { droptype = DROP_MOUNT, itemID = 174753, mountID = 1317, isKnown = false } } }, -- Rotfeaster | Invasion Type: Amathet
             -- Pet Drops:
-            [157593] = { name = L["amalgamation_of_flesh"], npcid = 157593, questId = { 57667 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 0 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_PET, itemID = 174478, petID = 162012, speciesID = 2851, isKnown = false } } }, -- Amalgamation of Flesh | Invasion Type: Black Empire !Coords
+            [157593] = { name = L["amalgamation_of_flesh"], npcid = 157593, questId = { 57667 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 59907230 }, bothphases = true, assault = assaultType.blackEmpire, loot = { { droptype = DROP_PET, itemID = 174478, petID = 162012, speciesID = 2851, isKnown = false } } }, -- Amalgamation of Flesh | Invasion Type: Black Empire !Coords
             [154604] = { name = L["lord_ajqirai"], npcid = 154604, questId = { 56340 }, type = TYPE_ELITE, faction = FACTION_ALL, coord = { 34741885 }, bothphases = true, assault = assaultType.aqir, cave = { 36852093 }, note = "Located inside the Obelisk of the Moon.", loot = { { droptype = DROP_PET, itemID = 174475, petID = 161997, speciesID = 2847, isKnown = false } } }, -- Lord Aj'qirai | Invasion Type: Aqir
             [162140] = { name = L["skikxtraz"], npcid = 162140, questId = { 58697 }, type = TYPE_RARE, faction = FACTION_ALL, coord = { 21236105 }, bothphases = true, assault = assaultType.aqir, note = "Patrols in a big area around Ankhaten Harbor.", loot = { { droptype = DROP_PET, itemID = 174476, petID = 162004, speciesID = 2848, isKnown = false } } }, -- Skikx'traz | Invasion Type: Aqir
             -- Toy Drops:
@@ -1787,6 +1787,9 @@ function WarfrontRareTracker:DelayedInitialize(init)
     if IsAddOnLoaded("TomTom") then
         isTomTomloaded = true
     end
+    if rareDB[WarfrontRareTracker.db.char.selectedZone] == nil then
+        WarfrontRareTracker.db.char.selectedZone = 14
+    end
     checkAssaults()
     scanForKnownItems()
     checkWarfrontZonePhases()
@@ -1879,8 +1882,6 @@ function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     WarfrontRareTracker:SortRares()
     C_Timer.After(5, function() WarfrontRareTracker:DelayedInitialize(true) end)
 end
-
-
 
 function WarfrontRareTracker:QUEST_WATCH_UPDATE(_, questID)
     if questID == 56376 then
@@ -2918,7 +2919,7 @@ local function getNewPin()
 		return pin
     end
     pinCount = pinCount + 1
-    pin = CreateFrame("Button", WARFRONT_PINNAME..pinCount, Minimap)
+    pin = CreateFrame("Button", WARFRONT_PINNAME..pinCount, Minimap, _G.UIParent, BackdropTemplateMixin and "BackdropTemplate")
     pin:SetFrameLevel(5)
 	pin:EnableMouse(true)
 	pin:SetWidth(12)
