@@ -20,7 +20,7 @@ local _G = _G
 ------------
 -- Constants
 ------------
-local PLAYER_MAXLEVEL = 50
+local PLAYER_WARFRONT_LEVEL = 50
 local SECONDS_IN_MIN = 60
 local SECONDS_IN_HOUR = SECONDS_IN_MIN * 60
 local SECONDS_IN_DAY = SECONDS_IN_HOUR * 24
@@ -820,8 +820,8 @@ local function isNPCPlayerFaction(mapid, npcid)
     return rareDB[mapid].rares[npcid].faction == currentPlayerFaction or rareDB[mapid].rares[npcid].faction == FACTION_ALL
 end
 
-local function isPlayerMaxLevel()
-    if currentPlayerLevel >= PLAYER_MAXLEVEL then
+local function IsPlayerWarfrontLevel()
+    if currentPlayerLevel == PLAYER_WARFRONT_LEVEL then
         return true
     else
         return false
@@ -937,8 +937,8 @@ local function getColoredRareName(mapid, npcid)
 end
 
 local function getColoredStatusText(mapid, npcid)
-    if not isPlayerMaxLevel() then
-        return colorText("Level " .. PLAYER_MAXLEVEL, colors.orange)
+    if not IsPlayerWarfrontLevel() then
+        return colorText("Level " .. PLAYER_WARFRONT_LEVEL, colors.orange)
     end
     local rare = rareDB[mapid].rares[npcid]
     if rare.questId[1] == -1 then
@@ -1267,7 +1267,7 @@ local function showRare(mapid, npcid, mode)
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
             if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED and rareDB[mapid].hidden == true  then
                 return false
-            elseif WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not isPlayerMaxLevel() then
+            elseif WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not IsPlayerWarfrontLevel() then
                 return false
             end
             if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
@@ -1331,7 +1331,7 @@ local function showRare(mapid, npcid, mode)
             if mode == "worldmap" then
                 if WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase == true and rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED and rareDB[mapid].hidden == true then
                     return false
-                elseif WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not isPlayerMaxLevel() then
+                elseif WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not IsPlayerWarfrontLevel() then
                     return false
                 elseif WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                     return false
@@ -1428,12 +1428,16 @@ local function setBrokerIcon(faction)
     end
 end
 
-local function updateBrokerText()
+local function updateBrokerText(mapid)
     if updateBrokerTimer then
         WarfrontRareTracker:CancelTimer(updateBrokerTimer)
         updateBrokerTimer = nil
     end
-    checkWarfrontControl()
+    if mapid then
+        checkWarfrontControl(mapid)
+    else
+        checkWarfrontControl()
+    end
     local canSchedule = false
     local scheduleState = 0
     local brokerText
@@ -1674,7 +1678,7 @@ local function addToTomTom(mapid, npcid)
 end
 
 local function currentPlayerLeveledUp(newLevel)
-    if isPlayerMaxLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
+    if IsPlayerWarfrontLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
         WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise))
         if WarfrontRareTracker.db.profile.general.enableLevelUpSound then
             playSound("good")
@@ -1850,16 +1854,16 @@ end
 ----------------
 -- Event Handler
 function WarfrontRareTracker:OnEvent(event, ...)
-    if event == "NEW_MOUNT_ADDED" and isPlayerMaxLevel() then
+    if event == "NEW_MOUNT_ADDED" and IsPlayerWarfrontLevel() then
         scanForKnownItems()
-    elseif event == "NEW_PET_ADDED" and isPlayerMaxLevel() then
+    elseif event == "NEW_PET_ADDED" and IsPlayerWarfrontLevel() then
         if newPetAdedTimer == nil then
             newPetAdedTimer = self:ScheduleTimer(function() scanForKnownItems() end, 2)
         end
     elseif event == "PLAYER_LEVEL_UP" then
         local newLevel = ...
         currentPlayerLevel = newLevel
-        if isPlayerMaxLevel() then
+        if IsPlayerWarfrontLevel() then
             C_Timer.After(5, function() currentPlayerLeveledUp(newLevel) end)
         end
     end
@@ -1904,7 +1908,7 @@ end
 ----------------
 -- Bucket events
 function WarfrontRareTracker:BUCKET_ON_LOOT_RECEIVED()
-    if isPlayerMaxLevel() and isPlayerInWarfront() and not playerIsInInstance then
+    if IsPlayerWarfrontLevel() and isPlayerInWarfront() and not playerIsInInstance then
         if isSessionLocked("BUCKET_ON_LOOT_RECEIVED") then
             return
         end
@@ -1936,7 +1940,7 @@ function WarfrontRareTracker:ZONE_CHANGED()
 end
 
 function WarfrontRareTracker:TOYS_UPDATED()
-    if isPlayerMaxLevel() then
+    if IsPlayerWarfrontLevel() then
         scanForKnownItems()
     end
 end
@@ -1962,7 +1966,7 @@ function WarfrontRareTracker:RefreshAllData()
 end
 
 function WarfrontRareTracker:RefreshZoneData(mapid)
-    self:RefreshBrokerText()
+    updateBrokerText(mapid)
     self:UpdateZoneWorldMapIcons(mapid)
 end
 
@@ -2163,7 +2167,7 @@ function WarfrontRareTracker:MenuOnClick(self, button)
         if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
             return
         end
-        if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+        if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not IsPlayerWarfrontLevel() then
             return
         end
         if menuTooltip == nil then
@@ -2181,7 +2185,7 @@ function WarfrontRareTracker:MenuOnEnter(self)
     if WarfrontRareTracker.db.profile.menu.hideOnCombat and UnitAffectingCombat("player") then
         return
     end
-    if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not isPlayerMaxLevel() then
+    if WarfrontRareTracker.db.profile.menu.showAtMaxLevel and not IsPlayerWarfrontLevel() then
         return
     end
     WarfrontRareTracker:ShowMenu(self)
@@ -3013,7 +3017,7 @@ function WarfrontRareTracker:DeleteAllWorldmapIcons()
 end
 
 function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
-    if not isPlayerMaxLevel() then
+    if not IsPlayerWarfrontLevel() then
         return
     end
     if self.db.profile.worldmapicons.useMasterfilter and self.db.profile.masterfilter.worldmapHandleDefeated == "hide" and rareDB[currentPlayerMapid] or not self.db.profile.worldmapicons.useMasterfilter and self.db.profile.worldmapicons.handleDefeated == "hide" and rareDB[currentPlayerMapid] then
