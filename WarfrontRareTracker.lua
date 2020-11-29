@@ -821,7 +821,7 @@ local function isNPCPlayerFaction(mapid, npcid)
 end
 
 local function IsPlayerWarfrontLevel()
-    if currentPlayerLevel == PLAYER_WARFRONT_LEVEL then
+    if currentPlayerLevel >= PLAYER_WARFRONT_LEVEL then
         return true
     else
         return false
