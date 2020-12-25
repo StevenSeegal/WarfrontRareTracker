@@ -2,7 +2,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 
 local isTomTomlocked = true
 local hasMultipleRareDB = false
-local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests", ["Blueprint"] = "Blueprints" }
+local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests", ["Blueprint"] = "Blueprints", ["Transmog"] = "Transmog", }
 local defeatModes = { ["hide"] = "Hide Icon", ["change"] = "Change Icon", ["none"] = "Nothing" }
 local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
@@ -192,8 +192,8 @@ configOptions = {
                     inline = true,
                     args = {
                         showAtMaxLevel = {
-                            name = "Only Show At Level 120",
-                            desc = "Only show the menu when your Character is level 120.",
+                            name = "Only Show At 50",
+                            desc = "Only show the menu when your Character is level 50 or higher.",
                             type = "toggle",
                             width = 1.3,
                             order = 1,
@@ -229,27 +229,6 @@ configOptions = {
                                     WarfrontRareTracker.db.profile.menu.clickToTomTom = value
                                 end,
                             disabled = function() return isTomTomlocked or not WarfrontRareTracker.db.profile.tomtom.enableIntegration end,
-                        },
-                    },
-                },
-                wartfontselect = {
-                    name = "Warfront Selection Menu",
-                    order = 2,
-                    type = "group",
-                    inline = true,
-                    args = {
-                        keepSelectionMenuOpen = {
-                            name = "Keep Warfront Selection Menu Open.",
-                            desc = "Keeps the Warfront Selection Menu Open so you can switch Warfronts in a single click.",
-                            type = "toggle",
-                            width = "full",
-                            order = 1,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.menu.keepSelectionMenuOpen = value
-                                end,
                         },
                     },
                 },
@@ -413,6 +392,19 @@ configOptions = {
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.menu.hideBlueprintOnly = value
+                                        end,
+                                },
+                                hideTransmogOnly = {
+                                    name = "Hide Transmog Only",
+                                    desc = "Hides the Rare's that only drop Transmog.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 12,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideTransmogOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideTransmogOnly = value
                                         end,
                                 },
                                 hideAlreadyKnown = {
@@ -839,12 +831,26 @@ configOptions = {
                             desc = "Shows all Rare's in Uldum and Vale of Eternal Blossoms.",
                             type = "toggle",
                             width = "full",
-                            order = 11,
+                            order = 12,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.ignoreAssault
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.masterfilter.ignoreAssault = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideTransmogOnly = {
+                            name = "Hide Transmog Only",
+                            desc = "Hides the Rare's that only drop Transmog.",
+                            type = "toggle",
+                            width = 1.2,
+                            order = 13,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideTransmogOnly
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideTransmogOnly = value
                                     refreshWorldmapIcons(true)
                                 end,
                         },
@@ -902,7 +908,7 @@ configOptions = {
                         },
                         worldmapShowOnlyAtPhase = {
                             name = "Show Only In Warfront Phase",
-                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 120\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
+                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 50 or higher\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
                             type = "toggle",
                             width = "full",
                             order = 2,
@@ -915,8 +921,8 @@ configOptions = {
                                 end,
                         },
                         worldmapShowOnlyAtMaxLevel = {
-                            name = "Show Only At Level 120",
-                            desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
+                            name = "Show Only At Level 50",
+                            desc = "Show Worldmap Icons only at level 50 or higher. When lower then level 50 no Woldmap Icons will be shown, unless disabled.",
                             type = "toggle",
                             width = "full",
                             order = 3,
@@ -933,10 +939,76 @@ configOptions = {
                 },
             },
         },
+        lootwindow = {
+            name = "Loot Window",
+            type = "group",
+            order = 6,
+            args = {
+                compactmode = {
+                    name = "Loot Window Options",
+                    order = 4,
+                    type = "group",
+                    inline = true,
+                    args = {
+                        compactMode = {
+                            name = "Compact Mode",
+                            desc = "Enable/Disable Compact Loot Window.\n[Compact on Amount] lets you choose how many enties a Rare hs to be to get a Copacted list.\n[Compact All] always gives you a compacted list but in inadviced as it doesn't diaplay all information about the Loot",
+                            type = "select",
+                            style = "dropdown",
+                            order = 2,
+                            values = { ["amount"] = "Compact on Amount", ["all"] = "Compact All", ["disabled"] = "Disabled" },
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.lootwindow.compactMode
+                            end,
+                            set = function(info, value)
+                                        WarfrontRareTracker.db.profile.lootwindow.compactMode = value
+                                end,
+                        },
+                        compactModeAmount = {
+                            name = "Compact if more than: ",
+                            desc = "Select the amount of drops before Compacting the information in the Loot Window",
+                            type = "select",
+                            style = "dropdown",
+                            order = 3,
+                            values = {[1] = 1,[2] = 2,[3] = 3,[4] = 4,[5] = 5, [6] = 6, [7] = 7, [8] = 8, [9] = 9},
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.lootwindow.compactModeAmount
+                            end,
+                            set = function(info, value)
+                                        WarfrontRareTracker.db.profile.lootwindow.compactModeAmount = value
+                                end,
+                            hidden = function(info)
+                                return WarfrontRareTracker.db.profile.lootwindow.compactMode ~= "amount"
+                            end,
+                        },
+                        AlsohideNotes = {
+                            name = "Also Hide Notes",
+                            desc = "Also hide Notes in the Loot Window while mousing over a Rare in the Menu or Worldmap.",
+                            type = "toggle",
+                            width = "full",
+                            order = 4,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes = value
+                                end,
+                        },
+                        description = {
+                            name = WarfrontRareTracker:ColorizeText("\nNote:\n", colors.yellow)..
+                            "As a lot of Rares drops multiple items the Loot Window you see while mousing over a Rare in the Menu or Worldmap get big and can even slide under your UI.\n"..
+                            "These options allow you to make the Loot window show less information for all with the first option, or the default option, when a Rare had more than 3 drops.",
+                            type = "description",
+                            order = 5,
+                        },
+                    },
+                },
+            },
+        },
         colors = {
             name = "Color Options",
             type = "group",
-            order = 6,
+            order = 7,
             args = {
                 drops = {
                     name = "Color Known Items",
@@ -1183,7 +1255,7 @@ configOptions = {
         unitframes = {
             name = "Unit Frames",
             type = "group",
-            order = 7,
+            order = 8,
             args = {
                 unitframes = {
                     name = "NPC Unit Frame Options",
@@ -1282,7 +1354,7 @@ configOptions = {
         worldmap = {
             name = "Worldmap & Minimap",
             type = "group",
-            order = 8,
+            order = 9,
             args = {
                 worldmap = {
                     name = "Worldmap Icons",
@@ -1306,7 +1378,7 @@ configOptions = {
                         },
                         showOnlyAtPhase = {
                             name = "Show Only In Warfront Phase",
-                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 120\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
+                            desc = "Only Show Worldmap Icons while the zone is in the Warfron Phase.\nWhen you talk to a \"Time Traveler NPC\" in the area to return to the past the Icons will disappear.\nTalk again to go to the present time enables the Icons again.\n\nThis feature overrules \"Show Only at Level 50 or higher\" as low level characters always are in the 'past' phase of the zone, so no Icons will be shown.",
                             type = "toggle",
                             width = "full",
                             order = 2,
@@ -1319,8 +1391,8 @@ configOptions = {
                                 end,
                         },
                         showOnlyAtMaxLevel = {
-                            name = "Show Only At Level 120",
-                            desc = "Show Worldmap Icons only at level 120. When lower then level 120 no Woldmap Icons will be shown, unless disabled.",
+                            name = "Show Only At Level 50",
+                            desc = "Show Worldmap Icons only at level 50 or higher. When lower then level 50 no Woldmap Icons will be shown, unless disabled.",
                             type = "toggle",
                             width = "full",
                             order = 6,
@@ -1669,6 +1741,20 @@ configOptions = {
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
+                                hideTransmogOnly = {
+                                    name = "Hide Transmog Only",
+                                    desc = "Hides the Rare's that only drop Transmog.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 13,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideTransmogOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideTransmogOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
                                 hideAlreadyKnown = {
                                     name = "Hide Known Items",
                                     desc = "Hides the Icon of the Rare's which drop you already know.",
@@ -1709,7 +1795,7 @@ configOptions = {
         tomtom = {
             name = "TomTom",
             type = "group",
-            order = 9,
+            order = 10,
             args = {
                 tomtom = {
                     name = "TomTom Integration (Requires TomTom)",
@@ -1780,7 +1866,7 @@ configOptions = {
         soundMessage = {
             name = "Sounds & Messages",
             type = "group",
-            order = 10,
+            order = 11,
             args = {
                 zone = {
                     name = "Warfront Change Options",
@@ -1861,7 +1947,7 @@ configOptions = {
         compat = {
             name = "Compatibility",
             type = "group",
-            order = 11,
+            order = 12,
             args = {
                 disableBackground = {
                     name = "Disable tooltip backgroud",
@@ -1924,17 +2010,19 @@ function refreshMenuLootTypeOrder()
     end
 end
 
+-- Config Migration
 local currentConfigVersion = 3
 local function checkConfigChanges()
-    if WarfrontRareTracker.db.profile.profileversion == nil then
-        WarfrontRareTracker.db.profile["profileversion"] = 1
-    end
-    
+
     if brokerTexts[WarfrontRareTracker.db.profile.broker.brokerText] == nil then
         WarfrontRareTracker.db.profile.broker.brokerText = "allstatus"
     end
 
-    -- new changes
+    -- Changes once as it check by 'Config Version'
+    -- This is meant to automatically migrate your old config for mostly renames variables.
+    if WarfrontRareTracker.db.profile.profileversion == nil then
+        WarfrontRareTracker.db.profile["profileversion"] = 1
+    end
     if WarfrontRareTracker.db.profile.profileversion < currentConfigVersion then
         WarfrontRareTracker.db.profile.profileversion = currentConfigVersion
         -- Copy current 'Hide' settings to the new 'Master Filter'  showWarfrontOnTitle showWarfrontOnZoneName
