@@ -8,11 +8,16 @@ local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
 
 local colors = {
+    white = { 1, 1, 1, 1 },
     red = { 1, 0.12, 0.12, 1 },
     green = { 0, 1, 0, 1 },
+    purple = { 0.63, 0.20, 0.93, 1 },
+    oldturqoise = { 0.40, 0.73, 1, 1 },
     turqoise = { 0.25, 0.78, 0.92, 1 },
     yellow = { 1, 0.82, 0, 1 },
     blue = { 0, 0.44, 0.87, 1 },
+    grey = { 0.6, 0.6, 0.6, 1 },
+    orange = { 1, 0.49, 0.04, 1 },
     lightcyan = { 0, 1 , 0.59, 1 },
 }
 
@@ -405,6 +410,45 @@ configOptions = {
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.menu.hideTransmogOnly = value
+                                        end,
+                                },
+                                hideAnimaOnly = {
+                                    name = "Hide Anima Only",
+                                    desc = "Hides the Rare's that only drop Anima.",
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 13,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.hideAnimaOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.hideAnimaOnly = value
+                                        end,
+                                },
+                                showCovenantBoundRares = {
+                                    name = "Show All Covenant Bound Rare's",
+                                    desc = "Some Rare's or are bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see all Rare's from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 15,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.showCovenantBoundRares
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.showCovenantBoundRares = value
+                                        end,
+                                },
+                                showCovenantBoundLoot = {
+                                    name = "Show Rare's With Loot From All Covenants",
+                                    desc = "Some Rare's Loot is bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see the Loot from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                                    type = "toggle",
+                                    width = 1.2,
+                                    order = 16,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.menu.showCovenantBoundLoot
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.menu.showCovenantBoundLoot = value
                                         end,
                                 },
                                 hideAlreadyKnown = {
@@ -826,7 +870,7 @@ configOptions = {
                                     refreshWorldmapIcons(true)
                                 end,
                         },
-                        hideBlueprintOnly = {
+                        ignoreAssault = {
                             name = "Ignore Assaults",
                             desc = "Shows all Rare's in Uldum and Vale of Eternal Blossoms.",
                             type = "toggle",
@@ -844,13 +888,55 @@ configOptions = {
                             name = "Hide Transmog Only",
                             desc = "Hides the Rare's that only drop Transmog.",
                             type = "toggle",
-                            width = 1.2,
+                            width = "full",
                             order = 13,
                             get = function(info)
                                     return WarfrontRareTracker.db.profile.masterfilter.hideTransmogOnly
                                 end,
                             set = function(info, value)
                                     WarfrontRareTracker.db.profile.masterfilter.hideTransmogOnly = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        hideAnimaOnly = {
+                            name = "Hide Anima Only",
+                            desc = "Hides the Rare's that only drop Anima.",
+                            type = "toggle",
+                            width = "full",
+                            order = 14,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.hideAnimaOnly
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.hideAnimaOnly = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        showCovenantBoundRares = {
+                            name = "Show All Covenant Bound Rare's",
+                            desc = "Some Rare's or are bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see all Rare's from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                            type = "toggle",
+                            width = "full",
+                            order = 15,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundRares
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundRares = value
+                                    refreshWorldmapIcons(true)
+                                end,
+                        },
+                        showCovenantBoundLoot = {
+                            name = "Show Rare's With Loot From All Covenants",
+                            desc = "Some Rare's Loot is bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see the Loot from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                            type = "toggle",
+                            width = "full",
+                            order = 16,
+                            get = function(info)
+                                    return WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundLoot
+                                end,
+                            set = function(info, value)
+                                    WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundLoot = value
                                     refreshWorldmapIcons(true)
                                 end,
                         },
@@ -946,7 +1032,7 @@ configOptions = {
             args = {
                 compactmode = {
                     name = "Loot Window Options",
-                    order = 4,
+                    order = 1,
                     type = "group",
                     inline = true,
                     args = {
@@ -981,17 +1067,17 @@ configOptions = {
                                 return WarfrontRareTracker.db.profile.lootwindow.compactMode ~= "amount"
                             end,
                         },
-                        AlsohideNotes = {
+                        alsohidenotes = {
                             name = "Also Hide Notes",
                             desc = "Also hide Notes in the Loot Window while mousing over a Rare in the Menu or Worldmap.",
                             type = "toggle",
                             width = "full",
                             order = 4,
                             get = function(info)
-                                    return WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes
+                                    return WarfrontRareTracker.db.profile.lootwindow.alsohidenotes
                                 end,
                             set = function(info, value)
-                                    WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes = value
+                                    WarfrontRareTracker.db.profile.lootwindow.alsohidenotes = value
                                 end,
                         },
                         description = {
@@ -1003,6 +1089,27 @@ configOptions = {
                         },
                     },
                 },
+                -- showCovenantBoundLoot = { -- NYI
+                --     name = "Show other Covenant's Loot [NYI]",
+                --     order = 2,
+                --     type = "group",
+                --     inline = true,
+                --     args = {
+                --         showCovenantBoundLoot = {
+                --             name = "Show Covenant Bound Rare's and Loot [NYI]",
+                --             desc = "Some Rare's Loot is bound to the Covenant you sign up for. By default these left out of the list. If you Enable this option you are able to see the hidden Loot from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("Covenant Bound Loot for other Covenant's doesn't drop!",colors.orange),
+                --             type = "toggle",
+                --             width = "full",
+                --             order = 1,
+                --             get = function(info)
+                --                     return WarfrontRareTracker.db.profile.lootwindow.showCovenantBoundLoot
+                --                 end,
+                --             set = function(info, value)
+                --                     WarfrontRareTracker.db.profile.lootwindow.showCovenantBoundLoot = value
+                --                 end,
+                --         },
+                --     },
+                -- },
             },
         },
         colors = {
@@ -1745,13 +1852,55 @@ configOptions = {
                                     name = "Hide Transmog Only",
                                     desc = "Hides the Rare's that only drop Transmog.",
                                     type = "toggle",
-                                    width = 1.2,
+                                    width = "full",
                                     order = 13,
                                     get = function(info)
                                             return WarfrontRareTracker.db.profile.worldmapicons.hideTransmogOnly
                                         end,
                                     set = function(info, value)
                                             WarfrontRareTracker.db.profile.worldmapicons.hideTransmogOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                hideAnimaOnly = {
+                                    name = "Hide Anima Only",
+                                    desc = "Hides the Rare's that only drop Anima.",
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 14,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.hideAnimaOnly
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.hideAnimaOnly = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                showCovenantBoundRares = {
+                                    name = "Show All Covenant Bound Rare's",
+                                    desc = "Some Rare's or are bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see all Rare's from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 15,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundRares
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundRares = value
+                                            refreshWorldmapIcons(false)
+                                        end,
+                                },
+                                showCovenantBoundLoot = {
+                                    name = "Show Rare's With Loot From All Covenants",
+                                    desc = "Some Rare's Loot is bound to the Covenant you sign up for. By default these are hidded. If you Enable this option you are able to see the Loot from all Covenants." .. WarfrontRareTracker:ColorizeText("\nWarning: ",colors.red) .. WarfrontRareTracker:ColorizeText("You're most likely not able to interact with and/or loot these Rare's!",colors.orange),
+                                    type = "toggle",
+                                    width = "full",
+                                    order = 16,
+                                    get = function(info)
+                                            return WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundLoot
+                                        end,
+                                    set = function(info, value)
+                                            WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundLoot = value
                                             refreshWorldmapIcons(false)
                                         end,
                                 },
@@ -1964,6 +2113,27 @@ configOptions = {
                 },
             },
         },
+
+        -- debug = {
+        --     name = "Debug",
+        --     type = "group",
+        --     order = 13,
+        --     args = {
+        --         printDebug = {
+        --             name = "Enable Debug Messages.",
+        --             desc = "Enable Debug Messages.",
+        --             type = "toggle",
+        --             width = "full",
+        --             order = 1,
+        --             get = function(info)
+        --                     return WarfrontRareTracker.db.profile.debug.printDebug
+        --                 end,
+        --             set = function(info, value)
+        --                     WarfrontRareTracker.db.profile.debug.printDebug = value
+        --                 end,
+        --         },
+        --     },
+        -- },
     },
 }
 

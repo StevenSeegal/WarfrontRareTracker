@@ -58,12 +58,20 @@ local DROPTYPE = {
     QUEST = "Quest",
     BLUEPRINT = "Blueprint",
     GEAR_ONLY = "Gear only",
+    ANIMA_ONLY = "Anima Only",
     TRANSMOG = "Transmog",
     UNKNOWN = "Unknown",
 }
 local EXPANSION = {
     BFA = "Battle For Azeroth",
     SHADOWLANDS = "Shadowlands",
+}
+local COVENANTS = {
+    -- NONE = 0,
+    KYRIAN = 1, -- covenantData: ID=1, name=Kyrian
+    VENTHYR  = 2, -- covenantData: ID=2, name=Venthyr
+    NIGHTFAE = 3, -- covenantData: ID=3, name=Night Fae
+    NECROLORD = 4, -- covenantData: ID=4, name=Necrolord
 }
 
 ---------
@@ -95,6 +103,7 @@ local playerIsInInstance = false
 local currentPlayerMapid = 0
 local currentPlayerParentMapid = 0
 local currentPlayerLevel = 0
+local currentPlayerCovenant = 0
 local currentPlayerName = ""
 local currentPlayerFaction = ""
 local currentPlayerRealm = ""
@@ -546,29 +555,30 @@ local rareDB = {
         minimapIcons = {},
         index = 7,
         expansion = EXPANSION.SHADOWLANDS,
+        covenantID = COVENANTS.NIGHTFAE,
         rares = {
-            [164107] = { name = L["gormtamer_tizo"], npcid = 164107, questId = { 59145 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 27885248 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180725, mountID = 1362, isKnown = false } }, note = "Kill Bristlecone Terrors and Deranged Guardians in the area until Chompy spawns. The rare will spawn once Chompy is killed." },
+            [164107] = { name = L["gormtamer_tizo"], npcid = 164107, questId = { 59145 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 27885248 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180725, mountID = 1362, isKnown = false } }, note = "Kill Bristlecone Terrors and Deranged Guardians in the area until Chompy spawns. The rare will spawn once Chompy is killed." },
             [164112] = { name = L["humongozz"], npcid = 164112, questId = { 59157 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 32423026 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182650, mountID = 1415, isKnown = false } }, note = "Loot an Unusually Large Mushroom from mobs in Ardenweald and plant at the Damp Soil at the coordinate to summon the rare." },
             [168135] = { name = L["night_mare"], npcid = 168135, questId = { 60306 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 57874983 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180728, mountID = 1306, isKnown = false } }, note = "Use the [Dream Catcher] in Dreamshrine Basin to see and kill this rare." },
-            [168647] = { name = L["valfir_the_unrelenting"], npcid = 168647, questId = { 61632 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30115536 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180730, mountID = 1393, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 180154, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182176, checkId = 62431, isKnown = false } }, note = "Loot a nearby Sparkling Animaseed and use [Animaseed Light] on the rare to dispell his  Misty Veil." },
-            [171743] = { name = L["star_lake_amphitheater"], npcid = 171743, questId = { 61633 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 41254443 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180748, mountID = 1332, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 182454, isKnown = false } }, note = "Talk to 'the Stage Director' to start one of the special encounters. The encounter changes each day." },
+            [168647] = { name = L["valfir_the_unrelenting"], covenantBound = COVENANTS.NIGHTFAE, npcid = 168647, questId = { 61632 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30115536 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180730, mountID = 1393, covenantBound = COVENANTS.NIGHTFAE, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 180154, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182176, checkId = 62431, covenantBound = COVENANTS.NIGHTFAE, isKnown = false } }, note = "Loot a nearby Sparkling Animaseed and use [Animaseed Light] on the rare to dispell his  Misty Veil." },
+            [171743] = { name = L["star_lake_amphitheater"], covenantBound = COVENANTS.NIGHTFAE, npcid = 171743, questId = { 61633 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 41254443 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180748, mountID = 1332, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 182454, isKnown = false } }, note = "Talk to 'the Stage Director' to start one of the special encounters. The encounter changes each day." },
             [164477] = { name = L["deathbinder_hroth"], npcid = 164477, questId = { 59226 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 34606800 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180166, isKnown = false } } },
             [164238] = { name = L["deifir_the_untamed"], npcid = 164238, questId = { 59201, 62271 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47522845 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180631, speciesID = 2920, isKnown = false } }, note = "Mount the Rare and his mount ability [Stunning Strike] to slow and stun him." },
             [163370] = { name = L["gormbore"], npcid = 163370, questId = { 59006 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 54067601 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 183196, speciesID = 3035, isKnown = false } } },
-            [164093] = { name = L["macabre"], npcid = 164093, questId = { 59140 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 32664480 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180644, speciesID = 2907, isKnown = false } }, note = "Requires 3 players to stand in the mushroom ring at  location and /dance with each other to summon the rare." },
+            [164093] = { name = L["macabre"], npcid = 164093, questId = { 59140 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 32664480 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180644, speciesID = 2907, isKnown = false } }, note = "Requires 3 players to stand in the mushroom ring at  location and /dance with each other to summon the rare." },
             [164391] = { name = L["old_ardeite"], npcid = 164391, questId = { 59208, 62270 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 51105740 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180643, speciesID = 2908, isKnown = false } }, note = "Flies high up in the air. Use a nearby [Basket of Enchanted Wings] or [Pinch of Faerie Dust] to fly and aggro the rare." },
             [160448] = { name = L["hunter_vivian"], npcid = 160448, questId = { 59221 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 67465147 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 183091, checkId = 62246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179596, isKnown = false } } },
-            [164547] = { name = L["mystic_rainbowhorn"], npcid = 164547, questId = { 59235 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 65702809 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179586, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182179, checkId = 62434, isKnown = false } }, note = "Use the Great Horn of the Runestag nearby to summon the rare." },
-            [164415] = { name = L["skuld_vit"], npcid = 164415, questId = { 59220 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 37675917 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180146, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182183, checkId = 62439, isKnown = false } }, note = "A Night Fae member needs to [Soulshape] inside his cave to make the rare attackable." },
-            [167851] = { name = L["egg-tender_lehgo"], npcid = 167851, questId = { 60266 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 57862955 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179539, isKnown = false } }, note = "Break the eggs inside the cave to summon the rare." },
-            [171688] = { name = L["faeflayer"], npcid = 171688, questId = { 61184 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 68612765 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180144, isKnown = false } }, note = "Can get to his cave by either dropping from above or following a path below it." },
-            [165053] = { name = L["mymaen"], npcid = 165053, questId = { 59431 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 62102470 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179502, isKnown = false } }, note = "Kill Rotbriar Scrappers in the  area to summon the rare." },
+            [164547] = { name = L["mystic_rainbowhorn"], npcid = 164547, questId = { 59235 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 65702809 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179586, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182179, checkId = 62434, covenantBound = COVENANTS.NIGHTFAE, isKnown = false } }, note = "Use the Great Horn of the Runestag nearby to summon the rare." },
+            [164415] = { name = L["skuld_vit"], covenantBound = COVENANTS.NIGHTFAE, npcid = 164415, questId = { 59220 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 37675917 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180146, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 182183, checkId = 62439, covenantBound = COVENANTS.NIGHTFAE, isKnown = false } }, note = "A Night Fae member needs to [Soulshape] inside his cave to make the rare attackable." },
+            [167851] = { name = L["egg-tender_lehgo"], npcid = 167851, questId = { 60266 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 57862955 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179539, isKnown = false } }, note = "Break the eggs inside the cave to summon the rare." },
+            [171688] = { name = L["faeflayer"], npcid = 171688, questId = { 61184 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 68612765 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180144, isKnown = false } }, note = "Can get to his cave by either dropping from above or following a path below it." },
+            [165053] = { name = L["mymaen"], npcid = 165053, questId = { 59431 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 62102470 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179502, isKnown = false } }, note = "Kill Rotbriar Scrappers in the  area to summon the rare." },
             [167726] = { name = L["rootwrithe"], npcid = 167726, questId = { 60273 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 65104430 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179603, isKnown = false } }, note = "Interact with the 3 plants by the vignette to summon the rare." },
-            [167724] = { name = L["rotbriar_boggart"], npcid = 167724, questId = { 60258 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 65702430 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 175729, isKnown = false } }, note = "Talk to 'Daffodil' in the area to start the event." },
-            [171451] = { name = L["soultwister_cero"], npcid = 171451, questId = { 61177 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 72425175 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180164, isKnown = false } } },
-            [167721] = { name = L["the_slumbering_emperor"], npcid = 167721, questId = { 60290 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59304660 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 175711, isKnown = false } }, note = "Use any targetted AOE on the Strange Cloud to dissipate it and aggro the rare. [Phial of Ravenous Slime] works well too." },
-            [164147] = { name = L["wrigglemortis"], npcid = 164147, questId = { 59170 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58306180 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 181396, isKnown = false } }, note = "Pull the Wriggling Tendrill in the area to summon the rare." },
-            [163229] = { name = L["dustbrawl"], npcid = 163229, questId = { 58987 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48397717 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
+            [167724] = { name = L["rotbriar_boggart"], npcid = 167724, questId = { 60258 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 65702430 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 175729, isKnown = false } }, note = "Talk to 'Daffodil' in the area to start the event." },
+            [171451] = { name = L["soultwister_cero"], npcid = 171451, questId = { 61177 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 72425175 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180164, isKnown = false } } },
+            [167721] = { name = L["the_slumbering_emperor"], npcid = 167721, questId = { 60290 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 59304660 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 175711, isKnown = false } }, note = "Use any targetted AOE on the Strange Cloud to dissipate it and aggro the rare. [Phial of Ravenous Slime] works well too." },
+            [164147] = { name = L["wrigglemortis"], npcid = 164147, questId = { 59170 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 58306180 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 181396, isKnown = false } }, note = "Pull the Wriggling Tendrill in the area to summon the rare." },
+            [163229] = { name = L["dustbrawl"], npcid = 163229, questId = { 58987 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48397717 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
         },
     },
     [1533] = {
@@ -588,31 +598,32 @@ local rareDB = {
         minimapIcons = {},
         index = 8,
         expansion = EXPANSION.SHADOWLANDS,
+        covenantID = COVENANTS.KYRIAN,
         rares = {
-            [170548] = { name = L["sundancer"], npcid = 170548, questId = { 0 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 61409050 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180773, mountID = 1307, isKnown = false } }, note = "Mount on it with a combination of [Sunrider's Blessing] (altar located near one of his spawn areas) and [Skystrider Glider] (from Path of Ascension crafting) to obtain the mount." },
+            [170548] = { name = L["sundancer"], npcid = 170548, questId = { -1 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 61409050 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180773, mountID = 1307, isKnown = false } }, note = "Mount on it with a combination of [Sunrider's Blessing] (altar located near one of his spawn areas) and [Skystrider Glider] (from Path of Ascension crafting) to obtain the mount." },
             [170899] = { name = L["the_ascended_council"], npcid = 170899, questId = { 60977 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53498868 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 183741, mountID = 1426, isKnown = false } }, note = "Ring 5 Vespers of Bastion at the same time to spawn the rares, they will be at the coordinate location. Requires 5 players to ring the Vespers. Kill all 5 rares and loot the Cache of the Ascended for the mount." },
             [170932] = { name = L["cloudfeather_guardian"], npcid = 170932, questId = { 60978, 62191 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50435804 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180812, speciesID = 2925, isKnown = false } }, note = "Kill Anima-Starved Cloudfeather in the area to spawn the rare." },
             [163460] = { name = L["dionae"], npcid = 163460, questId = { 62650 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 41354887 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180856, speciesID = 2932, isKnown = false } }, note = "Talk to the nearby Stewart to start the event and summon the rare." },
             [171012] = { name = L["swelling_tear"], npcid = 171012, questId = { 61001, 61046, 61047 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 39604499 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180869, speciesID = 2940, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183605, isKnown = false } }, note = "Click the [Swelling Tear] to summon one of three rares. Tears can appear in multiple locations in the zone." },
             [171009] = { name = L["enforcer_aegeon"], npcid = 171009, questId = { 60998 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 51151953 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 184404, isKnown = false } }, note = "Kill enemies in the surrounding area until Aegeon spawns as a reinforcement." },
             [171008] = { name = L["unstable_memory"], npcid = 171008, questId = { 60997 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43482524 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 184413, isKnown = false } }, note = "Bring [Unstable Memory Fragments] on top of other fragments until you get 10 stacks of Instability to spawn the rare." },
-            [170659] = { name = L["basilofos_king_of_the_hill"], npcid = 170659, questId = { 60897, 62158 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48985031 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "When approaching the area, you will be marked with purple eyes. Stay marked for ~2 minutes for the rare to spawn." },
-            [171211] = { name = L["aspirant_eolis"], npcid = 171211, questId = { 61083 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 32592336 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183607, isKnown = false } }, note = "Loot a [Fragile Humility Scroll] at the area and use it on Aspirant Eolis to save him." },
-            [161527] = { name = L["beasts_of_bastion"], npcid = 161527, questId = { 0 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 55358024 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179485, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179486, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179487, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179488, isKnown = false } }, note = "Talk to 'Orator Kloe' to trigger the rare using the hologram next to her." },
-            [171189] = { name = L["bookkeeper_mnemis"], npcid = 171189, questId = { 59022 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 55826249 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 182682, isKnown = false } }, note = "Shares a spawn with the [Converted Praetors] in the area. If not up, kill Praetors for the rare to spawn." },
+            [170659] = { name = L["basilofos_king_of_the_hill"], npcid = 170659, questId = { 60897, 62158 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 48985031 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "When approaching the area, you will be marked with purple eyes. Stay marked for ~2 minutes for the rare to spawn." },
+            [171211] = { name = L["aspirant_eolis"], npcid = 171211, questId = { 61083 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 32592336 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183607, isKnown = false } }, note = "Loot a [Fragile Humility Scroll] at the area and use it on Aspirant Eolis to save him." },
+            [161527] = { name = L["beasts_of_bastion"], npcid = 161527, questId = { 58526 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 55358024 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179485, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179486, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179487, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179488, isKnown = false } }, note = "Talk to 'Orator Kloe' to trigger the rare using the hologram next to her." },
+            [171189] = { name = L["bookkeeper_mnemis"], npcid = 171189, questId = { 59022 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 55826249 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 182682, isKnown = false } }, note = "Shares a spawn with the [Converted Praetors] in the area. If not up, kill Praetors for the rare to spawn." },
             [170623] = { name = L["dark_watcher"], npcid = 170623, questId = { 60883 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 27823014 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184297, isKnown = false } }, note = "Go to the coordinate area, if you get the debuff [Ominous Gaze], the rare can be killed. Die to the nearby mobs and find the rare in Spirit form, talk to her and she will revive you, allowing you to kill her." },
-            [171011] = { name = L["demi_the_relic_hoarder"], npcid = 171011, questId = { 61069, 61000 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 37004180 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 183606, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183608, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183613, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183611, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183609, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183607, isKnown = false } }, note = "Casts [Anima Shield] starting at 99% reduction when engaged. Rare will flee around looking for help. Dealing damage to the rare reduces the effectiveness of Anima Shield." },
-            [171255] = { name = L["echo_of_aella"], npcid = 171255, questId = { 61082, 61091, 62251 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45656550 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180062, isKnown = false } }, note = "Patrols around the coordinate area. Initially neutral, speak to her to fight it. Loot comes from a chest after she's defeated." },
-            [160721] = { name = L["fallen_acolyte_erisne"], npcid = 160721, questId = { 58222 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 60427305 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180444, isKnown = false } } },
-            [160882] = { name = L["nikara_blackheart"], npcid = 160882, questId = { 58319 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51456859 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183608, isKnown = false } }, note = "Requires 3 players to channel on the Ancient Incense to summon the rare." },
+            [171011] = { name = L["demi_the_relic_hoarder"], npcid = 171011, questId = { 61069, 61000 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 37004180 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 183606, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183608, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183613, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183611, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183609, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183607, isKnown = false } }, note = "Casts [Anima Shield] starting at 99% reduction when engaged. Rare will flee around looking for help. Dealing damage to the rare reduces the effectiveness of Anima Shield." },
+            [171255] = { name = L["echo_of_aella"], npcid = 171255, questId = { 61082, 61091, 62251 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 45656550 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180062, isKnown = false } }, note = "Patrols around the coordinate area. Initially neutral, speak to her to fight it. Loot comes from a chest after she's defeated." },
+            [160721] = { name = L["fallen_acolyte_erisne"], npcid = 160721, questId = { 58222 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 60427305 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180444, isKnown = false } } },
+            [160882] = { name = L["nikara_blackheart"], npcid = 160882, questId = { 58319 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 51456859 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183608, isKnown = false } }, note = "Requires 3 players to channel on the Ancient Incense to summon the rare." },
             [160985] = { name = L["selena_the_reborn"], npcid = 160985, questId = { 58320 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 61295090 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183608, isKnown = false } }, note = "Requires 3 players to channel on the Ancient Incense to summon the rare." },
-            [167078] = { name = L["wingflayer_the_cruel"], npcid = 167078, questId = { 60314, 62197 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 40635306 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 182749, isKnown = false } }, note = "Requires a Kyrian member to channel their Anima Conductor into the Temple of Courage to spawn. Once done, use the Horn of Courage to bring the rare down." },
-            [160629] = { name = L["baedos"], npcid = 160629, questId = { 58648, 62192 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51344080 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Bring [Purians] to the nearby [Baedos' Fruit Barrel] to start the fight. Once Baedos reaches 50%, it will return to its original spawn point and spew a chest with loot." },
-            [171014] = { name = L["collector_astorestes"], npcid = 171014, questId = { 61002 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 66004367 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Requires you to collect tomes in a specific order" },
-            [171010] = { name = L["corrupted_clawguard"], npcid = 171010, questId = { 60999 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56904778 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Loot a [Discarded Phalynx Core] from Centurions around Bastion and insert it on the rare to trigger it." },
-            [158659] = { name = L["herculon"], npcid = 158659, questId = { 57705, 57708 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 42908265 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Loot [Weak Anima Motes] around the Vestibule of Eternity to power up the rare." },
-            [171327] = { name = L["reekmonger"], npcid = 171327, questId = { 0 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 30365517 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [156339] = { name = L["orstus_and_sotiros"], npcid = 156339, questId = { 61634 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 22432285 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Requires a Kyrian member to channel their Anima Conductor into the Citadel of Loyalty to spawn. Once done, go to the location an interact with the Black Bell to spawn the rares." },
+            [167078] = { name = L["wingflayer_the_cruel"], covenantBound = COVENANTS.KYRIAN, npcid = 167078, questId = { 60314, 62197 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 40635306 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 182749, isKnown = false } }, note = "Requires a Kyrian member to channel their Anima Conductor into the Temple of Courage to spawn. Once done, use the Horn of Courage to bring the rare down." },
+            [160629] = { name = L["baedos"], npcid = 160629, questId = { 58648, 62192 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 51344080 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Bring [Purians] to the nearby [Baedos' Fruit Barrel] to start the fight. Once Baedos reaches 50%, it will return to its original spawn point and spew a chest with loot." },
+            [171014] = { name = L["collector_astorestes"], npcid = 171014, questId = { 61002 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 66004367 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Requires you to collect tomes in a specific order" },
+            [171010] = { name = L["corrupted_clawguard"], npcid = 171010, questId = { 60999 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56904778 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Loot a [Discarded Phalynx Core] from Centurions around Bastion and insert it on the rare to trigger it." },
+            [158659] = { name = L["herculon"], npcid = 158659, questId = { 57705, 57708 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 42908265 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Loot [Weak Anima Motes] around the Vestibule of Eternity to power up the rare." },
+            [171327] = { name = L["reekmonger"], npcid = 171327, questId = { -1 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30365517 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [156339] = { name = L["orstus_and_sotiros"], covenantBound = COVENANTS.KYRIAN, npcid = 156339, questId = { 61634 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 22432285 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Requires a Kyrian member to channel their Anima Conductor into the Citadel of Loyalty to spawn. Once done, go to the location an interact with the Black Bell to spawn the rares." },
         },
     },
     [1536] = {
@@ -632,15 +643,16 @@ local rareDB = {
         minimapIcons = {},
         index = 9,
         expansion = EXPANSION.SHADOWLANDS,
+        covenantID = COVENANTS.NECROLORD,
         rares = {
-            [162741] = { name = L["gieger"], npcid = 162741, questId = { 58872 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 31603540 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182080, mountID = 1411, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 184298, isKnown = false } }, note = "Requires a Necrolord member to channel their Anima Conductor into the House of Constructs to spawn. Once done, pull the Final Threaf by the rare to activate it." },
-            [162690] = { name = L["nerissa_heartless"], npcid = 162690, questId = { 58851 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 66023532 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182084, mountID = 1373, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184179, isKnown = false } } },
-            [168147] = { name = L["sabriel_the_bonecleaver"], npcid = 168147, questId = { 58784 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51744439 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 181815, mountID = 1370, isKnown = false } }, note = "Has a small chance to spawn in place of one of the common fights in the Theater of Pain. Necrolord members can force this rare to spawn by channeling their Anima Conductor to the Theater of Pain." },
-            [162586] = { name = L["tahonta"], npcid = 162586, questId = { 58783 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 44215132 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182075, mountID = 1366, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 182190, isKnown = false } } },
+            [162741] = { name = L["gieger"], covenantBound = COVENANTS.NECROLORD, npcid = 162741, questId = { 58872 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 31603540 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182080, mountID = 1411, covenantBound = COVENANTS.NECROLORD, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 184298, isKnown = false } }, note = "Requires a Necrolord member to channel their Anima Conductor into the House of Constructs to spawn. Once done, pull the Final Threaf by the rare to activate it." },
+            [162690] = { name = L["nerissa_heartless"], npcid = 162690, questId = { 58851 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 66023532 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182084, mountID = 1373, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184179, isKnown = false } } },
+            [168147] = { name = L["sabriel_the_bonecleaver"], covenantBound = COVENANTS.NECROLORD, npcid = 168147, questId = { 58784 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51744439 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 181815, mountID = 1370, covenantBound = COVENANTS.NECROLORD, isKnown = false } }, note = "Has a small chance to spawn in place of one of the common fights in the Theater of Pain. Necrolord members can force this rare to spawn by channeling their Anima Conductor to the Theater of Pain." },
+            [162586] = { name = L["tahonta"], npcid = 162586, questId = { 58783 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 44215132 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182075, mountID = 1366, covenantBound = COVENANTS.NECROLORD, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 182190, isKnown = false } } },
             [162819] = { name = L["warbringer_malkorak"], npcid = 162819, questId = { 58889 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 33718016 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182085, mountID = 1372, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184288, isKnown = false } } },
             [157226] = { name = L["mixed_monstrosities"], npcid = 157226, questId = { 61718, 61719, 61720, 61721, 61722, 61723, 61724 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58197421 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 182079, mountID = 1410, isKnown = false }, { droptype = DROPTYPE.PET, itemID = 181270, speciesID = 2960, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 183903, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 184155, checkId = 62804, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184302, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184301, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184300, isKnown = false } }, note = "Gather ingredients from the surrounding mobs and toss them into the pool. Once 30 ingredients have been added, one of seven rares will spawn depending on the combination used. Kill each rare once to earn the toy." },
-            [162853] = { name = L["theater_of_pain"], npcid = 162853, questId = { 62786 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50354728 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 184062, mountID = 1437, isKnown = false } }, note = "Your first boss kill each day has a chance to drop the mount." },
-            [162711] = { name = L["deadly_dapperling"], npcid = 162711, questId = { 58868 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 76835707 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 181263, speciesID = 2953, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184280, isKnown = false } } },
+            [162853] = { name = L["theater_of_pain"], npcid = 162853, questId = { 62786 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 50354728 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 184062, mountID = 1437, isKnown = false } }, note = "Your first boss kill each day has a chance to drop the mount." },
+            [162711] = { name = L["deadly_dapperling"], npcid = 162711, questId = { 58868 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 76835707 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 181263, speciesID = 2953, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184280, isKnown = false } } },
             [159753] = { name = L["ravenomous"], npcid = 159753, questId = { 58004 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53841877 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 181283, speciesID = 2964, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184184, isKnown = false } } },
             [158406] = { name = L["scunner"], npcid = 158406, questId = { 58006 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 62107580 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 181267, speciesID = 2957, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184287, isKnown = false } } },
             [159886] = { name = L["sister_chelicerae"], npcid = 159886, questId = { 58003 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 55502361 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 181172, speciesID = 2948, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184289, isKnown = false } }, note = "Break the [Intricate Webbing] at the entrance of the cave to spawn the rare." },
@@ -648,16 +660,16 @@ local rareDB = {
             [162727] = { name = L["bubbleblood"], npcid = 162727, questId = { 58870 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 52663542 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 184476, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184290, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184154, isKnown = false } } },
             [159105] = { name = L["collector_kash"], npcid = 159105, questId = { 58005 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49012351 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184188, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184181, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184189, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184182, isKnown = false } } },
             [157058] = { name = L["corpsecutter_moroc"], npcid = 157058, questId = { 58335 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 26392633 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184177, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 184176, isKnown = false } } },
-            [162797] = { name = L["deepscar"], npcid = 162797, questId = { 58878 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 46734550 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182191, isKnown = false } }, note = "Can spawn in any of the 3 inner towers in the Theater of Pain area." },
+            [162797] = { name = L["deepscar"], npcid = 162797, questId = { 58878 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 46734550 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182191, isKnown = false } }, note = "Can spawn in any of the 3 inner towers in the Theater of Pain area." },
             [162669] = { name = L["devourus"], npcid = 162669, questId = { 58835 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45052842 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184178, isKnown = false } } },
-            [162588] = { name = L["gristlebeak"], npcid = 162588, questId = { 58837 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 57795155 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182196, isKnown = false } }, note = "Flies high up in the air. Find and break [Unusual Eggs] to bring the rare down." },
-            [161105] = { name = L["indomitable_schmitd"], npcid = 161105, questId = { 58332 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38794333 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182192, isKnown = false } }, note = "Break his Imunity Shield by throwing [Fuseless Special] bombs around his area onto him." },
+            [162588] = { name = L["gristlebeak"], npcid = 162588, questId = { 58837 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 57795155 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182196, isKnown = false } }, note = "Flies high up in the air. Find and break [Unusual Eggs] to bring the rare down." },
+            [161105] = { name = L["indomitable_schmitd"], npcid = 161105, questId = { 58332 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 38794333 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182192, isKnown = false } }, note = "Break his Imunity Shield by throwing [Fuseless Special] bombs around his area onto him." },
             [174108] = { name = L["necromantic_anomaly"], npcid = 174108, questId = { 62369 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 72872891 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 181810, isKnown = false } } },
             [161857] = { name = L["nirvaska_the_summoner"], npcid = 161857, questId = { 58629 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50346328 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183700, isKnown = false } }, note = "Only available during the [Deadly Reminder] World Quest." },
             [162767] = { name = L["pesticide"], npcid = 162767, questId = { 58875 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53726132 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 182205, isKnown = false } } },
             [160059] = { name = L["taskmaster_xox"], npcid = 160059, questId = { 58091 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50562011 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 184186, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 184192, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 184187, isKnown = false } }, note = "Shares a spawn with Taskmaster Mortis, Taskmaster Bloata and Taskmaster Joyless. If not up, simply kill taskmaster until it spawns." },
             [162180] = { name = L["thread_mistress_leeda"], npcid = 162180, questId = { 58678 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 24184297 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184180, isKnown = false } }, note = "Kill [Razorthread Weavers] around the coordinate area to spawn the rare." },
-            [157125] = { name = L["zargox_the_reborn"], npcid = 157125, questId = { 59290 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 28965138 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 184285, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 181804, isKnown = false } }, note = "To spawn this rare, complete the quest [Ani-Matter Animator], then grab an [Ani-Matter Orb] from Synder Sixfold and use it at the bone pile at the coordinate location." },
+            [157125] = { name = L["zargox_the_reborn"], npcid = 157125, questId = { 59290 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 28965138 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184285, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 181804, covenantBound = COVENANTS.NECROLORD, isKnown = false } }, note = "To spawn this rare, complete the quest [Ani-Matter Animator], then grab an [Ani-Matter Orb] from Synder Sixfold and use it at the bone pile at the coordinate location." },
         },
     },
     [1525] = {
@@ -677,33 +689,34 @@ local rareDB = {
         minimapIcons = {},
         index = 10,
         expansion = EXPANSION.SHADOWLANDS,
+        covenantID = COVENANTS.VENTHYR,
         rares = {
             [166521] = { name = L["famu_the_infinite"], npcid = 166521, questId = { 59869 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 62484716 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180582, mountID = 1379, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183739, isKnown = false } } },
-            [165290] = { name = L["harika_the_horrid"], npcid = 165290, questId = { 59612 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45847919 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180461, mountID = 1310, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183720, isKnown = false } }, note = "Repair and use the nearby [Dredterror Ballista] to activate the rare." },
-            [166679] = { name = L["hopecrusher"], npcid = 166679, questId = { 59900 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51985179 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180581, mountID = 1298, isKnown = false } } },
-            [166292] = { name = L["bog_beast"], npcid = 166292, questId = { 59823 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35003230 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180588, speciesID = 2896, isKnown = false } }, note = "During the World Quest [Muck It] Up, Using [Primordial Muck] has a chance to spawn the rare." },
-            [165152] = { name = L["leeched_soul"], npcid = 165152, questId = { 59580 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 67978179 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180585, speciesID = 2897, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183736, isKnown = false } }, note = "Complete the RP event to earn the loot." },
+            [165290] = { name = L["harika_the_horrid"], covenantBound = COVENANTS.VENTHYR, npcid = 165290, questId = { 59612 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45847919 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180461, mountID = 1310, covenantBound = COVENANTS.VENTHYR, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183720, isKnown = false } }, note = "Repair and use the nearby [Dredterror Ballista] to activate the rare." },
+            [166679] = { name = L["hopecrusher"], npcid = 166679, questId = { 59900 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 51985179 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 180581, mountID = 1298, covenantBound = COVENANTS.VENTHYR, isKnown = false } } },
+            [166292] = { name = L["bog_beast"], npcid = 166292, questId = { 59823 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 35003230 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180588, speciesID = 2896, isKnown = false } }, note = "During the World Quest [Muck It] Up, Using [Primordial Muck] has a chance to spawn the rare." },
+            [165152] = { name = L["leeched_soul"], npcid = 165152, questId = { 59580 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 67978179 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180585, speciesID = 2897, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 183736, isKnown = false } }, note = "Complete the RP event to earn the loot." },
             [170048] = { name = L["manifestation_of_wrath"], npcid = 170048, questId = { 60729 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49003490 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180585, speciesID = 2897, isKnown = false } }, note = "During the World Quest [Swarming Souls], Recovering Lost Souls has a chance to spawn the rare." },
             [160675] = { name = L["scrivener_lenua"], npcid = 160675, questId = { 58213 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38316914 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180587, speciesID = 2893, isKnown = false } }, note = "Grab multiple [Forbidden Tomes] in the area and bring them to the Forbidden Library to spawn the rare." },
-            [155779] = { name = L["tomb_burster"], npcid = 155779, questId = { 56877 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43007910 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180584, speciesID = 2891, isKnown = false } }, note = "Kill all [Crawler Eggs] in the area to trigger an event - Rare will spawn after a few waves of spider mobs." },
-            [160857] = { name = L["sire_ladinas"], npcid = 160857, questId = { 58263 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 34045555 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 180873, isKnown = false } }, note = "Pick up a [Remnant of Light] nearby and use it on [Crazed Ash Ghoul]." },
-            [165253] = { name = L["tollkeeper_varaboss"], npcid = 165253, questId = { 59595 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 66507080 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 179363, checkId = 60517, isKnown = false } } },
-            [160821] = { name = L["worldedge_gorger"], npcid = 160821, questId = { 58259 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38607200 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 180583, checkId = 61188, isKnown = false } }, note = "Obtain an [Enticing Anima] from World Reavers, Devourers and Mites in the Banewood and the Endmire. Use it to light the Worldedge Braziers and summon the rare." },
-            [166393] = { name = L["amalgamation_of_filth"], npcid = 166393, questId = { 59854 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53247300 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183729, isKnown = false } }, note = "Only available during the World Quest [Dirty Job: Demolition Detail]." },
-            [164388] = { name = L["amalgamation_of_light"], npcid = 164388, questId = { 59584 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 25304850 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179926, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179924, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179653, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179925, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 180688, isKnown = false } }, note = "Unlock the 3 Light Prisons at the vignette area to spawn the rare." },
+            [155779] = { name = L["tomb_burster"], npcid = 155779, questId = { 56877 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 43007910 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 180584, speciesID = 2891, isKnown = false } }, note = "Kill all [Crawler Eggs] in the area to trigger an event - Rare will spawn after a few waves of spider mobs." },
+            [160857] = { name = L["sire_ladinas"], npcid = 160857, questId = { 58263 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 34045555 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 180873, isKnown = false } }, note = "Pick up a [Remnant of Light] nearby and use it on [Crazed Ash Ghoul]." },
+            [165253] = { name = L["tollkeeper_varaboss"], npcid = 165253, questId = { 59595 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 66507080 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 179363, checkId = 60517, isKnown = false } } },
+            [160821] = { name = L["worldedge_gorger"], npcid = 160821, questId = { 58259 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 38607200 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 180583, checkId = 61188, isKnown = false } }, note = "Obtain an [Enticing Anima] from World Reavers, Devourers and Mites in the Banewood and the Endmire. Use it to light the Worldedge Braziers and summon the rare." },
+            [166393] = { name = L["amalgamation_of_filth"], npcid = 166393, questId = { 59854 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 53247300 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183729, isKnown = false } }, note = "Only available during the World Quest [Dirty Job: Demolition Detail]." },
+            [164388] = { name = L["amalgamation_of_light"], npcid = 164388, questId = { 59584 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25304850 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 179926, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179924, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179653, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 179925, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 180688, isKnown = false } }, note = "Unlock the 3 Light Prisons at the vignette area to spawn the rare." },
             [170434] = { name = L["amalgamation_of_sin"], npcid = 170434, questId = { 60836 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 65782914 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183730, isKnown = false } }, note = "During the World Quest [Summon Your Sins], pick the [Catalyst of Power] for a chance to obtain [Amalgamation of Sin], then use the item to summon the rare." },
             [166576] = { name = L["azgar"], npcid = 166576, questId = { 59893 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35817052 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183731, isKnown = false } } },
-            [165206] = { name = L["endlurker"], npcid = 165206, questId = { 59582 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 66555946 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 179927, isKnown = false } }, note = "Loot a nearby [Anima Stake] and use it on the portal to spawn the rare." },
+            [165206] = { name = L["endlurker"], npcid = 165206, questId = { 59582 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 66555946 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 179927, isKnown = false } }, note = "Loot a nearby [Anima Stake] and use it on the portal to spawn the rare." },
             [166710] = { name = L["executioner_aatron"], npcid = 166710, questId = { 59913 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 37084742 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183737, isKnown = false } }, note = "Defeat the 3 [Stone Legion Punisher] in his area to remove his immunity shield." },
             [161310] = { name = L["executioner_adrastia"], npcid = 161310, questId = { 58441 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43055183 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180502, isKnown = false } } },
-            [159496] = { name = L["forgemaster_madalav"], npcid = 159496, questId = { 61618 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 32641545 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180939, isKnown = false } }, note = "Click Madalav's Hammer on the nearby anvil to summon him." },
-            [167464] = { name = L["grand_arcanist_dimitri"], npcid = 167464, questId = { 60173 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 20485298 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180503, isKnown = false } }, note = "Inside the mansion. Kill the 4 [Shrouded Ritualist] channeling the nearby corpse to spawn the rare." },
-            [166993] = { name = L["huntmaster_petrus"], npcid = 166993, questId = { 60022 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 61717949 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180705, isKnown = false } } },
+            [159496] = { name = L["forgemaster_madalav"], covenantBound = COVENANTS.VENTHYR, npcid = 159496, questId = { 61618 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 32641545 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180939, isKnown = false } }, note = "Click Madalav's Hammer on the nearby anvil to summon him." },
+            [167464] = { name = L["grand_arcanist_dimitri"], npcid = 167464, questId = { 60173 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 20485298 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180503, isKnown = false } }, note = "Inside the mansion. Kill the 4 [Shrouded Ritualist] channeling the nearby corpse to spawn the rare." },
+            [166993] = { name = L["huntmaster_petrus"], npcid = 166993, questId = { 60022 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 61717949 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 180705, isKnown = false } } },
             [160640] = { name = L["innervus"], npcid = 160640, questId = { 58210 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 21803590 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183735, isKnown = false } }, note = "Inside a locked crypt. Loot [Scorched Crypt Key] from nearby 'Feral Ritualists' to unlock it." },
-            [161891] = { name = L["lord_mortegore"], npcid = 161891, questId = { 58633 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 75976161 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180501, isKnown = false } }, note = "Loot 4 [Mortegore Scrolls] from mobs in the area and use it on the sigils in the area to spawn the rare." },
+            [161891] = { name = L["lord_mortegore"], npcid = 161891, questId = { 58633 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 75976161 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180501, isKnown = false } }, note = "Loot 4 [Mortegore Scrolls] from mobs in the area and use it on the sigils in the area to spawn the rare." },
             [162481] = { name = L["sinstone_hoarder"], npcid = 162481, questId = { 62252 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 67443048 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183732, isKnown = false } }, note = "Attempt to loot the [Catacombs Cache] and the rare will reveal itself." },
             [159503] = { name = L["stonefist"], npcid = 159503, questId = { 62220 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 31312324 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 180488, isKnown = false } } },
-            [160392] = { name = L["soulstalker_doina"], npcid = 160392, questId = { 58130 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 78934975 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Inside a tower in Halls of Atonement. Will run away from you and go through Blood Mirrors at 75% and 40%, and needs to be followed." },
+            [160392] = { name = L["soulstalker_doina"], npcid = 160392, questId = { 58130 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 78934975 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Inside a tower in Halls of Atonement. Will run away from you and go through Blood Mirrors at 75% and 40%, and needs to be followed." },
         },
     },
     [1543] = {
@@ -723,6 +736,7 @@ local rareDB = {
         minimapIcons = {},
         index = 11,
         expansion = EXPANSION.SHADOWLANDS,
+        --covenantID = COVENANTS.NONE,
         rares = {
             [154330] = { name = L["eternas_the_tormentor"], npcid = 154330, questId = { 57509 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 19194608 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 183407, speciesID = 3037, isKnown = false } } },
             [157833] = { name = L["borr-geth"], npcid = 157833, questId = { 57469 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 39014119 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 184312, isKnown = false } } },
@@ -734,36 +748,36 @@ local rareDB = {
             [171317] = { name = L["conjured_death"], npcid = 171317, questId = { 61106 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 27731305 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 183887, isKnown = false } } },
             [169827] = { name = L["ekphoras_herald_of_grief"], npcid = 169827, questId = { 60666 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 42342108 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 184105, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 182328, isKnown = false } }, note = "With 3 other players, stand on the corners of the platform and cast [Convocation of Grief] to summon the rare." },
             [170302] = { name = L["talaporas_herald_of_pain"], npcid = 170302, questId = { 60789 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28701204 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 184107, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 182326, isKnown = false } } },
-            [157964] = { name = L["adjutant_dekaris"], npcid = 157964, questId = { 57482 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25923116 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "On top of a large jutting rock." },
-            [160770] = { name = L["darithis_the_bleak"], npcid = 160770, questId = { 62281 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 60964805 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "In cave" },
-            [158025] = { name = L["darklord_taraxis"], npcid = 158025, questId = { 62282 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49128175 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [170711] = { name = L["dolos_deaths_knife"], npcid = 170711, questId = { 0 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28086058 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [170774] = { name = L["eketra_the_impaler"], npcid = 170774, questId = { 60909 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28086058 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [175012] = { name = L["ikras_the_devourer"], npcid = 175012, questId = { 62788 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30775000 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Flies around Perdition Hold. This is a good place to pull him." },
-            [158278] = { name = L["nascent_devourer"], npcid = 158278, questId = { 57573 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45507376 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "In small cave" },
-            [164064] = { name = L["obolos_prime_adjutant"], npcid = 164064, questId = { 60667 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48801830 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [166398] = { name = L["soulforger_rhovus"], npcid = 166398, questId = { 60834 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35974156 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [170731] = { name = L["thanassos_deaths_voice"], npcid = 170731, questId = { 60914 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 27397152 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [172862] = { name = L["yero_the_skittish"], npcid = 172862, questId = { 61568 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 37676591 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Approach the Rare and then follow him down into a nearby cave where he becomes hostile." },
+            [157964] = { name = L["adjutant_dekaris"], npcid = 157964, questId = { 57482 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25923116 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "On top of a large jutting rock." },
+            [160770] = { name = L["darithis_the_bleak"], npcid = 160770, questId = { 62281 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 60964805 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "In cave" },
+            [158025] = { name = L["darklord_taraxis"], npcid = 158025, questId = { 62282 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49128175 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [170711] = { name = L["dolos_deaths_knife"], npcid = 170711, questId = { 60909 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28086058 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [170774] = { name = L["eketra_the_impaler"], npcid = 170774, questId = { 60915 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28086058 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [175012] = { name = L["ikras_the_devourer"], npcid = 175012, questId = { 62788 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30775000 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Flies around Perdition Hold. This is a good place to pull him." },
+            [158278] = { name = L["nascent_devourer"], npcid = 158278, questId = { 57573 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45507376 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "In small cave" },
+            [164064] = { name = L["obolos_prime_adjutant"], npcid = 164064, questId = { 60667 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48801830 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [166398] = { name = L["soulforger_rhovus"], npcid = 166398, questId = { 60834 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35974156 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [170731] = { name = L["thanassos_deaths_voice"], npcid = 170731, questId = { 60914 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 27397152 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [172862] = { name = L["yero_the_skittish"], npcid = 172862, questId = { 61568 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 37676591 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Approach the Rare and then follow him down into a nearby cave where he becomes hostile." },
             [168693] = { name = L["cyrixia_the_willbreaker"], npcid = 168693, questId = { 61346 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 28712513 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 183070, checkId = 63164, isKnown = false } } },
             [162844] = { name = L["dath_rezara_lord_of_blades"], npcid = 162844, questId = { 61140 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 19205740 }, bothphases = true, loot = { { droptype = DROPTYPE.QUEST, itemID = 183066, checkId = 63160, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 183067, checkId = 63161, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 183068, checkId = 63162, isKnown = false } } },
-            [169102] = { name = L["agonix"], npcid = 169102, questId = { 61136 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 28204450 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [170787] = { name = L["akros_deaths_hammer"], npcid = 170787, questId = { 60920 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 34087453 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [162452] = { name = L["dartanos_flayer_of_souls"], npcid = 162452, questId = { 59230 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25831479 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "On the upper platforms of the Tremaculum. Use the teleport pad in the area to reach the event area." },
-            [158314] = { name = L["drifting_sorrow"], npcid = 158314, questId = { 59183 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 31982122 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Kill [Agonizing Shade] near the hovering orb to activate the boss." },
-            [172523] = { name = L["houndmaster_vasanok"], npcid = 172523, questId = { 62209 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 60456478 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [162965] = { name = L["huwerath"], npcid = 162965, questId = { 58918 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 20782968 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [170692] = { name = L["krala_deaths_wings"], npcid = 170692, questId = { 60903 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 30846866 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [171316] = { name = L["malevolent_stygia"], npcid = 171316, questId = { 61125 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 27311754 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "In small cave" },
-            [172207] = { name = L["odalrik"], npcid = 172207, questId = { 62618 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 38642880 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [162845] = { name = L["orrholyn_lord_of_bloodletting"], npcid = 162845, questId = { 60991 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25364875 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [175821] = { name = L["ratgusher"], npcid = 175821, questId = { 63044 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 22674223 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, cave = { coord = { 20813927 } }, note = "In cave" },
-            [162829] = { name = L["razkazzar_lord_of_axes"], npcid = 162829, questId = { 60992 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 26173744 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [172521] = { name = L["sanngror_the_torturer"], npcid = 172521, questId = { 62210 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 55626318 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, cave = { coord = { 55806753 } }, note = "If he is not attackable, wait until he is not experimenting on souls." },
-            [172524] = { name = L["skittering_broodmother"], npcid = 172524, questId = { 62211 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 61737795 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, cave = { coord = { 59268001 } }, note = "In cave" },
-            [165047] = { name = L["soulsmith_yol-mattar"], npcid = 165047, questId = { 59441 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 36253744 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [156203] = { name = L["stygian_incinerator"], npcid = 156203, questId = { 62539 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 36844480 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false } },
-            [173086] = { name = L["valis_the_cruel"], npcid = 173086, questId = { 61728 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 40705959 }, bothphases = true, loot = { droptype = DROPTYPE.UNKNOWN, itemID = 0, isKnown = false }, note = "Interact with the 3 [Rune of Cruelty] in the area to spawn the event. The runes inflict [Cruel Rebuke], so be careful to not die." },
+            [169102] = { name = L["agonix"], npcid = 169102, questId = { 61136 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 28204450 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [170787] = { name = L["akros_deaths_hammer"], npcid = 170787, questId = { 60920 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 34087453 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [162452] = { name = L["dartanos_flayer_of_souls"], npcid = 162452, questId = { 59230 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25831479 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "On the upper platforms of the Tremaculum. Use the teleport pad in the area to reach the event area." },
+            [158314] = { name = L["drifting_sorrow"], npcid = 158314, questId = { 59183 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 31982122 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Kill [Agonizing Shade] near the hovering orb to activate the boss." },
+            [172523] = { name = L["houndmaster_vasanok"], npcid = 172523, questId = { 62209 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 60456478 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [162965] = { name = L["huwerath"], npcid = 162965, questId = { 58918 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 20782968 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [170692] = { name = L["krala_deaths_wings"], npcid = 170692, questId = { 60903 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 30846866 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [171316] = { name = L["malevolent_stygia"], npcid = 171316, questId = { 61125 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 27311754 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "In small cave" },
+            [172207] = { name = L["odalrik"], npcid = 172207, questId = { 62618 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 38642880 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [162845] = { name = L["orrholyn_lord_of_bloodletting"], npcid = 162845, questId = { 60991 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 25364875 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [175821] = { name = L["ratgusher"], npcid = 175821, questId = { 63044 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 22674223 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, cave = { coord = { 20813927 } }, note = "In cave" },
+            [162829] = { name = L["razkazzar_lord_of_axes"], npcid = 162829, questId = { 60992 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 26173744 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [172521] = { name = L["sanngror_the_torturer"], npcid = 172521, questId = { 62210 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 55626318 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, cave = { coord = { 55806753 } }, note = "If he is not attackable, wait until he is not experimenting on souls." },
+            [172524] = { name = L["skittering_broodmother"], npcid = 172524, questId = { 62211 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 61737795 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, cave = { coord = { 59268001 } }, note = "In cave" },
+            [165047] = { name = L["soulsmith_yol-mattar"], npcid = 165047, questId = { 59441 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 36253744 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [156203] = { name = L["stygian_incinerator"], npcid = 156203, questId = { 62539 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 36844480 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } } },
+            [173086] = { name = L["valis_the_cruel"], npcid = 173086, questId = { 61728 }, type = RARETYPE.UNCOMMON, faction = FACTION.ALL, coord = { 40705959 }, bothphases = true, loot = { { droptype = DROPTYPE.ANIMA_ONLY, itemID = 0, isKnown = false } }, note = "Interact with the 3 [Rune of Cruelty] in the area to spawn the event. The runes inflict [Cruel Rebuke], so be careful to not die." },
         },
     },
 }
@@ -826,7 +840,10 @@ local dbDefaults = {
             hideBlueprintOnly = false,
             hideItemOnly = false,
             hideTransmogOnly = false,
+            hideAnimaOnly = false,
             showAtMaxLevel = false,
+            showCovenantBoundRares = false,
+            showCovenantBoundLoot = false,
             showWarfrontOnZoneName = true,
             showWarfrontTitle = "all",
             showWarfrontInMenu = true,
@@ -854,18 +871,22 @@ local dbDefaults = {
             hideQuestOnly = false, -- Loot
             hideBlueprintOnly = false, -- Loot
             hideItemOnly = false, -- Loot
-            hideTransmogOnly = false,
+            hideTransmogOnly = false, -- Loot
+            hideAnimaOnly = false, -- Loot
             whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false },
             worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
             alwaysShowWorldboss = true,
             ignoreAssault = false,
+            showCovenantBoundRares = false,
+            showCovenantBoundLoot = false,
         },
         lootwindow = {
             compactMode = "amount",
-            AlsohideNotes = false,
+            alsohidenotes = false,
             compactModeAmount = 3,
+            showCovenantBoundLoot = false,
         },
         colors = {
             colorizeDrops = true,
@@ -902,6 +923,8 @@ local dbDefaults = {
             showWorldmapIcons = true,
             showOnlyAtPhase = true,
             showOnlyAtMaxLevel = false,
+            showCovenantBoundRares = false,
+            showCovenantBoundLoot = false,
             clickToTomTom = true,
             worldmapIconSize = 13,
             worldmapIconAlpha = 1,
@@ -917,6 +940,7 @@ local dbDefaults = {
             hideBlueprintOnly = false,
             hideItemOnly = false,
             hideTransmogOnly = false,
+            hideAnimaOnly = false,
             whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false },
             alwaysShowWorldboss = true,
         },
@@ -933,6 +957,9 @@ local dbDefaults = {
             enableLevelUpChatMessage = true,
             disableBackground = false,
         },
+        debug = {
+            printDebug = false,
+        },
     },
     char = {
         selectedZone = 14,
@@ -940,6 +967,7 @@ local dbDefaults = {
     global = {
         printCompatibilityMessage1 = true,
         printCompatibilityMessage2 = true,
+        debug = false,
     },
 }
 
@@ -1099,14 +1127,20 @@ local function isNPCUpForPlayerFaction(mapid, npcid)
 end
 
 local function isQuestCompleted(mapid, npcid)
-    if rareDB[mapid].rares[npcid].questId[1] <= 0 then
-        return false
-    else
+    if rareDB[mapid].rares[npcid].questId == nil or rareDB[mapid].rares[npcid].questId[1] <= 0 then return false end
+    if rareDB[mapid].expansion == EXPANSION.BFA then -- BfA has Alliance/Horde ID's.
         for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
             if C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
                 return true
             end
         end
+    elseif rareDB[mapid].expansion == EXPANSION.SHADOWLANDS then -- Shadowlands has multiple questID's for a few Rare's so we need to iterate to see if all are completed.
+        for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+            if not C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+                return false
+            end
+        end
+        return true
     end
     return false
 end
@@ -1166,6 +1200,7 @@ local function colorText(text, color, noreset)
 end
 
 local function DebugPrint(text, color)
+    if WarfrontRareTracker.db.profile.debug.printDebug == false then return end
     if text == nil or text == "" then return end
     if color == nil then color = colors.lightcyan end
     print(colorText("[WRT] ", colors.orange)..colorText(text, color))
@@ -1213,39 +1248,74 @@ local function getColoredStatusText(mapid, npcid)
     end
 end
 
-local dropHash = {}
-local dropTable = {}
+local function showDropTextCovenantCheck(mapid, npcid, index) -- for getColoredDropText(mapid, npcid) If needed make it universal! Looks like a smal portion of showRare but per loot for coloring. Might make a universal check aas I need one for lootToolTip too!
+    if rareDB[mapid].expansion ~= EXPANSION.SHADOWLANDS then return true end
+    if index == nil then index = 1 end
+    if rareDB[mapid].rares[npcid].loot[index] == nil then return false end
+    if rareDB[mapid].rares[npcid].loot[index].covenantBound then
+        if not WarfrontRareTracker.db.profile.menu.useMasterfilter then
+            --DebugPrint("displayCovenantLootWindow(): menu - name: " .. rareDB[mapid].rares[npcid].name)
+            if WarfrontRareTracker.db.profile.menu.showCovenantBoundLoot == true and rareDB[mapid].rares[npcid].loot[index].covenantBound ~= currentPlayerCovenant then
+                --DebugPrint("displayCovenantLootWindow(): showCovenantBoundLoot Returns FALSE")
+                return false
+            end
+        else
+            --DebugPrint("displayCovenantLootWindow(): Master filer name: " .. rareDB[mapid].rares[npcid].name .. ", loot="..tostring(rareDB[mapid].rares[npcid].loot[index].droptype))
+            if WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundLoot == true and rareDB[mapid].rares[npcid].loot[index].covenantBound ~= currentPlayerCovenant then
+                --DebugPrint("displayCovenantLootWindow(): showCovenantBoundLoot Returns FALSE")
+                return false
+            end
+        end
+    end
+    return true
+end
+
 local function getColoredDropText(mapid, npcid)
+    local text = ""
     if rareDB[mapid].rares[npcid].loot == nil then
-        return "nil"
+        text =  "nil"
     end
     if #rareDB[mapid].rares[npcid].loot == 0 then
-        return DROPTYPE.UNKNOWN
-    elseif #rareDB[mapid].rares[npcid].loot == 1 then
-        if WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[1].isKnown then
-            return colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
-        elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[1].isKnown then
-            return colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
-        else
-            return rareDB[mapid].rares[npcid].loot[1].droptype
+        text =  DROPTYPE.UNKNOWN
+        -- Cropped down as the Iterarer works with 1 entry!!
+    -- elseif #rareDB[mapid].rares[npcid].loot == 1 and showDropTextCovenantCheck(mapid, npcid, 1) then
+    --     if WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[1].isKnown then
+    --         text = colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
+    --     elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[1].isKnown then
+    --         text = colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
+    --     else
+    --         text = "NYI" -- rareDB[mapid].rares[npcid].loot[1].droptype
+    --     end
+    -- else
+    elseif #rareDB[mapid].rares[npcid].loot > 0 then
+        local i
+        for i = 1, #rareDB[mapid].rares[npcid].loot, 1 do
+            --if showDropTextCovenantCheck(mapid, npcid, i) then
+                if string.len(text) > 1 then
+                    text = text .. colorText(", ", colors.yellow)
+                end
+                if rareDB[mapid].rares[npcid].loot[i].covenantBound and rareDB[mapid].rares[npcid].loot[i].covenantBound ~= currentPlayerCovenant then
+                    text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, colors.red)
+                elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[i].isKnown then
+                    text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
+                elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[i].isKnown then
+                    text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
+                else
+                    text = text .. rareDB[mapid].rares[npcid].loot[i].droptype
+                end
+            --else
+                --text = colorText("Covenant Bound!!!", colors.red)
+                --text =  DROPTYPE.UNKNOWN
+            --end
         end
     else
-        local text = ""
-        local i
-        for i = 1, #rareDB[mapid].rares[npcid].loot do
-            if string.len(text) > 1 then
-                text = text .. colorText(", ", colors.yellow)
-            end
-            if WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[i].isKnown then
-                text = text ..  colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
-            elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[i].isKnown then
-                text = text ..  colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
-            else
-                text = text ..  rareDB[mapid].rares[npcid].loot[i].droptype
-            end
-        end
-        return text
+        text =  DROPTYPE.UNKNOWN
+        DebugPrint(ColorizeText(format("Function getColoredDropText(%d, %d): ", mapid, npcid), colors.yellow) .. "ELSE!!!!!!!!")
     end
+    if string.len(text) == 0 then
+        text = colorText("Covenant Bound", colors.red)
+    end
+    return text
 end
 
 local function getColoredPercentage(percentage)
@@ -1300,10 +1370,8 @@ local function getDBZoneType(mapid)
         return DB_ZONE_TYPE_UNKNOWN
     elseif rareDB[mapid].zoneType == nil then
         return DB_ZONE_TYPE_UNKNOWN
-    else--if rareDB[mapid].zoneType == DB_ZONE_TYPE_UNTRACKED or rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED then
+    else
         return rareDB[mapid].zoneType
-    -- else
-    --     return DB_ZONE_TYPE_UNKNOWN
     end
 end
 
@@ -1451,7 +1519,7 @@ local function rareHasAllLoot(mapid, npcid)
     return true
 end
 
-local function rareHasLootType(mapid, npcid, whitelist)
+local function checkWhitelist(mapid, npcid, whitelist)
     if type(whitelist) ~= "table" then
         return false
     end
@@ -1462,6 +1530,22 @@ local function rareHasLootType(mapid, npcid, whitelist)
         end
     end
     return false
+end
+
+local function rareIsPlayerCovenant(mapid, npcid)
+    return rareDB[mapid].rares[npcid].covenantBound == currentPlayerCovenant
+end
+
+local function rareHasOnlyCovenantLoot(mapid, npcid)
+    local i
+    local count = 0
+    for i = 1, #rareDB[mapid].rares[npcid].loot do
+        if rareDB[mapid].rares[npcid].loot[i].covenantBound then
+            count = count + 1
+        end
+    end
+    --DebugPrint("rareHasOnlyCovenantLoot() END RESULT -> Name="..rareDB[mapid].rares[npcid].name..", Count="..count.."/"..tostring(#rareDB[mapid].rares[npcid].loot).."   RETURN (count == #rareDB[mapid].rares[npcid].loot)= " .. tostring(count == #rareDB[mapid].rares[npcid].loot), colors.turqoise)
+    return count == #rareDB[mapid].rares[npcid].loot
 end
 
 local function rareHasLegitLoot(mapid, npcid)
@@ -1519,13 +1603,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             end
         end
-
+        
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
-            if WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[mapid].zoneType == DB_ZONE_TYPE_TRACKED and rareDB[mapid].hidden == true  then
-                return false
-            elseif WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtMaxLevel and not IsPlayerWarfrontLevel() then
-                return false
-            end
             if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == RARETYPE.WORLDBOSS then
@@ -1544,6 +1623,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.GEAR_ONLY then
                 return false
+            elseif WarfrontRareTracker.db.profile.worldmapicons.hideAnimaOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.ANIMA_ONLY then
+                return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.QUEST then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideBlueprintOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.BLUEPRINT then
@@ -1552,8 +1633,14 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideTransmogOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.TRANSMOG then
                 return false
+            elseif rareDB[mapid].rares[npcid].covenantBound and not WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundRares and rareDB[mapid].rares[npcid].covenantBound ~= currentPlayerCovenant then
+                --DebugPrint("ShowRare(MasterFiler): covenantBound hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
+            elseif not WarfrontRareTracker.db.profile.worldmapicons.showCovenantBoundLoot and rareHasOnlyCovenantLoot(mapid, npcid) then
+                --DebugPrint("ShowRare(MasterFiler): covenantBoundLoot hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
-                return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.worldmapicons.whitelist)
+                return checkWhitelist(mapid, npcid, WarfrontRareTracker.db.profile.worldmapicons.whitelist)
             else
                 return true
             end
@@ -1574,6 +1661,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.GEAR_ONLY then
                 return false
+            elseif WarfrontRareTracker.db.profile.menu.hideAnimaOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.ANIMA_ONLY then
+                return false
             elseif WarfrontRareTracker.db.profile.menu.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.QUEST then
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideBlueprintOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.BLUEPRINT then
@@ -1582,8 +1671,14 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.menu.hideTransmogOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.TRANSMOG then
                 return false
+            elseif rareDB[mapid].rares[npcid].covenantBound and not WarfrontRareTracker.db.profile.menu.showCovenantBoundRares and rareDB[mapid].rares[npcid].covenantBound ~= currentPlayerCovenant then
+                --DebugPrint("ShowRare(MasterFiler): covenantBound hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
+            elseif not WarfrontRareTracker.db.profile.menu.showCovenantBoundLoot and rareHasOnlyCovenantLoot(mapid, npcid) then
+                --DebugPrint("ShowRare(MasterFiler): covenantBoundLoot hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
             elseif WarfrontRareTracker.db.profile.menu.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
-                return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.menu.whitelist)
+                return checkWhitelist(mapid, npcid, WarfrontRareTracker.db.profile.menu.whitelist)
             else
                 return true
             end
@@ -1613,6 +1708,8 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideGearOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.GEAR_ONLY then
                 return false
+            elseif WarfrontRareTracker.db.profile.masterfilter.hideAnimaOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.ANIMA_ONLY then
+                return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideQuestOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.QUEST then
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideBlueprintOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.BLUEPRINT then
@@ -1621,11 +1718,18 @@ local function showRare(mapid, npcid, mode)
                 return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideTransmogOnly and rareHasLoot(mapid, npcid) and #rareDB[mapid].rares[npcid].loot == 1 and rareDB[mapid].rares[npcid].loot[1].droptype == DROPTYPE.TRANSMOG then
                 return false
+            elseif rareDB[mapid].rares[npcid].covenantBound and not WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundRares and rareDB[mapid].rares[npcid].covenantBound ~= currentPlayerCovenant then
+                --DebugPrint("ShowRare(MasterFiler): covenantBound hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
+            elseif not WarfrontRareTracker.db.profile.masterfilter.showCovenantBoundLoot and rareHasOnlyCovenantLoot(mapid, npcid) then
+                --DebugPrint("ShowRare(MasterFiler): covenantBoundLoot hide: " .. tostring(rareDB[mapid].rares[npcid].name))
+                return false
             elseif WarfrontRareTracker.db.profile.masterfilter.hideAlreadyKnown and rareHasLoot(mapid, npcid) and rareHasAllLoot(mapid, npcid) then
-                return rareHasLootType(mapid, npcid, WarfrontRareTracker.db.profile.masterfilter.whitelist)
+                return checkWhitelist(mapid, npcid, WarfrontRareTracker.db.profile.masterfilter.whitelist)
             else
                 return true
             end
+            return true
         end
     else
         return false
@@ -1639,6 +1743,88 @@ local function playerHasMount(mountID)
     end
     return false
 end
+
+-- New but NYI: Check per LootType instead of fireing a Check ALL, This might reduce time as it skips everything non related. TODO: Rename scanForKnownItems(), <- this function is for the initial scan upon login to scan everything!
+-- for mapid, content in pairs(rareDB) do
+--     for k, rare in pairs(content.rares) do
+--         if #rare.loot > 0 then
+--             local i
+--             for i = 1, #rare.loot do
+--                 if rare.loot[i].droptype == DROPTYPE.MOUNT then
+--                     -- Got the correct Loot, now check it
+--                 end
+--             end
+--         end
+--     end
+-- end
+local function checkAddedMount()
+    for mapid, content in pairs(rareDB) do
+        for k, rare in pairs(content.rares) do
+            if #rare.loot > 0 then
+                local i
+                for i = 1, #rare.loot do
+                    if rare.loot[i].droptype == DROPTYPE.MOUNT then
+                        if playerHasMount(rare.loot[i].mountID) and rare.loot[i].isKnown == false then
+                            rare.loot[i].isKnown = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+local function checkAddedPet() -- TODO: Add the count of the pets so it can show (1/1, 1/3, 2/3 or 3/3) Collected!
+    for mapid, content in pairs(rareDB) do
+        for k, rare in pairs(content.rares) do
+            if #rare.loot > 0 then
+                local i
+                for i = 1, #rare.loot do
+                    if rare.loot[i].droptype == DROPTYPE.PET then
+                        local number, _ = C_PetJournal.GetNumCollectedInfo(rare.loot[i].speciesID);
+                        if number >= 1  and rare.loot[i].isKnown == false then
+                            rare.loot[i].isKnown = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+end
+local function checkAddedToy()
+    for mapid, content in pairs(rareDB) do
+        for k, rare in pairs(content.rares) do
+            if #rare.loot > 0 then
+                local i
+                for i = 1, #rare.loot do
+                    if rare.loot[i].droptype == DROPTYPE.TOY then
+                        if PlayerHasToy(rare.loot[i].itemID)  and rare.loot[i].isKnown == false then
+                            rare.loot[i].isKnown = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+end
+local function checkAddedTransmog()
+    for mapid, content in pairs(rareDB) do
+        for k, rare in pairs(content.rares) do
+            if #rare.loot > 0 then
+                local i
+                for i = 1, #rare.loot do
+                    if rare.loot[i].droptype == DROPTYPE.TRANSMOG then
+                        if C_TransmogCollection.PlayerHasTransmog(rare.loot[i].itemID) and rare.loot[i].isKnown == false then
+                            rare.loot[i].isKnown = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+-- checkItem need a different implementation as it's not learnable and only a few are flagged complete once you used it to activate a Rare or whatever.
   
 local function scanForKnownItems()
     if newPetAdedTimer then
@@ -1655,7 +1841,7 @@ local function scanForKnownItems()
                         if playerHasMount(rare.loot[i].mountID) then
                             rare.loot[i].isKnown = true
                         end
-                    elseif rare.loot[i].droptype == DROPTYPE.ITEM and rare.loot[i].checkMountID ~= nil then
+                    elseif rare.loot[i].droptype == DROPTYPE.ITEM and rare.loot[i].checkMountID ~= nil then -- TODO: Need to be able to check multiple types in the New Framework!!! Some items can be marked hidden after obtaining a 2nd item as the 1th item is a tool you use to activate a Rare. Once the 2nd Rare's loot is collected, the 1st Item isn't needed anymore!
                         --local name, spellId, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(rare.loot[i].checkMountID)
                         if playerHasMount(rare.loot[i].checkMountID) then
                             rare.loot[i].isKnown = true
@@ -1671,6 +1857,10 @@ local function scanForKnownItems()
                         end
                     elseif rare.loot[i].droptype == DROPTYPE.QUEST or rare.loot[i].droptype == DROPTYPE.BLUEPRINT then
                         if rare.loot[i].checkId ~= nil and rare.loot[i].checkId > 0 and C_QuestLog.IsQuestFlaggedCompleted(rare.loot[i].checkId) then
+                            rare.loot[i].isKnown = true
+                        end
+                    elseif rare.loot[i].droptype == DROPTYPE.TRANSMOG then
+                        if C_TransmogCollection.PlayerHasTransmog(rare.loot[i].itemID) then
                             rare.loot[i].isKnown = true
                         end
                     end
@@ -1950,13 +2140,12 @@ local function addToTomTom(mapid, npcid)
     end
 end
 
-local function currentPlayerLeveledUp(newLevel)
-    if IsPlayerWarfrontLevel() and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
-        WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise))
+local function playerLeveledUp(newLevel)
+    if newLevel == PLAYER_WARFRONT_LEVEL and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
         if WarfrontRareTracker.db.profile.general.enableLevelUpSound then
-            playSound("good")
+            C_Timer.After(5, function() WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise)); playSound("good") end)
         end
-    end
+    end  
 end
 
 local function sortLootTables()
@@ -1976,6 +2165,10 @@ local function checkWarfrontZonePhases()
             contents.hidden = true
         end
     end
+end
+
+local function setPlayersCovenant()
+    currentPlayerCovenant = C_Covenants.GetActiveCovenantID() -- returns 0 if no Covenant chosen so is safe to use!
 end
 
 ----------------------
@@ -2083,9 +2276,12 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("NEW_MOUNT_ADDED", "OnEvent")
     self:RegisterEvent("NEW_PET_ADDED", "OnEvent")
-    self:RegisterEvent("PLAYER_LEVEL_UP", "OnEvent")
+    self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("QUEST_WATCH_UPDATE")
     self:RegisterEvent("QUEST_ACCEPTED")
+    self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED", "TRANSMOG_EVENTS")
+    self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED", "TRANSMOG_EVENTS")
+    self:RegisterEvent("COVENANT_CHOSEN")
     -- Bucket Events
     self:RegisterBucketEvent("ZONE_CHANGED", 1, "ZONE_CHANGED")
     self:RegisterBucketEvent("ZONE_CHANGED_INDOORS", 1, "ZONE_CHANGED")
@@ -2096,7 +2292,7 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterBucketEvent("SHOW_LOOT_TOAST", 2, "BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("SHOW_LOOT_TOAST_UPGRADE", 2,"BUCKET_ON_LOOT_RECEIVED")
     self:RegisterBucketEvent("ENCOUNTER_LOOT_RECEIVED", 2, "BUCKET_ON_LOOT_RECEIVED")
-    self:RegisterBucketEvent("TOYS_UPDATED", 2,"TOYS_UPDATED")
+    self:RegisterBucketEvent("TOYS_UPDATED", 2,"TOYS_UPDATED") -- NEW_TOY_ADDED?
     -- Set variables and Worldmap Icons   
     self:DelayedInitialize(false)
 end
@@ -2108,6 +2304,9 @@ function WarfrontRareTracker:OnDisable()
     self:UnregisterEvent("PLAYER_LEVEL_UP")
     self:UnregisterEvent("QUEST_WATCH_UPDATE")
     self:UnregisterEvent("QUEST_ACCEPTED")
+    self:UnregisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED")
+    self:UnregisterEvent("TRANSMOG_COLLECTION_SOURCE_REMOVED")
+    self:UnregisterEvent("COVENANT_CHOSEN")
     -- Bucket Events
     self:UnregisterBucket("ZONE_CHANGED")
     self:UnregisterBucket("ZONE_CHANGED_INDOORS")
@@ -2127,25 +2326,62 @@ end
 -- Events
 ----------------
 -- Event Handler
+-- local function checkAddedMount()
+-- end
+-- local function checkAddedPet()
+-- end
+-- local function checkAddedToy()
+-- end
+-- local function checkAddedTransmog()
+-- end
+
 function WarfrontRareTracker:OnEvent(event, ...)
     if event == "NEW_MOUNT_ADDED" and IsPlayerWarfrontLevel() then
         scanForKnownItems()
+        --checkAddedMount()
     elseif event == "NEW_PET_ADDED" and IsPlayerWarfrontLevel() then
         if newPetAdedTimer == nil then
             newPetAdedTimer = self:ScheduleTimer(function() scanForKnownItems() end, 2)
-        end
-    elseif event == "PLAYER_LEVEL_UP" then
-        local newLevel = ...
-        currentPlayerLevel = newLevel
-        if IsPlayerWarfrontLevel() then
-            C_Timer.After(5, function() currentPlayerLeveledUp(newLevel) end)
+            --newPetAdedTimer = self:ScheduleTimer(function() checkAddedPet() end, 2)
         end
     end
 end
 
 ----------------
 -- Normal Events
+local function handleTransmog(itemID, add) -- On init Create Lookup Table with entry [itemID] = { mapid = mapid, npcid = npcid, lootIndex = index }. This might be a better idea.
+    for mapid, contents in pairs(rareDB) do
+        for npcid, rare in pairs(contents.rares) do
+            if rare.loot and #rare.loot > 0 then
+                local i
+                for i = 1, #rare.loot do
+                    if rare.loot[i].droptype == DROPTYPE.TRANSMOG then
+                        if rare.loot[i].itemID == itemID then
+                            --DebugPrint(format("Rare %s has loot with itemID: %d", rare.name, itemID))
+                            if add then
+                                rare.loot[i].isKnown = true
+                            else
+                                rare.loot[i].isKnown = false
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 
+function WarfrontRareTracker:TRANSMOG_EVENTS(event, appearanceID)
+    if appearanceID == nil or appearanceID < 0 then return end
+    local itemID = C_Transmog.GetItemIDForSource(appearanceID)
+    if itemID and itemID > 0 then
+        if event == "TRANSMOG_COLLECTION_SOURCE_ADDED" then -- TRANSMOG ADDED
+            handleTransmog(itemID, true)
+        elseif event == "TRANSMOG_COLLECTION_SOURCE_REMOVED" then -- TRANSMOG REMOVED
+            handleTransmog(itemID, false)
+        end
+    end
+end
 
 function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
@@ -2153,6 +2389,7 @@ function WarfrontRareTracker:PLAYER_ENTERING_WORLD()
     currentPlayerName = UnitName("player")
     currentPlayerFaction = UnitFactionGroup("player")
     currentPlayerRealm = GetRealmName()
+    setPlayersCovenant()
     WarfrontRareTracker:ZONE_CHANGED()
     checkAddonCompatibility()
     checkWarfrontControl()
@@ -2176,6 +2413,24 @@ function WarfrontRareTracker:QUEST_ACCEPTED(_, questID)
         C_Timer.After(1, function()
             checkAssaults()
         end)
+    end
+end
+
+function WarfrontRareTracker:PLAYER_LEVEL_UP(event, newLevel, ...)
+    playerLeveledUp(newLevel)
+    --C_Timer.After(10, function(self, newLevel) playerLeveledUp(newLevel) end, newLevel)
+end
+
+function WarfrontRareTracker:COVENANT_CHOSEN(event, covenantID)
+    DebugPrint(colorText("EVENT[COVENANT_CHOSEN] ", colors.yellow) .. colorText(format("Args: event=%s, xx=%s", colorText(tostring(event), colors.yellow), colorText(tostring(covenantID), colors.yellow)), colors.turqoise))
+    if covenantID then
+        if covenantID > 0 then
+            currentPlayerCovenant = covenantID
+            self:RefreshShadowlandsIcons()
+        end
+    else
+        -- Safe way
+        C_Timer.After(10, function() setPlayersCovenant() end)
     end
 end
 
@@ -2215,13 +2470,13 @@ function WarfrontRareTracker:ZONE_CHANGED()
         currentMapid = 0
     elseif currentMapid ~= currentPlayerMapid then
         local previousMapid = currentPlayerMapid
-        --print("currentPlayerMapid="..currentPlayerMapid..", previousMapid="..previousMapid)
+        --DebugPrint("ZONE_CHANGED: currentPlayerMapid="..currentPlayerMapid..", previousMapid="..previousMapid)
         currentPlayerMapid = currentMapid
         playerIsInInstance, _ = IsInInstance()
         self:CheckMapChange(previousMapid)
     elseif currentMapid == currentPlayerMapid and rareDB[currentPlayerMapid] ~= nil then
         -- also Update??
-        --DebugPrint("WRT WarfrontRareTracker:ZONE_CHANGED(): also Update??")
+        --DebugPrint("ZONE_CHANGED: WRT WarfrontRareTracker:ZONE_CHANGED(): also Update??")
     end
 end
 
@@ -2263,7 +2518,7 @@ function WarfrontRareTracker:CheckMapChange(previousMapid)
     end
     if self.db.profile.menu.autoChangeZone and autoChangeZone ~= previousAutoChangeMapid then
         -- Something has changed and all needs a refresh. Get the Timed Refresh code from the ON_ZONE_CHANGED Function here!!!
-        --DebugPrint("CheckMapChange has changed, executing CheckWarfrontPhaseChange("..tostring(autoChangeZone)..")", colors.green)
+        --DebugPrint("CheckMapChange() has changed, executing CheckWarfrontPhaseChange("..tostring(autoChangeZone)..")", colors.green)
         WarfrontRareTracker:SetTimestamp(false)
         if autoChangeZone ~= nil then
             C_Timer.After(3, function() WarfrontRareTracker:CheckWarfrontPhaseChange(autoChangeZone) end)
@@ -2274,6 +2529,7 @@ end
 function WarfrontRareTracker:TOYS_UPDATED()
     if IsPlayerWarfrontLevel() then
         scanForKnownItems()
+        --checkAddedToy()
     end
 end
 
@@ -2313,6 +2569,14 @@ function WarfrontRareTracker:SetTimestamp(manual)
         autoChangeZoneTimestamp = GetServerTime()
     end
     self:RefreshBrokerText()
+end
+
+function WarfrontRareTracker:RefreshShadowlandsIcons()
+    for mapid, content in pairs(rareDB) do
+        if content.expansion == EXPANSION.SHADOWLANDS then
+            self:UpdateZoneWorldMapIcons(mapid)
+        end
+    end
 end
 
 -----------------
@@ -2730,6 +2994,46 @@ function WarfrontRareTracker:MenuTooltipOnLineLeave()
     end
 end
 
+local function getColoredCovenantText(covenantID)
+    if covenantID > 0 and covenantID <= 4 then
+        if covenantID == COVENANTS.KYRIAN then
+            return colorText("Kyrian", colors.grey)
+        elseif covenantID == COVENANTS.VENTHYR then
+            return colorText("Venthyr", colors.red)
+        elseif covenantID == COVENANTS.NIGHTFAE then
+            return colorText("Night Fea", colors.blue)
+        elseif covenantID == COVENANTS.NECROLORD then
+            return colorText("Nercolord", colors.green)
+        end
+    else
+        return colorText("Unknown", colors.orange)
+    end
+end
+
+local function getRareInfoCovenantText(mapid, npcid)
+    if index == nil then index = 1 end
+    local rareCovenantID = rareDB[mapid].rares[npcid].covenantBound
+    if rareCovenantID == currentPlayerCovenant then
+        -- color right
+        return colorText("Covenant Bound: ", colors.green) .. getColoredCovenantText(rareCovenantID)
+    else
+        --color wrong
+        return colorText("Covenant Bound: ", colors.red) .. getColoredCovenantText(rareCovenantID)
+    end
+end
+
+local function getLootInfoCovenantText(mapid, npcid, index)
+    if index == nil then index = 1 end
+    local lootCovenantID = rareDB[mapid].rares[npcid].loot[index].covenantBound
+    if lootCovenantID == currentPlayerCovenant then
+        -- color right
+        return colorText("Covenant Availavle: ", colors.green) .. getColoredCovenantText(lootCovenantID)
+    else
+        --color wrong
+        return colorText("Covenant Required: ", colors.red) .. getColoredCovenantText(lootCovenantID)
+    end
+end
+
 local function isLootmenuCropped(mapid, npcid)
     return WarfrontRareTracker.db.profile.lootwindow.compactMode == "amount" and #rareDB[mapid].rares[npcid].loot >= WarfrontRareTracker.db.profile.lootwindow.compactModeAmount or WarfrontRareTracker.db.profile.lootwindow.compactMode == "all"
 end
@@ -2744,6 +3048,11 @@ local function addLootInfoToTooltip(tooltip, mapid, npcid, lootindex, compactmod
 
         local line = tooltip:AddLine()
         tooltip:SetCell(line, 1, colorText("Drops: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].loot[lootindex].droptype, colors.lightcyan), nil, nil, 2)
+
+        if rareDB[mapid].rares[npcid].loot[lootindex].covenantBound then
+            line = tooltip:AddLine()
+            tooltip:SetCell(line, 1, getLootInfoCovenantText(mapid, npcid, lootindex), nil, nil, 2)
+        end
 
         if itemTexture ~= nil then
             tooltip:AddHeader(itemLink or itemName, "|T" .. itemTexture .. ":22|t")
@@ -2806,6 +3115,11 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
     lootTooltip:SetPoint("RIGHT", self, "LEFT", -15, -18)
 
     lootTooltip:AddHeader(getColoredRareName(mapid, npcid))
+    if rareDB[mapid].rares[npcid].covenantBound then
+        line = lootTooltip:AddLine()
+        lootTooltip:SetCell(line, 1, getRareInfoCovenantText(mapid, npcid), nil, nil, 2)
+        --DebugPrint("MenuToolTip: Rare is Covenant bound to: " .. getColoredCovenantText(rareDB[mapid].rares[npcid].covenantBound))
+    end
     line = lootTooltip:AddLine()
     lootTooltip:SetCell(line, 1, " ", nil, nil, 2)
 
@@ -2834,7 +3148,7 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
         lootTooltip:SetCell(line, 1, colorText("No know drop", colors.lightcyan), nil, nil, 2)
     end
 
-    if not isLootmenuCropped(mapid, npcid) and not WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes and rareDB[mapid].rares[npcid].note then
+    if not isLootmenuCropped(mapid, npcid) and not WarfrontRareTracker.db.profile.lootwindow.alsohidenotes and rareDB[mapid].rares[npcid].note then
         line = lootTooltip:AddLine()
         lootTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.orange), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
     end
@@ -3065,6 +3379,11 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
             if WarfrontRareTracker.db.profile.minimapIcons.minimapIconsCompactMode then
                 line = worldmapTooltip:AddHeader()
                 worldmapTooltip:SetCell(line, 1, getColoredRareName(mapid, npcid) .. colorText(": ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
+                if rareDB[mapid].rares[npcid].covenantBound then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, getRareInfoCovenantText(mapid, npcid), nil, nil, 2)
+                    --DebugPrint("WorldmapTooltip: Rare is Covenant bound to: " .. getColoredCovenantText(rareDB[mapid].rares[npcid].covenantBound))
+                end
 
                 if rareDB[mapid].rares[npcid].loot == nil then
                     line = worldmapTooltip:AddLine()
@@ -3108,6 +3427,11 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
             else
                 line = worldmapTooltip:AddHeader()
                 worldmapTooltip:SetCell(line, 1, getColoredRareName(mapid, npcid), nil, nil, 2)
+                if rareDB[mapid].rares[npcid].covenantBound then
+                    line = worldmapTooltip:AddLine()
+                    worldmapTooltip:SetCell(line, 1, getRareInfoCovenantText(mapid, npcid), nil, nil, 2)
+                    --DebugPrint("WorldmapTooltip: Rare is Covenant bound to: " .. getColoredCovenantText(rareDB[mapid].rares[npcid].covenantBound))
+                end
                 line = worldmapTooltip:AddLine()
                 worldmapTooltip:SetCell(line, 1, colorText("Status: ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
                 if rareDB[mapid].rares[npcid].loot == nil then
@@ -3170,6 +3494,11 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
             end
         elseif not minimap then
             worldmapTooltip:AddHeader(getColoredRareName(mapid, npcid))
+            if rareDB[mapid].rares[npcid].covenantBound then
+                line = worldmapTooltip:AddLine()
+                worldmapTooltip:SetCell(line, 1, getRareInfoCovenantText(mapid, npcid), nil, nil, 2)
+                --DebugPrint("WorldmapTooltip: Rare is Covenant bound to: " .. getColoredCovenantText(rareDB[mapid].rares[npcid].covenantBound))
+            end
 
             line = worldmapTooltip:AddLine()
             worldmapTooltip:SetCell(line, 1, colorText("Status: ", colors.yellow) .. getColoredStatusText(mapid, npcid), nil, nil, 2)
@@ -3206,7 +3535,7 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
                     worldmapTooltip:SetCell(line, 1, colorText(rareDB[mapid].rares[npcid].warning, colors.red), nil, nil, 2)
                 end
             end
-            if not isLootmenuCropped(mapid, npcid) and not WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes and rareDB[mapid].rares[npcid].note and WarfrontRareTracker.db.profile.lootwindow.AlsohideNotes == false then
+            if not isLootmenuCropped(mapid, npcid) and not WarfrontRareTracker.db.profile.lootwindow.alsohidenotes and rareDB[mapid].rares[npcid].note and WarfrontRareTracker.db.profile.lootwindow.alsohidenotes == false then
                 if rareDB[mapid].rares[npcid].warning and rareDB[mapid].rares[npcid].faction == currentPlayerFaction and rareDB[mapid].warfrontControlledByFaction == currentPlayerFaction then
                     line = worldmapTooltip:AddLine()
                     worldmapTooltip:SetCell(line, 1, colorText("Note: ", colors.yellow) .. colorText(rareDB[mapid].rares[npcid].note, colors.orange), nil, nil, 2, LibQTip.LabelProvider, nil, nil, 200)
