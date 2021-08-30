@@ -803,7 +803,7 @@ local rareDB = {
         warfrontControlledByFaction = "",
         worldmapIcons = {},
         minimapIcons = {},
-        index = 11,
+        index = 12,
         expansion = EXPANSION.SHADOWLANDS,
         --covenantID = COVENANTS.NONE,
         rares = {
@@ -2771,10 +2771,9 @@ end
 
 local function switchToNextWarfront()
     local index = rareDB[WarfrontRareTracker.db.char.selectedZone].index + 1
-    if index > getBDSize(rareDB) then
+    if index > getBDSize(rareDB) or warfrontSwitchTable[index] == nil then
         index = 1
     end
-
     WarfrontRareTracker.db.char.selectedZone = warfrontSwitchTable[index]
     if menuTooltip then
         WarfrontRareTracker:UpdateMenuToolTip(menuTooltip)
