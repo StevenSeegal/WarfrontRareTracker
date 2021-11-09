@@ -1,10 +1,10 @@
-## Interface: 90100
+## Interface: 90105
 ## Title: Warfront Rare Tracker
-## Version: 1.2.5-1
+## Version: 1.2.6
 ## Notes: Tracks your kills of the Rare's in Warfront zones.
 ## Author: StevenSeegal / Dora
 ## SavedVariables: WarfrontRareTrackerDB
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibQTip-1.0, HereBeDragons-2.0
+## OptionalDeps: Ace3, LibDBIcon-1.0, HereBeDragons-2.0
 
 
 #@no-lib-strip@

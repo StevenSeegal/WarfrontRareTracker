@@ -2,7 +2,7 @@ WarfrontRareTracker = LibStub("AceAddon-3.0"):NewAddon("WarfrontRareTracker", "A
 local WarfrontRareTracker = WarfrontRareTracker
 
 local L = LibStub("AceLocale-3.0"):GetLocale("WarfrontRareTracker")
-local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
+local LDB = LibStub("LibDataBroker-1.1")
 local MinimapIcon = LibStub("LibDBIcon-1.0")
 
 local LibQTip = LibStub("LibQTip-1.0")
