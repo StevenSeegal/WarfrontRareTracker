@@ -1,5 +1,6 @@
-WarfrontRareTracker = LibStub("AceAddon-3.0"):NewAddon("WarfrontRareTracker", "AceBucket-3.0", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
-local WarfrontRareTracker = WarfrontRareTracker
+local LibStub = _G.LibStub
+local WarfrontRareTracker = LibStub("AceAddon-3.0"):NewAddon("WarfrontRareTracker", "AceBucket-3.0", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
+--local WarfrontRareTracker = WarfrontRareTracker
 
 local L = LibStub("AceLocale-3.0"):GetLocale("WarfrontRareTracker")
 local LDB = LibStub("LibDataBroker-1.1")
@@ -2839,10 +2840,10 @@ function WarfrontRareTracker:ShowMenu(self)
 
 	if menuTooltip:GetLineCount() >= 1 then
         menuTooltip:UpdateScrolling()
-        if WarfrontRareTracker.db.profile.general.disableBackground == false then
-            menuTooltip:SetBackdrop(tooltipBackDrop)
-            menuTooltip:SetBackdropColor(0.2, 0.2, 0.2, WarfrontRareTracker.db.profile.colors.menuAlpha)
-        end
+        -- if WarfrontRareTracker.db.profile.general.disableBackground == false then
+        --     menuTooltip:SetBackdrop(tooltipBackDrop)
+        --     menuTooltip:SetBackdropColor(0.2, 0.2, 0.2, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        -- end
         menuTooltip:Show()
     end
 end
@@ -3219,10 +3220,10 @@ function WarfrontRareTracker:MenuTooltipOnLineEnter(self, info)
     lootTooltip:SetCell(line, 1, colorText("Shift Right-Click to announce in /1.", colors.turqoise), "LEFT", 2)
 
     if lootTooltip:GetLineCount() > 1 then
-        if WarfrontRareTracker.db.profile.general.disableBackground == false then
-            lootTooltip:SetBackdrop(tooltipBackDrop)
-            lootTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
-        end
+        -- if WarfrontRareTracker.db.profile.general.disableBackground == false then
+        --     lootTooltip:SetBackdrop(tooltipBackDrop)
+        --     lootTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        -- end
         lootTooltip:Show()
     end
 end
@@ -3267,10 +3268,10 @@ function WarfrontRareTracker:WarfrontStatusTooltipOnEnter(self, mapid)
     else
         local line = warfrontStatusTooltip:AddHeader()
         warfrontStatusTooltip:SetCell(line, 1, colorText("Click to select different Warfront", colors.yellow), warfrontStatusTooltip:GetHeaderFont())
-        if WarfrontRareTracker.db.profile.general.disableBackground == false then
-            warfrontStatusTooltip:SetBackdrop(tooltipBackDrop)
-            warfrontStatusTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
-        end
+        -- if WarfrontRareTracker.db.profile.general.disableBackground == false then
+        --     warfrontStatusTooltip:SetBackdrop(tooltipBackDrop)
+        --     warfrontStatusTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        -- end
         warfrontStatusTooltip:Show()
     end
 end
@@ -3630,10 +3631,10 @@ function WarfrontRareTracker:WorldmapTooltipOnEnter(self, mapid, npcid, cave, mi
     end
 
     if worldmapTooltip:GetLineCount() >= 1 then
-        if WarfrontRareTracker.db.profile.general.disableBackground == false then
-            worldmapTooltip:SetBackdrop(tooltipBackDrop)
-            worldmapTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
-        end
+        -- if WarfrontRareTracker.db.profile.general.disableBackground == false then
+        --     worldmapTooltip:SetBackdrop(tooltipBackDrop)
+        --     worldmapTooltip:SetBackdropColor(0, 0, 0, WarfrontRareTracker.db.profile.colors.menuAlpha)
+        -- end
         worldmapTooltip:Show()
     end
 end
@@ -3859,129 +3860,6 @@ function WarfrontRareTracker:CreateNewMapIcon(mapid, npcid, caveicon)
     end
 end
 
-----------------
--- NPC UnitFrame
-----------------
-GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-    if WarfrontRareTracker.db.profile.unitframe.enableUnitframeIntegration == false then
-        return
-    end
-    if rareDB[currentPlayerMapid] == nil or playerIsInInstance then
-        return
-    end
-    if WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == true and WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
-        return
-    elseif WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == false and WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
-        return
-    end
-
-    local name, unit = self:GetUnit()
-    if not unit then 
-        return
-    end
-    if UnitCreatureType(unit) == "Critter" or UnitCreatureType(unit) == "Non-combat Pet" or UnitCreatureType(unit) == "Wild Pet" then
-        return
-    end
-    local guid = UnitGUID(unit)
-    if not unit or not guid then return end
-    if not UnitCanAttack("player", unit) then return end -- Something you can't attack
-    if UnitIsPlayer(unit) then return end -- A player
-    if UnitIsPVP(unit) then return end -- A PVP flagged unit
-
-    local npcid = getNPCIDFromGUID(guid)
-    if rareDB[currentPlayerMapid] and type(rareDB[currentPlayerMapid].rares[npcid]) == "table" then
-        local rare = rareDB[currentPlayerMapid].rares[npcid]
-        if isNPCPlayerFaction(currentPlayerMapid, npcid) then
-            local itemName, itemLink, itemTexture
-            if WarfrontRareTracker.db.profile.unitframe.compactMode then
-                local text = ""
-                if WarfrontRareTracker.db.profile.unitframe.showStatus then
-                    text = text .. colorText("Warfront Rare Tracker: ", colors.yellow) .. getColoredStatusText(currentPlayerMapid, npcid) .. "\n"
-                else
-                    text = text .. colorText("Warfront Rare Tracker: ", colors.yellow) .. "\n"
-                end
-
-                if WarfrontRareTracker.db.profile.unitframe.showDrop then
-                    if rareDB[currentPlayerMapid].rares[npcid].loot ~= nil then
-                        if #rareDB[currentPlayerMapid].rares[npcid].loot == 0 then
-                            text = text .. colorText("No know drop", colors.lightcyan)
-                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
-                            itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
-                            if itemLink or itemName then
-                                if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
-                                    text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " already known", colors.red)
-                                elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
-                                    text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " still needed", colors.green)
-                                else
-                                    text = text .. (itemLink or itemName)
-                                end
-                            end
-                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot > 1 then
-                            local i
-                            for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
-                                itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
-                                if itemLink or itemName then
-                                    if i > 1 then
-                                        text = text .. "\n"
-                                    end
-                                    if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
-                                        text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " already known", colors.red)
-                                    elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
-                                        text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " still needed", colors.green)
-                                    else
-                                        text = text .. (itemLink or itemName)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine(text)
-            else
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine(colorText("Warfront Rare Tracker:", colors.yellow))
-
-                if WarfrontRareTracker.db.profile.unitframe.showStatus then
-                    GameTooltip:AddLine(colorText("Status: ", colors.yellow) .. getColoredStatusText(currentPlayerMapid, npcid))
-                end
-
-                if WarfrontRareTracker.db.profile.unitframe.showDrop then
-                    if rareDB[currentPlayerMapid].rares[npcid].loot ~= nil then
-                        if #rareDB[currentPlayerMapid].rares[npcid].loot == 0 then
-                            GameTooltip:AddLine(colorText("No know drop", colors.lightcyan))
-                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
-                            itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
-                            if itemLink or itemName then
-                                GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
-                                if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
-                                    GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " already known", colors.red))
-                                elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
-                                    GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " still needed", colors.green))
-                                end
-                            end
-                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot > 1 then
-                            local i
-                            for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
-                                itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
-                                if itemLink or itemName then
-                                    GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
-                                    if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
-                                        GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " already known", colors.red))
-                                    elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
-                                        GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " still needed", colors.green))
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
-
 ----------
 -- Sorting
 ----------
@@ -4042,6 +3920,7 @@ local function getHighestLootPriority(mapid, npcid)
 end
 
 function WarfrontRareTracker:SortRares()
+    --print("SortRares() :: " .. tostring("a"))
     for mapid, contents in pairs(rareDB) do
         if sortedRareDB[mapid] == nil then
             sortedRareDB[mapid] = {}
@@ -4221,3 +4100,144 @@ function WarfrontRareTracker:SortRares()
         worldbossTable = nil
     end
 end
+
+----------------
+-- NPC UnitFrame
+----------------
+local function onTooltipSetUnit(tooltip, data)
+    if tooltip ~= _G.GameTooltip then
+		return -- Probably a tooltip created by another addon, that does use the new GameTooltipDataMixin (triggers post-hooks globally...)
+	end
+
+    -- Skip if the function is disabled
+    if WarfrontRareTracker.db.profile.unitframe.enableUnitframeIntegration == false then
+        return
+    end
+
+    local self = tooltip -- For backwards compatibility with the legacy code below (should be refactored eventually...)
+
+    if not self.GetUnit then
+		return -- Probably a tooltip created by another addon, that hasn't been updated to use GameTooltipDataMixin (risky assumption)
+	end
+
+    local name, unit = self:GetUnit()
+    if not unit then 
+        return
+    end
+    if UnitCreatureType(unit) == "Critter" or UnitCreatureType(unit) == "Non-combat Pet" or UnitCreatureType(unit) == "Wild Pet" then
+        return
+    end
+    
+    local guid = UnitGUID(unit)
+    if not unit or not guid then return end
+    if not UnitCanAttack("player", unit) then return end -- Something you can't attack
+    if UnitIsPlayer(unit) then return end -- A player
+    if UnitIsPVP(unit) then return end -- A PVP flagged unit
+    if playerIsInInstance then return end
+    -- Skip if the if Database doesn't contain current map
+    if rareDB[currentPlayerMapid] == nil or playerIsInInstance then
+        return
+    end
+    
+    if WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == true and WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
+        return
+    elseif WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter == false and WarfrontRareTracker.db.profile.worldmapicons.showOnlyAtPhase == true and rareDB[currentPlayerMapid].hidden == true then
+        return
+    end
+
+    local npcid = getNPCIDFromGUID(guid)
+    if rareDB[currentPlayerMapid] and type(rareDB[currentPlayerMapid].rares[npcid]) == "table" then
+        local rare = rareDB[currentPlayerMapid].rares[npcid]
+        if isNPCPlayerFaction(currentPlayerMapid, npcid) then
+            local itemName, itemLink, itemTexture
+            if WarfrontRareTracker.db.profile.unitframe.compactMode then
+                local text = ""
+                if WarfrontRareTracker.db.profile.unitframe.showStatus then
+                    text = text .. colorText("Warfront Rare Tracker: ", colors.yellow) .. getColoredStatusText(currentPlayerMapid, npcid) .. "\n"
+                else
+                    text = text .. colorText("Warfront Rare Tracker: ", colors.yellow) .. "\n"
+                end
+
+                if WarfrontRareTracker.db.profile.unitframe.showDrop then
+                    if rareDB[currentPlayerMapid].rares[npcid].loot ~= nil then
+                        if #rareDB[currentPlayerMapid].rares[npcid].loot == 0 then
+                            text = text .. colorText("No know drop", colors.lightcyan)
+                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
+                            itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
+                            if itemLink or itemName then
+                                if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
+                                    text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " already known", colors.red)
+                                elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
+                                    text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " still needed", colors.green)
+                                else
+                                    text = text .. (itemLink or itemName)
+                                end
+                            end
+                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot > 1 then
+                            local i
+                            for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
+                                itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
+                                if itemLink or itemName then
+                                    if i > 1 then
+                                        text = text .. "\n"
+                                    end
+                                    if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
+                                        text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " already known", colors.red)
+                                    elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
+                                        text = text .. (itemLink or itemName) .. colorText(": ", colors.yellow) .. colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " still needed", colors.green)
+                                    else
+                                        text = text .. (itemLink or itemName)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
+                --GameTooltip:AddLine(" ")
+                GameTooltip:AddLine(text)
+            else
+                --GameTooltip:AddLine(" ")
+                GameTooltip:AddLine(colorText("Warfront Rare Tracker:", colors.yellow))
+
+                if WarfrontRareTracker.db.profile.unitframe.showStatus then
+                    GameTooltip:AddLine(colorText("Status: ", colors.yellow) .. getColoredStatusText(currentPlayerMapid, npcid))
+                end
+
+                if WarfrontRareTracker.db.profile.unitframe.showDrop then
+                    if rareDB[currentPlayerMapid].rares[npcid].loot ~= nil then
+                        if #rareDB[currentPlayerMapid].rares[npcid].loot == 0 then
+                            GameTooltip:AddLine(colorText("No know drop", colors.lightcyan))
+                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot == 1 then
+                            itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[1].itemID)
+                            if itemLink or itemName then
+                                GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
+                                if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
+                                    GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " already known", colors.red))
+                                elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[1].isKnown then
+                                    GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[1].droptype .. " still needed", colors.green))
+                                end
+                            end
+                        elseif #rareDB[currentPlayerMapid].rares[npcid].loot > 1 then
+                            local i
+                            for i = 1, #rareDB[currentPlayerMapid].rares[npcid].loot do
+                                itemName, itemLink, _, _, _, _, _, _, _, itemTexture, _ = GetItemInfo(rareDB[currentPlayerMapid].rares[npcid].loot[i].itemID)
+                                if itemLink or itemName then
+                                    GameTooltip:AddLine(colorText("Drops " .. rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. ": ", colors.yellow) .. (itemLink or itemName))
+                                    if WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
+                                        GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " already known", colors.red))
+                                    elseif WarfrontRareTracker.db.profile.unitframe.showAlreadyKnown and not rareDB[currentPlayerMapid].rares[npcid].loot[i].isKnown then
+                                        GameTooltip:AddLine(colorText(rareDB[currentPlayerMapid].rares[npcid].loot[i].droptype .. " still needed", colors.green))
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+end
+
+_G.TooltipDataProcessor.AddTooltipPostCall(_G.Enum.TooltipDataType.Unit, onTooltipSetUnit)

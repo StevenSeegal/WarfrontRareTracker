@@ -2093,26 +2093,26 @@ configOptions = {
                 },
             },
         },
-        compat = {
-            name = "Compatibility",
-            type = "group",
-            order = 12,
-            args = {
-                disableBackground = {
-                    name = "Disable tooltip backgroud",
-                    desc = "Disables the background texture so it can be override by another addon if any errors occure.",
-                    type = "toggle",
-                    width = "full",
-                    order = 1,
-                    get = function(info)
-                            return WarfrontRareTracker.db.profile.general.disableBackground
-                        end,
-                    set = function(info, value)
-                            WarfrontRareTracker.db.profile.general.disableBackground = value
-                        end,
-                },
-            },
-        },
+        -- compat = {
+        --     name = "Compatibility",
+        --     type = "group",
+        --     order = 12,
+        --     args = {
+        --         disableBackground = {
+        --             name = "Disable tooltip backgroud",
+        --             desc = "Disables the background texture so it can be override by another addon if any errors occure.",
+        --             type = "toggle",
+        --             width = "full",
+        --             order = 1,
+        --             get = function(info)
+        --                     return WarfrontRareTracker.db.profile.general.disableBackground
+        --                 end,
+        --             set = function(info, value)
+        --                     WarfrontRareTracker.db.profile.general.disableBackground = value
+        --                 end,
+        --         },
+        --     },
+        -- },
 
         -- debug = {
         --     name = "Debug",
