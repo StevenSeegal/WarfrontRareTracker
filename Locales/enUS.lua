@@ -1,10 +1,18 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("WarfrontRareTracker", "enUS", true)
 
---------
--- Rares
---------
+---------------------
+-- Global
+---------------------
+L["in_waterfall_cave"] = "In a cave behind the waterfall."
+L["in_small_cave"] = "In small cave"
+L["in_cave"] = "In cave"
+
+---------------------
+-- Battle For Azeroth
+---------------------
 
 -- Arathi Highlands
+-- Rares
 L["dooms_howl"] = "Doom's Howl"
 L["the_lions_roar"] = "The Lion's Roar"
 L["cresting_goliath"] = "Cresting Goliath"
@@ -35,8 +43,10 @@ L["molok_the_crusher"] = "Molok the Crusher"
 L["ruul_onestone"] = "Ruul Onestone"
 L["singer"] = "Singer"
 L["zalas_witherbark"] = "Zalas Witherbark"
+-- Notes
 
 -- Darkshore
+-- Rares
 L["ivus_the_decayed"] = "Ivus the Decayed"
 L["ivus_the_forest_lord"] = "Ivus the Forest Lord"
 L["alash_anir"] = "Alash'anir"
@@ -72,8 +82,10 @@ L["scalefiend"] = "Scalefiend"
 L["shattershard"] = "Shattershard"
 L["glimmerspine"] = "Glimmerspine"
 L["amberclaw"] = "Amberclaw"  --  Amberclaw <Glrglrr's Mount>
+-- Notes
 
 -- Mechagon
+-- Rares
 L["arachnoid_harvester"] = "Arachnoid Harvester"
 L["rustfeather"] = "Rustfeather"
 L["armored_vaultbot"] = "Armored Vaultbot"
@@ -110,8 +122,10 @@ L["scrapclaw"] = "Scrapclaw"
 L["seaspit"] = "Seaspit"
 L["steel_singer_freza"] = "Steel Singer Freza"
 L["the_scrap_king"] = "The Scrap King"
+-- Notes
 
 -- Nazjatar
+-- Rares
 L["soundless"] = "Soundless"
 L["sandclaw_stoneshell"] = "Sandclaw Stoneshell"
 L["allseer_oma_kil"] = "Allseer Oma'kil"
@@ -169,8 +183,10 @@ L["daggertooth_terror"] = "Daggertooth Terror"
 L["shassera"] = "Shassera"
 L["tidemistress_leth_sindra"] = "Tidemistress Leth'sindra"
 L["rockweed_shambler"] = "Rockweed Shambler"
+-- Notes
 
 -- Uldum
+-- Rares
 L["acolyte_taspu"] = "Acolyte Taspu"
 L["actiss_the_deceiver"] = "Actiss the Deceiver"
 L["anaua"] = "Anaua"
@@ -233,8 +249,10 @@ L["thoughtstealer_vos"] = "Thoughtstealer Vos"
 L["yiphrim_the_will_ravager"] = "Yiphrim the Will Ravager"
 L["zothrum_the_intellect_pillager"] = "Zoth'rum the Intellect Pillager"
 L["royolok_the_reality_eater"] = "R'oyolok the Reality Eater"
+-- Notes
 
 -- Vale of Eternal Blossoms
+-- Rares
 L["ivory_cloud_serpent"] = "Ivory Cloud Serpent"
 L["anh_de_the_loyal"] = "Anh-De the Loyal"
 L["zrorum_the_infinite"] = "Zror'um the Infinite"
@@ -280,9 +298,15 @@ L["infused_amber_ooze"] = "Infused Amber Ooze"
 L["jade_colossus"] = "Jade Colossus"
 L["corrupted_bonestripper"] = "Corrupted Bonestripper"
 L["skiver"] = "Skiver"
+-- Notes
 
+
+--------------
 -- Shadowlands
+--------------
+
 -- Ardenweald
+-- Rares
 L["gormtamer_tizo"] = "Gormtamer Tizo"
 L["humongozz"] = "Humon'gozz"
 L["night_mare"] = "Night Mare"
@@ -305,8 +329,10 @@ L["soultwister_cero"] = "Soultwister Cero"
 L["the_slumbering_emperor"] = "The Slumbering Emperor"
 L["wrigglemortis"] = "Wrigglemortis"
 L["dustbrawl"] = "Dustbrawl"
+-- Notes
 
 -- Bastion
+-- Rares
 L["sundancer"] = "Sundancer"
 L["the_ascended_council"] = "The Ascended Council"
 L["cloudfeather_guardian"] = "Cloudfeather Guardian"
@@ -331,8 +357,10 @@ L["corrupted_clawguard"] = "Corrupted Clawguard"
 L["herculon"] = "Herculon"
 L["reekmonger"] = "Reekmonger"
 L["orstus_and_sotiros"] = "Orstus and Sotiros"
+-- Notes
 
 -- Maldraxxus
+-- Rares
 L["gieger"] = "Gieger"
 L["nerissa_heartless"] = "Nerissa Heartless"
 L["sabriel_the_bonecleaver"] = "Sabriel the Bonecleaver"
@@ -358,8 +386,10 @@ L["pesticide"] = "Pesticide"
 L["taskmaster_xox"] = "Taskmaster Xox"
 L["thread_mistress_leeda"] = "Thread Mistress Leeda"
 L["zargox_the_reborn"] = "Zargox the Reborn"
+-- Notes
 
 -- Revendreth
+-- Rares
 L["famu_the_infinite"] = "Famu the Infinite"
 L["harika_the_horrid"] = "Harika the Horrid"
 L["hopecrusher"] = "Hopecrusher"
@@ -386,8 +416,10 @@ L["lord_mortegore"] = "Lord Mortegore"
 L["sinstone_hoarder"] = "Sinstone Hoarder"
 L["stonefist"] = "Stonefist"
 L["soulstalker_doina"] = "Soulstalker Doina"
+-- Notes
 
 -- The Maw
+-- Rares
 L["eternas_the_tormentor"] = "Eternas the Tormentor"
 L["borr-geth"] = "Borr-Geth"
 L["morguliax_lord_of_decapitation"] = "Morguliax <Lord of Decapitation>"
@@ -428,6 +460,302 @@ L["skittering_broodmother"] = "Skittering Broodmother"
 L["soulsmith_yol-mattar"] = "Soulsmith Yol-Mattar"
 L["stygian_incinerator"] = "Stygian Incinerator"
 L["valis_the_cruel"] = "Valis the Cruel"
+-- Patch 9.1
+L["fallen_charger"] = "Fallen Charger"
+L["deomen_the_vortex"] = "Deomen the Vortex"
+L["traitor_balthier"] = "Traitor Balthier"
+L["yiva"] = "Yiva"
+L["guard_orguluus"] = "Guard Orguluus"
+L["blinding_shadow"] = "Blinding Shadow"
+L["torglluun"] = "Torglluun"
+-- Notes
+
+-- Korthia
+-- Rares
+L["carriage_crusher"] = "Carriage Crusher"
+L["consumption"] = "Consumption"
+L["dominated_protector"] = "Dominated Protector"
+L["malbog"] = "Malbog"
+L["kroke_the_tormented"] = "Kroke the Tormented"
+L["towering_exterminator"] = "Towering Exterminator"
+L["konthrogz_the_obliterator"] = "Konthrogz the Obliterator"
+L["verayn"] = "Ve'rayn"
+L["reliwik_the_defiant"] = "Reliwik the Defiant"
+L["wild_worldcracker"] = "Wild Worldcracker"
+L["relic_breaker_krelva"] = "Relic Breaker Krelva"
+L["zelnithop"] = "Zelnithop"
+L["fleshwing_lord_of_the_heap"] = "Fleshwing <Lord of the Heap>"
+L["escaped_wilderling"] = "Escaped Wilderling"
+L["stygian_stonecrusher"] = "Stygian Stonecrusher"
+L["yarxhov_the_pillager"] = "Yarxhov the Pillager"
+L["xyraxz_the_unknowable"] = "Xyraxz the Unknowable"
+L["observer_yorik"] = "Observer Yorik"
+L["silent_soulstalker"] = "Silent Soulstalker"
+L["screaming_shade"] = "Screaming Shade"
+L["deadsoul_hatcher"] = "Deadsoul Hatcher"
+-- Notes
+
+-- Zereth Mortis
+-- Rares
+L["akkaris"] = "Akkaris"
+L["chitali_the_eldest"] = "Chitali the Eldest"
+L["corrupted_architect"] = "Corrupted Architect"
+L["destabilized_core"] = "Destabilized Core"
+L["euvouk"] = "Euv'ouk"
+L["feasting"] = "Feasting"
+L["furidian"] = "Furidian"
+L["garudeon"] = "Garudeon"
+L["general_zarathura"] = "General Zarathura"
+L["gluttonous_overgrowth"] = "Gluttonous Overgrowth"
+L["gorkek"] = "Gorkek"
+L["hadeon_the_stonebreaker"] = "Hadeon the Stonebreaker"
+L["helmix"] = "Helmix"
+L["hirukon"] = "Hirukon"
+L["otaris_the_provoked"] = "Otaris the Provoked"
+L["mother_phestis"] = "Mother Phestis"
+L["orixal"] = "Orixal"
+L["otiosen"] = "Otiosen"
+L["protector_of_the_first_ones"] = "Protector of the First Ones"
+L["sand_matriarch_ileus"] = "Sand Matriarch Ileus"
+L["shifting_stargorger"] = "Shifting Stargorger"
+L["sorranos"] = "Sorranos"
+L["tahkwitz"] = "Tahkwitz"
+L["tethos"] = "Tethos"
+L["the_engulfer"] = "The Engulfer"
+L["vexis"] = "Vexis"
+L["vitiane"] = "Vitiane"
+L["xyrath_the_covetous"] = "Xy'rath the Covetous"
+L["zatojin"] = "Zatojin"
+-- Notes
+L["corrupted_architect_note"] = "Engage [Xy'azam] and [Xy'kina] to activate the rare."
+L["feasting_note"] = "Will sometimes circle the area before returning to this spot."
+L["furidian_note"] = "Activate three Empowered Keys in the area, then unlock the Suspiciously Angry Vault."
+L["garudeon_note"] = "Collect [Energizing Leporid] from the surrounding area and use [Throw Leporid] to feed the [Hungry Nestling]. Once all three are fed, [Garudeon] will activate."
+L["gluttonous_overgrowth_note"] = "Break all nearby [Bulging Root] to activate the rare."
+L["helmix_note"] = "Kill [Annelid Mudborer] in the area until they emotes and spawns."
+L["orixal_note"] = "Shares a spawn with the [Overgrown Helicid] patrolling the area."
+L["protector_of_the_first_ones_note"] = "Requires two people. Bring the matching runes to each console (found in the surrounding area) to open the barrier."
+L["the_engulfer_note"] = "Defend [The Matriarch] until [The Engulfer] jumps out of the rift."
+L["zatojin_note"] = "Pull nearby [Menacing Vespoid Worker] and let you apply 20 stacks of [Paralytic Sting] until you are [Paralyzed!]. You must be standing over the [Scarabid Burrower] corpses when you are paralyzed for [Zatojin] to notice you."
+
+---------------
+-- DragonFlight
+---------------
+
+-- The Waking Shores
+-- Rares
+L["onank_shorescour"] = "O'nank Shorescour"
+L["ancient_hornswog"] = "Ancient Hornswog"
+L["captain_lancer"] = "Captain Lancer"
+L["skald_the_impaler"] = "Skald the Impaler"
+L["firava_the_rekindler"] = "Firava the Rekindler"
+L["gushgut_the_beaksinker"] = "Gushgut the Beaksinker"
+L["morchok"] = "Morchok"
+L["deaths_shadow"] = "Death's Shadow"
+L["massive_magmashell"] = "Massive Magmashell"
+L["cauldronbearer_blakor"] = "Cauldronbearer Blakor"
+L["shadeslash_trakken"] = "Shadeslash Trakken"
+L["enkine_the_voracious"] = "Enkine the Voracious"
+L["penumbrus"] = "Penumbrus"
+L["drakewing"] = "Drakewing"
+L["skewersnout"] = "Skewersnout"
+L["harkyn_grymstone"] = "Harkyn Grymstone"
+L["dragonhunter_igordan"] = "Dragonhunter Igordan"
+L["terillod_the_devout"] = "Terillod the Devout"
+L["primal_scythid_queen"] = "Primal Scythid Queen"
+L["klozicc_the_ascended"] = "Klozicc the Ascended"
+L["worldcarver_atir"] = "Worldcarver A'tir"
+L["turboris"] = "Turboris"
+L["thunderous_matriarch"] = "Thunderous Matriarch"
+L["anhydros_the_tidetaker"] = "Anhydros the Tidetaker"
+L["rohzor_forgesmash"] = "Rohzor Forgesmash"
+L["nulltheria_the_void_gazer"] = "Nulltheria the Void Gazer"
+L["snappy"] = "Snappy"
+L["battlehorn_pyrhus"] = "Battlehorn Pyrhus"
+L["amethyzar_the_glittering"] = "Amethyzar the Glittering"
+L["smogswog_the_firebreather"] = "Smogswog the Firebreather"
+L["slurpo_the_incredible_snail"] = "Slurpo, the Incredible Snail"
+L["forgotten_gryphon"] = "Forgotten Gryphon"
+L["rasnar_the_war_ender"] = "Rasnar the War Ender"
+L["brundin_the_dragonbane"] = "Brundin the Dragonbane"
+L["magmaton"] = "Magmaton"
+L["lepidoralia_the_resplendent"] = "Lepidoralia the Resplendent"
+L["helmet_missingway"] = "Helmet Missingway"
+L["azras_prized_peony"] = "Azra's Prized Peony"
+L["shasith"] = "Shas'ith"
+L["char"] = "Char"
+-- Notes
+L["obsidian_throne_rare_note"] = "Inside the [The Obsidian Throne]."
+L["obsidian_citadel_rare_note"] = "Turn in [Restored Obsidian Key's] until the bar is full at [The Obsidian Citadel]. To craft a key you need to combine 30 [Key Fragments] and 3 [Key Framing], farming them at [The Obsidian Citadel]. This progress is done by multile players!"
+L["captain_lancer_note"] = "Spawns immediately after completing the [Siege on Dragonbane Keep] event."
+L["skald_the_impaler_note"] = "Use 5 [Ominous Conch] to summon either a [Gigantic Thresher] or a rare."
+L["shadeslash_trakken_note"] = "Click the [Pilfered Globe], [Pilfered Telescope] and [Pilfered Focus] to summon the rare."
+L["enkine_the_voracious_note"] = "Kill [Restless Lava], [Lavaslurper] or [Basalt Shell] along the lava river to get [Lava Spices], use it and fish near [Obsidian Angler] in the lava."
+L["worldcarver_atir_note"] = "Collect 3 [Wurmling Bones] from [Worldcarver Wurmling] nearby and place them at [Wurmling Bones] to spawn the rare."
+L["slurpo_the_incredible_snail_note"] = "Loot a [Magical Salt Crystal] from [Salt Crystal] in The Azure Span cave (11, 41) and use it in the cave to summon him."
+L["forgotten_gryphon_note"] = "Spawns only at night. (After 18:30 server time)"
+L["brundin_the_dragonbane_note"] = "The Qalashi War Party travels on their [Qalashi War Mammoth] to this tower."
+L["lepidoralia_the_resplendent_note"] = "Located in the [Fluttering Cavern.] Help [Collector Zik] catch [Reveling Shimmerwing] until the rare spawns."
+
+
+-- Ohn'ahran Plains
+-- Rares
+L["sparkspitter_vrak"] = "Sparkspitter Vrak"
+L["groffnar"] = "Groffnar"
+L["deadwaker_ghendish"] = "Deadwaker Ghendish"
+L["oshigol"] = "Oshigol"
+L["defend_clan_aylaag"] = "Defend Clan Aylaag"
+L["fulgurb"] = "Fulgurb"
+L["liskheszaera"] = "Liskheszaera"
+L["sunscale_behemoth"] = "Sunscale Behemoth"
+L["malsegan"] = "Malsegan"
+L["bloodbeak_the_ravenous"] = "Bloodbeak the Ravenous"
+L["huntmaster_yrgena"] = "Huntmaster Yrgena"
+L["rustlily"] = "Rustlily"
+L["scaleseeker_mezeri"] = "Scaleseeker Mezeri"
+L["zarizz"] = "Zarizz"
+L["stormcaller_narkena"] = "Stormcaller Narkena"
+L["eaglemaster_niraak"] = "Eaglemaster Niraak"
+L["zerimek"] = "Zerimek"
+L["porta_the_overgrown"] = "Porta the Overgrown"
+L["lurgan"] = "Lurgan"
+L["territorial_coastling"] = "Territorial Coastling"
+L["windscale_the_stormborn"] = "Windscale the Stormborn"
+L["web-queen_ashkaz"] = "Web-Queen Ashkaz"
+L["tyfoon_the_ascended"] = "Ty'foon the Ascended"
+L["mikrin_of_the_raging_winds"] = "Mikrin of the Raging Winds"
+L["vaniik_the_stormtouched"] = "Vaniik the Stormtouched"
+L["shade_of_grief"] = "Shade of Grief"
+L["ripsaw_the_stalker"] = "Ripsaw the Stalker"
+L["cinta_the_forgotten"] = "Cinta the Forgotten"
+L["zenet_avis"] = "Zenet Avis"
+L["enraged_sapphire"] = "Enraged Sapphire"
+L["prozela_galeshot"] = "Prozela Galeshot"
+L["sulfurion"] = "Sulfurion"
+L["astray_splashe"] = "Astray Splashe"
+L["blightpaw_the_depraved"] = "Blightpaw the Depraved"
+L["windseeker_avash"] = "Windseeker Avash"
+L["skaara"] = "Skaara"
+L["the_jolly_giant"] = "The Jolly Giant"
+L["steamgill"] = "Steamgill"
+L["seeker_teryx"] = "Seeker Teryx"
+L["scav_notail"] = "Scav Notail"
+L["hamett"] = "Hamett"
+L["ronsak_the_decimator"] = "Ronsak the Decimator"
+L["irontree"] = "Irontree"
+L["makhra_the_ashtouched"] = "Makhra the Ashtouched"
+L["researcher_sneakwing"] = "Researcher Sneakwing"
+L["hunter_of_the_deep"] = "Hunter of the Deep"
+-- Notes
+L["aylaag_outpost_note"] = "Only spawns when Clan Aylaag Camp in Aylaag Outpost."
+L["defend_clan_aylaag_note"] = "Only spawns when defending the Clan Aylaag Camp moving events."
+L["river_camp_note"] = "Only spawns when Clan Aylaag Camp in River Camp."
+L["rustlily_note"] = "Only spawns if the Clan Aylaag Camp is at Eaglewatch Outpost."
+L["scaleseeker_mezeri_note"] = "Give [Sugarwing Cupcake] to [Dawnbell] and follow her until she reveals the rare."
+L["zarizz_note"] = "Click and /hiss at the four [Juvenile Wind Serpent] to summon the rare."
+L["eaglemaster_niraak_note"] = "Kill nearby [Nokhud Mystic-Hunter] and [Nokhud Marauder] to spawn the rare."
+L["porta_the_overgrown_note"] = "Find 5 [Enriched Soil] at the bottom of the lake to the west, then spread the soil at [Odd Mushroom] to spawn the rare."
+L["windscale_the_stormborn_note"] = "Kill the [Nokhud Galebringer] channeling into the [Storm-touched Egg]."
+L["shade_of_grief_note"] = "Click the [Solethus's Gravestone] to spawn the rare."
+L["cinta_the_forgotten_note"] = "Only spawns if the Clan Aylaag Camp is at Eaglewatch Outpost."
+L["astray_splashe_note"] = "Use 5 [Ominous Conch] to summon either a [Gigantic Thresher] or a rare."
+L["blightpaw_the_depraved_note"] = "Talk to [Archaeologist Koranir] nearby and agree to help him."
+L["windseeker_avash_note"] = "Kill nearby [Primalist Instructor] and [Primalist Stormsmith] to spawn the rare."
+L["the_jolly_giant_note"] = "Only spawns if the Clan Aylaag Camp is at Eaglewatch Outpost."
+L["makhra_the_ashtouched_note"] = "Only spawns if the Clan Aylaag Camp is at Eaglewatch Outpost."
+L["hunter_of_the_deep_note"] = "Click on the weapon rack and shoot fish until the rare spawns."
+
+-- The Azure Span
+-- Rares
+L["mange_the_outcast"] = "Mange the Outcast"
+L["dragonhunter_gorund"] = "Dragonhunter Gorund"
+L["shiobhan_waterborn"] = "Shiobhan Waterborn"
+L["stranded_soul"] = "Stranded Soul"
+L["spellwrought_snowman"] = "Spellwrought Snowman"
+L["arcane_devourer"] = "Arcane Devourer"
+L["summoned_destroyer"] = "Summoned Destroyer"
+L["forgotten_creation"] = "Forgotten Creation"
+L["vakril"] = "Vakril"
+L["grumbletrunk"] = "Grumbletrunk"
+L["fisherman_tinnak"] = "Fisherman Tinnak"
+L["gruffy"] = "Gruffy"
+L["azure_pathfinder"] = "Azure Pathfinder"
+L["gethdazr"] = "Gethdazr"
+L["cascade"] = "Cascade"
+L["movtivator_krathos"] = "Movtivator Krathos"
+L["skag_the_thrower"] = "Skag the Thrower"
+L["frostpaw"] = "Frostpaw"
+L["breezebiter"] = "Breezebiter"
+L["blightfur"] = "Blightfur"
+L["sharpfang"] = "Sharpfang"
+L["wilrive"] = "Wilrive"
+L["brackle"] = "Brackle"
+L["mahg_the_trampler"] = "Mahg the Trampler"
+L["grand_artificer_zeerak"] = "Grand Artificer Zeerak"
+L["frigidpelt_den_mother"] = "Frigidpelt Den Mother"
+L["unstable_arcanogolem"] = "Unstable Arcanogolem"
+L["waterpots"] = "Waterpots"
+L["beogoka"] = "Beogoka"
+L["trilvarus_loreweaver"] = "Trilvarus Loreweaver"
+L["malgain_rockknell"] = "Malgain Rockknell"
+L["blue_terror"] = "Blue Terror"
+L["graniteclaw"] = "Graniteclaw"
+L["lunker_rares"] = "Lunker Rares"
+L["notfar_the_unbearable"] = "Notfar the Unbearable"
+L["mucka_the_raker"] = "Mucka the Raker"
+-- Notes
+L["stranded_soul_note"] = "After killing [Lost Elemental] he explodes into 4 [Lava Orb's]. You need to activate them to melt the ice wall. Kill [Stranded Soul] inside and you will recieve [Glowing Arcane Jewel]."
+L["spellwrought_snowman_note"] = "Collect 10 [Arcane Energy] and bring them to [Arcane Pedestal]."
+L["fisherman_tinnak_note"] = "Collect [Broken Fishing Pole], [Torn Fishing Net] and [Old Harpoon] to spawn the rare."
+L["gethdazr_note"] = "Spawns as part of an event in [Imbu] that starts by blowing the [Great Horn of Imbu]. The horn will only become clickable after killing the {npc:196155} which has about 30-60 minutes of respawn time."
+L["frostpaw_note"] = "After taking the [Wooden Hammer], you have 20 seconds to hit the [Whack a Gnoll ]on the [Tree Stump], and spawn the rare."
+L["breezebiter_note"] = "Flies around in the sky. Fly close to him to pull him down. Spawn point at right side cave."
+L["blightfur_note"] = "Talk to [Golkrin] to summon the rare."
+L["sharpfang_note"] = "Help [Larivi] defeat [Shadepaw Thief] to spawn the rare."
+L["trilvarus_loreweaver_note"] = "Collect a [Singing Fragment] to get [Singing Energies] and use the [Uncharded Focus] to spawn the rare."
+L["lunker_rares_note"] = "Use 5 [Ominous Conch] to summon either a [Gigantic Thresher] or a rare."
+
+-- Thaldraszus
+-- Rares
+L["ancient_protector"] = "Ancient Protector"
+L["blightpaw_the_depraved"] = "Blightpaw the Depraved"
+L["broodweaver_araznae"] = "Broodweaver Araznae"
+L["corrupted_proto-dragon"] = "Corrupted Proto-Dragon"
+L["craggravated_elemental"] = "Craggravated Elemental"
+L["eldoren_the_reborn"] = "Eldoren the Reborn"
+L["goremaul_the_gluttonous"] = "Goremaul the Gluttonous"
+L["innumerable_ruination"] = "Innumerable Ruination"
+L["lord_epochbrgl"] = "Lord Epochbrgl"
+L["matriarch_remalla"] = "Matriarch Remalla"
+L["phenran"] = "Phenran"
+L["phleep"] = "Phleep"
+L["pleasant_alpha"] = "Pleasant Alpha"
+L["razkvex_the_untamed"] = "Razk'vex the Untamed"
+L["riverwalker_tamopo"] = "Riverwalker Tamopo"
+L["rokmur"] = "Rokmur"
+L["sandana_the_tempest"] = "Sandana the Tempest"
+L["tempestrian"] = "Tempestrian"
+L["the_great_shellkhan"] = "The Great Shellkhan"
+L["the_weeping_vilomah"] = "The Weeping Vilomah"
+L["treasure-mad_trambladd"] = "Treasure-Mad Trambladd"
+L["woolfang"] = "Woolfang"
+L["astray_splasher"] = "Astray Splasher"
+L["henlare"] = "Henlare"
+L["liskron_the_dazzling"] = "Liskron the Dazzling"
+L["lookout_mordren"] = "Lookout Mordren"
+L["shardwing"] = "Shardwing"
+L["tikarr_frostclaw"] = "Tikarr Frostclaw"
+L["avalantus"] = "Avalantus"
+L["shapemaster_zalani"] = "Shapemaster Za'lani"
+-- Notes
+L["ancient_protector_note"] = "Kill nearby [Titan Defense Matrix] to get [Unstable Matrix Core]. Combine 5 of them to create a [Unsustainable Containment Core] and use it to activate nearby Titanic Reactors."
+L["blightpaw_the_depraved_note"] = "Talk to [Archaeologist Koranir] nearby and agree to help him."
+L["corrupted_proto-dragon_note"] = "Inspect the [Corrupted Dragon Egg] to spawn the rare."
+L["lord_epochbrgl_note"] = "Click [Unstable Time Rift] to spawn the rare."
+L["the_great_shellkhan_note"] = "Collect [Case of Fresh Gleamfish] in The Azure Span, go back to [Patient Vaargo] within 3 minutes to return the item to activate the rare and get the achievement.\nMake sure [Patient Vaargo] and [The Great Shellkhan] are acutally there before you start. Only one character can pick up and return the item once a week to activate the rare, after which [Patient Vaargo] will only thank you."
+L["the_weeping_vilomah_note"] = "Talk to [Boomhooch the Lost] to summon the rare."
+L["woolfang_note"] = "Pet [Wooly Lamb] to spawn the rare."
+L["astray_splasher_note"] = "Use 5 [Ominous Conch] to summon either a [Gigantic Thresher] or a rare."
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

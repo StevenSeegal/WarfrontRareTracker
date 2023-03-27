@@ -2,7 +2,7 @@ local WarfrontRareTracker = LibStub("AceAddon-3.0"):GetAddon("WarfrontRareTracke
 
 local isTomTomlocked = true
 local hasMultipleRareDB = false
-local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests", ["Blueprint"] = "Blueprints", ["Transmog"] = "Transmog", }
+local whitelist = { ["Mount"] = "Mounts", ["Pet"] = "Pets", ["Toy"] = "Toys", ["Quest"] = "Quests", ["Blueprint"] = "Blueprints", ["Transmog"] = "Transmog", ["Scroll"] = "Scroll", }
 local defeatModes = { ["hide"] = "Hide Icon", ["change"] = "Change Icon", ["none"] = "Nothing" }
 local brokerTexts = { ["addonname"] = "Addon Name", ["factionstatus"] = "Faction Warfront Status", ["allstatus"] = "All Warfront Status", ["zonename"] = "Selected Zone Name" }
 local intervalTimes = { [1]="1 minute", [2] = "2 minutes", [3] = "3 minutes", [4] = "4 minutes", [5]="5 minutes", [10]="10 minutes", [15]="15 minutes", [30]="30 minutes", [60]="1 hour" }
@@ -197,7 +197,7 @@ configOptions = {
                     inline = true,
                     args = {
                         showAtMaxLevel = {
-                            name = "Only Show At 50",
+                            name = "Only Show At Level 50",
                             desc = "Only show the menu when your Character is level 50 or higher.",
                             type = "toggle",
                             width = 1.3,
@@ -2054,43 +2054,43 @@ configOptions = {
                         },
                     },
                 },
-                levelUp = {
-                    name = "Level-Up Options",
-                    type = "group",
-                    order = 2,
-                    inline = true,
-                    args = {
-                        enableLevelUpChatMessage = {
-                            name = "Enable Notification on Max Level",
-                            desc = "Prints a message in your chat window when the player reaches Max Level, letting them know they now egliable to enter the Warfront.",
-                            type = "toggle",
-                            width = "full",
-                            order = 1,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage = value
-                                end,
-                        },
-                        enableLevelUpSound = {
-                            name = "Play Sound On Max Level",
-                            desc = "Plays a sound when the player reaches Max Level controlling faction changes in a Warfront, letting them know they now egliable to enter the Warfront.",
-                            type = "toggle",
-                            width = "full",
-                            order = 2,
-                            get = function(info)
-                                    return WarfrontRareTracker.db.profile.general.enableLevelUpSound
-                                end,
-                            set = function(info, value)
-                                    WarfrontRareTracker.db.profile.general.enableLevelUpSound = value
-                                end,
-                            disabled = function(info)
-                                    return not WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
-                                end,
-                        },
-                    },
-                },
+                -- levelUp = { -- REMOVED
+                --     name = "Level-Up Options",
+                --     type = "group",
+                --     order = 2,
+                --     inline = true,
+                --     args = {
+                --         enableLevelUpChatMessage = {
+                --             name = "Enable Notification on Max Level",
+                --             desc = "Prints a message in your chat window when the player reaches Max Level, letting them know they now egliable to enter the Warfront.",
+                --             type = "toggle",
+                --             width = "full",
+                --             order = 1,
+                --             get = function(info)
+                --                     return WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
+                --                 end,
+                --             set = function(info, value)
+                --                     WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage = value
+                --                 end,
+                --         },
+                --         enableLevelUpSound = {
+                --             name = "Play Sound On Max Level",
+                --             desc = "Plays a sound when the player reaches Max Level controlling faction changes in a Warfront, letting them know they now egliable to enter the Warfront.",
+                --             type = "toggle",
+                --             width = "full",
+                --             order = 2,
+                --             get = function(info)
+                --                     return WarfrontRareTracker.db.profile.general.enableLevelUpSound
+                --                 end,
+                --             set = function(info, value)
+                --                     WarfrontRareTracker.db.profile.general.enableLevelUpSound = value
+                --                 end,
+                --             disabled = function(info)
+                --                     return not WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage
+                --                 end,
+                --         },
+                --     },
+                -- },
             },
         },
         -- compat = {

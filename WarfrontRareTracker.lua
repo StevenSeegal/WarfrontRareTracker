@@ -14,10 +14,11 @@ local HBDPins = LibStub("HereBeDragons-Pins-2.0")
 -----------------------------------------------
 -- Local references to wow's provided functions
 -----------------------------------------------
+local _G = _G
 local floor, mod, format, strsplit, table, tonumber, type, pairs, next = floor, mod, format, strsplit, table, tonumber, type, pairs, next
 local UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel = UnitName, GetRealmName, IsInInstance, GetItemInfo, GetServerTime, GetUnit, IsQuestFlaggedCompleted, PlayerHasToy, UnitAffectingCombat, UnitCanAttack, UnitCreatureType, UnitFactionGroup, UnitGUID, UnitIsPlayer, UnitIsPVP, UnitLevel
-local C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver = C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_Timer, GameTooltip, MouseIsOver
-local _G = _G
+local C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_TransmogCollection, C_Timer, GameTooltip, MouseIsOver = C_QuestLog, C_ContributionCollector, C_Map, C_MountJournal, C_PetJournal, C_TransmogCollection, C_Timer, GameTooltip, MouseIsOver
+
 ------------
 -- Constants
 ------------
@@ -30,6 +31,7 @@ local SOUND_BADNEWS = "Interface\\AddOns\\WarfrontRareTracker\\Sounds\\badnews.o
 local BROKER_ICON_ALLIANCE = "Interface\\Icons\\INV_AllianceWarEffort"
 local BROKER_ICON_HORDE = "Interface\\Icons\\INV_HordeWarEffort"
 local BROKER_ICON_SHADOWLANDS = "Interface\\Icons\\spell_warlock_demonsoul"
+local BROKER_ICON_DRAGONFLIGHT = "Interface\\Icons\\Ability_dragonriding_upwardflap01"
 local BROKER_ICON_UNKNOWN = "Interface\\Icons\\ability_ensnare"
 local CAVE_TYPE_INFO = "info"
 local CAVE_TYPE_CAVE = "cave"
@@ -62,10 +64,12 @@ local DROPTYPE = {
     ANIMA_ONLY = "Anima Only",
     TRANSMOG = "Transmog",
     UNKNOWN = "Unknown",
+    SCROLL = "Scroll",
 }
 local EXPANSION = {
     BFA = "Battle For Azeroth",
     SHADOWLANDS = "Shadowlands",
+    DRAGONFLIGHT = "Dragonflight",
 }
 local COVENANTS = {
     NONE = 0,
@@ -831,6 +835,291 @@ local rareDB = {
             [179913] = { name = L["deadsoul_hatcher"], npcid = 179913, questId = { 64285 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59335221 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 187174, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 187401, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 187396, isKnown = false } }, note = "Initially not interactable, requires someone with [Repaired Riftkey] to go inside the Rift and pull the rare out of the rift." },
         },
     },
+    [1970] = { -- Parent mapID 1550 (Shadowlands main Map)
+        zonename = "Zereth Mortis", -- 
+        scenarioname = "Unknown", -- Change!
+        gatheringname = "Unknown", -- Change!
+        hidden = false,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
+        currentAssault = 0,
+        zonephaseID = 1650, -- ArtID
+        zoneContributionMapID = 0, -- Change!
+        allianceContributionMapID = 0, -- Change!    
+        hordeContributionMapID = 0, -- Change!       
+        --homeCoord = { 39965257, 10205301 }, -- Alliance is exactly on portal!
+        warfrontControlledByFaction = "",
+        worldmapIcons = {},
+        minimapIcons = {},
+        index = 14,
+        expansion = EXPANSION.SHADOWLANDS,
+        --covenantID = COVENANTS.NONE,
+        rares = {
+            [179006] = { name = L["akkaris"], npcid = 179006, questId = { 65552 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 64743369 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189903, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189958, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190053, isKnown = false } } },
+            [183596] = { name = L["chitali_the_eldest"], npcid = 183596, questId = { 65553 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49566751 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189947, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189906, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189994, isKnown = false } } },
+            [183953] = { name = L["corrupted_architect"], npcid = 183953, questId = { 65273 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47486228 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189907, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189940, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190009, isKnown = false } }, note = L["corrupted_architect_note"] },
+            [180917] = { name = L["destabilized_core"], npcid = 180917, questId = { 64716 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53634435 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189910, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189930, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189985, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189999, isKnown = false } } },
+            [184409] = { name = L["euvouk"], npcid = 184409, questId = { 65555 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47474516 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189949, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189956, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190047, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189993, isKnown = false } } },
+            [178229] = { name = L["feasting"], npcid = 178229, questId = { 65557 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 61826060 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189969, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189970, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189936, isKnown = false } }, note = L["feasting_note"] },
+            [183646] = { name = L["furidian"], npcid = 183646, questId = { 65544 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 64585865 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189920, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189932, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189963, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190004, isKnown = false } }, note = L["furidian_note"] },
+            [180924] = { name = L["garudeon"], npcid = 180924, questId = { 64719 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 69073662 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189951, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189937, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190057, isKnown = false } }, note = L["garudeon_note"] },
+            [182318] = { name = L["general_zarathura"], npcid = 182318, questId = { 65583 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59862111 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189968, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189948, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190125, isKnown = false } } },
+            [178778] = { name = L["gluttonous_overgrowth"], npcid = 178778, questId = { 65579 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53089305 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189929, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189953, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190008, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190049, isKnown = false } }, note = L["gluttonous_overgrowth_note"] },
+            [178963] = { name = L["gorkek"], npcid = 178963, questId = { 63988 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 80384706 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189926, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189960, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190001, isKnown = false } } },
+            [178563] = { name = L["hadeon_the_stonebreaker"], npcid = 178563, questId = { 65581 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 52612503 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189919, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189942, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190051, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190000, isKnown = false } } },
+            [183748] = { name = L["helmix"], npcid = 183748, questId = { 65551 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58186837 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189931, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189965, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190054, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190056, isKnown = false } }, note = L["helmix_note"] },
+            [180978] = { name = L["hirukon"], npcid = 180978, questId = { 65548 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 52287541 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 187676, mountID = 1434, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189905, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189946, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190005, isKnown = false } } },
+            [183814] = { name = L["otaris_the_provoked"], npcid = 183814, questId = { 65257 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58654039 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189909, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189945, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189957, isKnown = false } }, cave = { coord = { 58723789 } }, note = L["in_small_cave"] },
+            [178508] = { name = L["mother_phestis"], npcid = 178508, questId = { 65547 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 54083493 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189923, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189950, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189769, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190045, isKnown = false } }, cave = { coord = { 55963261 } }, note = L["in_cave"] },
+            [179043] = { name = L["orixal"], npcid = 179043, questId = { 65582 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 55736915 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189912, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189934, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189952, isKnown = false } }, note = L["orixal_note"] },
+            [183746] = { name = L["otiosen"], npcid = 183746, questId = { 65556 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43308762 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189914, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189925, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190046, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189995, isKnown = false } } },
+            [180746] = { name = L["protector_of_the_first_ones"], npcid = 180746, questId = { 64668 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38872762 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189961, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189984, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190002, isKnown = false } }, note = L["protector_of_the_first_ones_note"] },
+            [183927] = { name = L["sand_matriarch_ileus"], npcid = 183927, questId = { 65574 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53384707 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189927, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189955, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189998, isKnown = false } } },
+            [184413] = { name = L["shifting_stargorger"], npcid = 184413, questId = { 65549 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 42302099 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189908, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189916, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189941, isKnown = false }, { droptype = DROPTYPE.QUEST, itemID = 189972, checkId = 65505, covenantBound = COVENANTS.NIGHTFAE, isKnown = false } } },
+            [183722] = { name = L["sorranos"], npcid = 183722, questId = { 65240 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35877121 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189911, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189944, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189962, isKnown = false } } },
+            [183925] = { name = L["tahkwitz"], npcid = 183925, questId = { 65272 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49783914 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189915, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189933, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189954, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190003, isKnown = false } } },
+            [181249] = { name = L["tethos"], npcid = 181249, questId = { 65550 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 54507344 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189967, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189928, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189966, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190055, isKnown = false } } },
+            [183516] = { name = L["the_engulfer"], npcid = 183516, questId = { 65580 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43947530 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189913, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189921, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190006, isKnown = false } }, note = L["the_engulfer_note"] },
+            [181360] = { name = L["vexis"], npcid = 181360, questId = { 65239 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 39555737 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189900, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189959, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189997, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190048, isKnown = false } } },
+            [183747] = { name = L["vitiane"], npcid = 183747, questId = { 65584 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47044698 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189901, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189922, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189935, isKnown = false } } },
+            [183737] = { name = L["xyrath_the_covetous"], npcid = 183737, questId = { 65241 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 64054975 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189918, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189964, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190052, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 190007, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 190238, isKnown = false } } },
+            [183764] = { name = L["zatojin"], npcid = 183764, questId = { 65251 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43513294 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189902, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189924, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 189939, isKnown = false } }, note = L["zatojin_note"] },
+        },
+    },
+    --DragonFlight
+    [2022] = { -- Parent mapID 1978 (Dragonflight Main Map)
+        zonename = "The Waking Shores", -- 
+        scenarioname = "Unknown", -- Change!
+        gatheringname = "Unknown", -- Change!
+        hidden = false,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
+        currentAssault = 0,
+        zonephaseID = 1706, -- ArtID
+        zoneContributionMapID = 0, -- Change!
+        allianceContributionMapID = 0, -- Change!    
+        hordeContributionMapID = 0, -- Change!       
+        --homeCoord = { 39965257, 10205301 }, -- Alliance is exactly on portal!
+        warfrontControlledByFaction = "",
+        worldmapIcons = {},
+        minimapIcons = {},
+        index = 15,
+        expansion = EXPANSION.DRAGONFLIGHT,
+        rares = {
+            [193118] = { name = L["onank_shorescour"], npcid = 193118, questId = { 74017 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 81485082 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200684, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200203, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200435, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197022, checkId = 69222, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197608, checkId = 69812, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197589, checkId = 69793, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false } } },
+            [187111] = { name = L["ancient_hornswog"], npcid = 187111, questId = { 72835 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 77302198 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200165, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200682, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197403, checkId = 69604, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196992, checkId = 69192, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, cave = { coord = { 77902281 } }, note = L["in_small_cave"] },
+            [193198] = { name = L["captain_lancer"], npcid = 193198, questId = { 73075 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 26847642 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200286, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false } }, note = L["captain_lancer_note"] },
+            [193708] = { name = L["skald_the_impaler"], npcid = 193708, questId = { 74078 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 33886446 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, note = L["skald_the_impaler_note"] },
+            [195915] = { name = L["firava_the_rekindler"], npcid = 195915, questId = { 70648 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 54582137 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false } } },
+            [196056] = { name = L["gushgut_the_beaksinker"], npcid = 196056, questId = { 73879 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 52345829 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false } } },
+            [187306] = { name = L["morchok"], npcid = 187306, questId = { 74067 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 32805248 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false } }, note = L["obsidian_citadel_rare_note"] },
+            [190985] = { name = L["deaths_shadow"], npcid = 190985, questId = { 73074 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 31785474 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false } }, note = L["obsidian_citadel_rare_note"] },
+            [193152] = { name = L["massive_magmashell"], npcid = 193152, questId = { 74012 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 22207649 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200192, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200435, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197022, checkId = 69222, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197589, checkId = 69793, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false } } },
+            [186783] = { name = L["cauldronbearer_blakor"], npcid = 186783, questId = { 74042 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30575625 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false } } },
+            [193271] = { name = L["shadeslash_trakken"], npcid = 193271, questId = { 74076 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 46997332 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200152, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200297, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196999, checkId = 69199, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197116, checkId = 69317, isKnown = false } }, cave = { coord = { 47727466 } }, note = L["shadeslash_trakken_note"] },
+            [193134] = { name = L["enkine_the_voracious"], npcid = 193134, questId = { 73072 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 21626478 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200167, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false } }, note = L["enkine_the_voracious_note"] },
+            [189289] = { name = L["penumbrus"], npcid = 189289, questId = { 74019 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 24135392 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } }, cave = { coord = { 27226096 } }, note = L["obsidian_throne_rare_note"] },
+            [193217] = { name = L["drakewing"], npcid = 193217, questId = { 73874 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 60204535 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200219, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193181] = { name = L["skewersnout"], npcid = 193181, questId = { 73895 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 42892832 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200132, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197022, checkId = 69222, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197589, checkId = 69793, isKnown = false } } },
+            [186200] = { name = L["harkyn_grymstone"], npcid = 186200, questId = { 74000 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 42203960 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200171, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200175, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200243, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197131, checkId = 69332, isKnown = false } } },
+            [191611] = { name = L["dragonhunter_igordan"], npcid = 191611, questId = { 72838 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 64173289 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false } } },
+            [193171] = { name = L["terillod_the_devout"], npcid = 193171, questId = { 72850 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 60598285 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200208, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200314, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } } },
+            [184853] = { name = L["primal_scythid_queen"], npcid = 184853, questId = { 72843 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 81133794 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, cave = { coord = { 81713719 } }, note = L["in_small_cave"] },
+            [187209] = { name = L["klozicc_the_ascended"], npcid = 187209, questId = { 72841 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 54728225 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200199, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200253, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200254, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200293, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200294, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200439, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197023, checkId = 69223, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } } },
+            [186859] = { name = L["worldcarver_atir"], npcid = 186859, questId = { 74090 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30025534 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200213, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false } }, note = L["worldcarver_atir_note"] },
+            [187886] = { name = L["turboris"], npcid = 187886, questId = { 74054 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 33525576 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false } }, note = L["in_small_cave"] },
+            [193148] = { name = L["thunderous_matriarch"], npcid = 193148, questId = { 73899 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45453540 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [187945] = { name = L["anhydros_the_tidetaker"], npcid = 187945, questId = { 73865 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58634021 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false } } },
+            [187598] = { name = L["rohzor_forgesmash"], npcid = 187598, questId = { 74052 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 30736110 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false } } },
+            [193256] = { name = L["nulltheria_the_void_gazer"], npcid = 193256, questId = { 73888 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56004592 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200165, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200256, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200310, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197403, checkId = 69604, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197382, checkId = 69583, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196992, checkId = 69192, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196985, checkId = 69185, isKnown = false } } },
+            [193228] = { name = L["snappy"], npcid = 193228, questId = { 73997 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 78514999 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200281, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200435, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197589, checkId = 69793, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197022, checkId = 69222, isKnown = false } } },
+            [190986] = { name = L["battlehorn_pyrhus"], npcid = 190986, questId = { 74040 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 28635882 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false } } },
+            [193132] = { name = L["amethyzar_the_glittering"], npcid = 193132, questId = { 73981 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 63695509 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } } },
+            [193120] = { name = L["smogswog_the_firebreather"], npcid = 193120, questId = { 74031 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 69486653 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200209, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false } } },
+            [193175] = { name = L["slurpo_the_incredible_snail"], npcid = 193175, questId = { 74079 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 34578950 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200189, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false } }, cave = { coord = { 36028984 } }, note = L["slurpo_the_incredible_snail_note"] },
+            [193154] = { name = L["forgotten_gryphon"], npcid = 193154, questId = { 73073 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 33127632 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200256, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200310, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196985, checkId = 69185, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197382, checkId = 69583, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, note = L["forgotten_gryphon_note"] },
+            [193232] = { name = L["rasnar_the_war_ender"], npcid = 193232, questId = { 74051 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 24005896 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false } }, cave = { coord = { 27226096 } }, note = L["obsidian_throne_rare_note"] },
+            [192738] = { name = L["brundin_the_dragonbane"], npcid = 192738, questId = { 73890 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 52916529 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false } }, note = L["brundin_the_dragonbane_note"] },
+            [186827] = { name = L["magmaton"], npcid = 186827, questId = { 74010 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 39596353 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200203, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200684, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197608, checkId = 69812, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false } } },
+            [193266] = { name = L["lepidoralia_the_resplendent"], npcid = 193266, questId = { 74065 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 34618275 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, note = L["lepidoralia_the_resplendent_note"] },
+            [193263] = { name = L["helmet_missingway"], npcid = 193263, questId = { 73880 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43007465 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [193135] = { name = L["azras_prized_peony"], npcid = 193135, questId = { 73984 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 54517174 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200259, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200267, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200229, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197121, checkId = 69322, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197398, checkId = 69599, isKnown = false } } },
+            [189822] = { name = L["shasith"], npcid = 189822, questId = { 74077 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 23755724 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false } }, note = L["obsidian_citadel_rare_note"] },
+            [190991] = { name = L["char"], npcid = 190991, questId = { 74043 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 29935074 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200199, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200293, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200294, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200439, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false } }, cave = { coord = { 29335248 } }, note = L["in_cave"] },
+        },
+    },
+    [2023] = { -- Parent mapID 1978
+        zonename = "Ohn'ahran Plains", -- 
+        scenarioname = "Unknown", -- Change!
+        gatheringname = "Unknown", -- Change!
+        hidden = false,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
+        currentAssault = 0,
+        zonephaseID = 1705, -- ArtID
+        zoneContributionMapID = 0, -- Change!
+        allianceContributionMapID = 0, -- Change!    
+        hordeContributionMapID = 0, -- Change!       
+        --homeCoord = { 39965257, 10205301 }, -- Alliance is exactly on portal!
+        warfrontControlledByFaction = "",
+        worldmapIcons = {},
+        minimapIcons = {},
+        index = 16,
+        expansion = EXPANSION.DRAGONFLIGHT,
+        rares = {
+            [193165] = { name = L["sparkspitter_vrak"], npcid = 193165, questId = { 73896 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 21603960 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200234, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200297, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197116, checkId = 69317, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196999, checkId = 69199, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false } } },
+            [201537] = { name = L["groffnar"], npcid = 201537, questId = { 74463 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35804040 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203671, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false } } },
+            [189652] = { name = L["deadwaker_ghendish"], npcid = 189652, questId = { 73872 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 30546628 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 189055, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200308, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200441, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false } } },
+            [193235] = { name = L["oshigol"], npcid = 193235, questId = { 74018 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 61212950 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200203, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200684, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197608, checkId = 69812, isKnown = false } } },
+            [187219] = { name = L["defend_clan_aylaag"], npcid = 187219, questId = { 0 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58604940 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["defend_clan_aylaag_note"] },
+            [193170] = { name = L["fulgurb"], npcid = 193170, questId = { 73994 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 75184651 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200433, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [197009] = { name = L["liskheszaera"], npcid = 197009, questId = { 73882 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 87556151 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200434, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197400, checkId = 69601, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197106, checkId = 69307, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193133] = { name = L["sunscale_behemoth"], npcid = 193133, questId = { 72849 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 63034854 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 198409, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, note = L["in_waterfall_cave"] },
+            [193212] = { name = L["malsegan"], npcid = 193212, questId = { 74011 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 71694585 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200197, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 198409, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [201535] = { name = L["bloodbeak_the_ravenous"], npcid = 201535, questId = { 74552 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36803800 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203673, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false } } },
+            [201538] = { name = L["huntmaster_yrgena"], npcid = 201538, questId = { 74548 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 33843872 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203672, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200308, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false } } },
+            [195223] = { name = L["rustlily"], npcid = 195223, questId = { 73973 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 42804428 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["rustlily_note"] },
+            [193215] = { name = L["scaleseeker_mezeri"], npcid = 193215, questId = { 74073 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 20444344 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200293, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200294, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200439, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } }, note = L["scaleseeker_mezeri_note"] },
+            [193140] = { name = L["zarizz"], npcid = 193140, questId = { 74091 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 30206260 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200215, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false } }, note = L["zarizz_note"] },
+            [201539] = { name = L["stormcaller_narkena"], npcid = 201539, questId = { 74547 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 32614184 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203676, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200441, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false } } },
+            [192020] = { name = L["eaglemaster_niraak"], npcid = 192020, questId = { 74063 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 49866673 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200308, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200441, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false } }, note = L["eaglemaster_niraak_note"] },
+            [188451] = { name = L["zerimek"], npcid = 188451, questId = { 73980 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 72232306 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["aylaag_outpost_note"] },
+            [191950] = { name = L["porta_the_overgrown"], npcid = 191950, questId = { 73971 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59686802 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, cave = { coord = { 59696879 } }, note = L["river_camp_note"].."\n"..L["in_small_cave"].."\n"..L["porta_the_overgrown_note"] },
+            [201540] = { name = L["lurgan"], npcid = 201540, questId = { 74546 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 35803600 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203674, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false } } },
+            [193163] = { name = L["territorial_coastling"], npcid = 193163, questId = { 72851 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 22956670 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200212, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [192364] = { name = L["windscale_the_stormborn"], npcid = 192364, questId = { 73979 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 84214784 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["river_camp_note"].."\n"..L["windscale_the_stormborn_note"] },
+            [192983] = { name = L["web-queen_ashkaz"], npcid = 192983, questId = { 74095 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43105078 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, cave = { coord = { 43724823 } }, note = L["in_cave"] },
+            [191354] = { name = L["tyfoon_the_ascended"], npcid = 191354, questId = { 72852 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 26073412 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 198429, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200314, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200439, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } }, cave = { coord = { 23573442 } }, note = L["in_cave"] },
+            [193173] = { name = L["mikrin_of_the_raging_winds"], npcid = 193173, questId = { 74015 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 63017996 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false } } },
+            [192453] = { name = L["vaniik_the_stormtouched"], npcid = 192453, questId = { 73978 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 83786215 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["river_camp_note"] },
+            [187559] = { name = L["shade_of_grief"], npcid = 187559, questId = { 74075 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 29964103 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200256, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200310, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200444, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200437, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196996, checkId = 69196, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197115, checkId = 69324, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196985, checkId = 69185, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197382, checkId = 69583, isKnown = false } }, note = L["shade_of_grief_note"] },
+            [193153] = { name = L["ripsaw_the_stalker"], npcid = 193153, questId = { 72845 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 26366533 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, note = L["in_small_cave"] },
+            [195186] = { name = L["cinta_the_forgotten"], npcid = 195186, questId = { 73950 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 31567644 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["cinta_the_forgotten_note"] },
+            [193209] = { name = L["zenet_avis"], npcid = 193209, questId = { 73901 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 31456387 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 198825, mountID = 1672, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200314, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false } } },
+            [193142] = { name = L["enraged_sapphire"], npcid = 193142, questId = { 73875 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56718128 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200309, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false } }, note = L["in_small_cave"] },
+            [193669] = { name = L["prozela_galeshot"], npcid = 193669, questId = { 72815 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59926696 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200199, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200293, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200294, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200314, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200439, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } } },
+            [191842] = { name = L["sulfurion"], npcid = 191842, questId = { 73974 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 78298276 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["river_camp_note"] },
+            [197411] = { name = L["astray_splashe"], npcid = 197411, questId = { 74057 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 80817770 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 200086, isKnown = false } }, note = L["astray_splashe_note"] },
+            [193128] = { name = L["blightpaw_the_depraved"], npcid = 193128, questId = { 74096 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 90434005 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200127, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200432, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200178, isKnown = false } }, note = L["blightpaw_the_depraved_note"] },
+            [192045] = { name = L["windseeker_avash"], npcid = 192045, questId = { 74088 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58596822 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200308, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200441, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false } }, note = L["windseeker_avash_note"] },
+            [192949] = { name = L["skaara"], npcid = 192949, questId = { 72847 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 44894924 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200212, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, note = L["in_small_cave"] },
+            [195204] = { name = L["the_jolly_giant"], npcid = 195204, questId = { 73976 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 27605560 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["the_jolly_giant_note"] },
+            [193123] = { name = L["steamgill"], npcid = 193123, questId = { 74034 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 53627281 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200216, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193188] = { name = L["seeker_teryx"], npcid = 193188, questId = { 73894 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 61801283 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200875, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197105, checkId = 69306, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196970, checkId = 69170, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false } } },
+            [193136] = { name = L["scav_notail"], npcid = 193136, questId = { 73893 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50117517 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200168, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196982, checkId = 69182, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197150, checkId = 69351, isKnown = false } } },
+            [187781] = { name = L["hamett"], npcid = 187781, questId = { 73951 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 85221544 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["aylaag_outpost_note"] },
+            [193227] = { name = L["ronsak_the_decimator"], npcid = 193227, questId = { 74026 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 43405560 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200308, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200441, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197016, checkId = 69216, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197367, checkId = 69568, isKnown = false } } },
+            [188124] = { name = L["irontree"], npcid = 188124, questId = { 73967 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 80513869 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, cave = { coord = { 79143656 } }, note = L["in_cave"].."\n"..L["aylaag_outpost_note"] },
+            [195409] = { name = L["makhra_the_ashtouched"], npcid = 195409, questId = { 73968 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 32823817 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["makhra_the_ashtouched_note"] },
+            [196010] = { name = L["researcher_sneakwing"], npcid = 196010, questId = { 74023 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 37005380 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200165, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200682, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200228, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200438, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196992, checkId = 69192, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197403, checkId = 69604, isKnown = false } } },
+            [188095] = { name = L["hunter_of_the_deep"], npcid = 188095, questId = { 73966 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 80544222 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["aylaag_outpost_note"].."\n"..L["hunter_of_the_deep_note"] },
+        },
+    },
+    [2024] = { -- Parent mapID 1978
+        zonename = "The Azure Span", -- 
+        scenarioname = "Unknown", -- Change!
+        gatheringname = "Unknown", -- Change!
+        hidden = false,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
+        currentAssault = 0,
+        zonephaseID = 1707, -- ArtID
+        zoneContributionMapID = 0, -- Change!
+        allianceContributionMapID = 0, -- Change!    
+        hordeContributionMapID = 0, -- Change!       
+        --homeCoord = { 39965257, 10205301 }, -- Alliance is exactly on portal!
+        warfrontControlledByFaction = "",
+        worldmapIcons = {},
+        minimapIcons = {},
+        index = 17,
+        expansion = EXPANSION.DRAGONFLIGHT,
+        rares = {
+            [198004] = { name = L["mange_the_outcast"], npcid = 198004, questId = { 73884 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 40514797 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196982, checkId = 69182, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197150, checkId = 69351, isKnown = false } } },
+            [193157] = { name = L["dragonhunter_gorund"], npcid = 193157, questId = { 73873 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 27214490 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200302, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200169, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200757, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197019, checkId = 69219, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197005, checkId = 69205, isKnown = false } } },
+            [201559] = { name = L["shiobhan_waterborn"], npcid = 201559, questId = { 74533 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 60196818 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203661, isKnown = false } } },
+            [197183] = { name = L["stranded_soul"], npcid = 197183, questId = { 71139 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 76602460 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 200528, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197137, checkId = 69338, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197141, checkId = 69342, isKnown = false } }, note = L["stranded_soul_note"] },
+            [193238] = { name = L["spellwrought_snowman"], npcid = 193238, questId = { 74082 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 55033405 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200211, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false } }, note = L["spellwrought_snowman_note"] },
+            [194270] = { name = L["arcane_devourer"], npcid = 194270, questId = { 73866 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53013563 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [193288] = { name = L["summoned_destroyer"], npcid = 193288, questId = { 72848 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 70143327 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false } } },
+            [193214] = { name = L["forgotten_creation"], npcid = 193214, questId = { 72840 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38155901 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false } }, cave = { coord = { 38625988 } }, note = L["in_cave"] },
+            [193223] = { name = L["vakril"], npcid = 193223, questId = { 72853 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 17254144 }, bothphases = true, loot = { { droptype = DROPTYPE.ITEM, itemID = 201728, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false } } },
+            [193269] = { name = L["grumbletrunk"], npcid = 193269, questId = { 74002 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 19234362 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200206, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false } } },
+            [193691] = { name = L["fisherman_tinnak"], npcid = 193691, questId = { 72254 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50043631 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200256, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200310, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197382, checkId = 69583, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196985, checkId = 69185, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 198070, isKnown = false } }, note = L["fisherman_tinnak_note"] },
+            [193251] = { name = L["gruffy"], npcid = 193251, questId = { 74001 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 32682911 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [194210] = { name = L["azure_pathfinder"], npcid = 194210, questId = { 73867 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 55823132 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } } },
+            [196165] = { name = L["gethdazr"], npcid = 196165, questId = { 74446 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56407080 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200237, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197105, checkId = 69306, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196970, checkId = 69170, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false } }, note = L["gethdazr_note"] },
+            [186962] = { name = L["cascade"], npcid = 186962, questId = { 72836 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 23503317 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200135, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false } } },
+            [201561] = { name = L["movtivator_krathos"], npcid = 201561, questId = { 74544 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 43903096 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203675, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200434, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197400, checkId = 69601, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197106, checkId = 69307, isKnown = false } } },
+            [193149] = { name = L["skag_the_thrower"], npcid = 193149, questId = { 74030 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 26494939 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200203, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200279, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200684, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197608, checkId = 69812, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } } },
+            [191356] = { name = L["frostpaw"], npcid = 191356, questId = { 73877 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58264391 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["frostpaw_note"] },
+            [195353] = { name = L["breezebiter"], npcid = 195353, questId = { 0 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 28564743 }, bothphases = true, loot = { { droptype = DROPTYPE.MOUNT, itemID = 201440, mountID = 1553, isKnown = false } }, cave = { coord = { 29804622 } }, note = L["breezebiter_note"] },
+            [193178] = { name = L["blightfur"], npcid = 193178, questId = { 74058 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 13432270 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200127, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200256, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200310, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200432, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197404, checkId = 69605, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196986, checkId = 69186, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196973, checkId = 69173, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196985, checkId = 69185, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197382, checkId = 69583, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196982, checkId = 69182, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197150, checkId = 69351, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200178, isKnown = false } }, note = L["blightfur_note"] },
+            [192749] = { name = L["sharpfang"], npcid = 192749, questId = { 72846 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36723247 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197150, checkId = 69351, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196982, checkId = 69182, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false } }, note = L["sharpfang_note"] },
+            [193632] = { name = L["wilrive"], npcid = 193632, questId = { 73900 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59405520 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [194392] = { name = L["brackle"], npcid = 194392, questId = { 73871 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 8944852 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200435, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } }, cave = { coord = { 8584883 } }, note = L["in_small_cave"] },
+            [190244] = { name = L["mahg_the_trampler"], npcid = 190244, questId = { 73883 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36243573 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200157, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200684, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200203, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197149, checkId = 69350, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197608, checkId = 69812, isKnown = false } } },
+            [201553] = { name = L["grand_artificer_zeerak"], npcid = 201553, questId = { 74545 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47912378 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203664, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200434, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197400, checkId = 69601, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197106, checkId = 69307, isKnown = false } } },
+            [193698] = { name = L["frigidpelt_den_mother"], npcid = 193698, questId = { 73876 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 64992995 }, bothphases = true, loot = { { droptype = DROPTYPE.GEAR_ONLY, itemID = 0, isKnown = false } }, note = L["in_small_cave"] },
+            [201554] = { name = L["unstable_arcanogolem"], npcid = 201554, questId = { 74536 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47102582 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203662, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false } } },
+            [201556] = { name = L["waterpots"], npcid = 201556, questId = { 74535 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 57256464 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200135, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 203659, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } } },
+            [193116] = { name = L["beogoka"], npcid = 193116, questId = { 73868 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 73032680 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200253, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200254, isKnown = false } } },
+            [193196] = { name = L["trilvarus_loreweaver"], npcid = 193196, questId = { 74087 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 70222532 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200434, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197106, checkId = 69307, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197400, checkId = 69601, isKnown = false } }, note = L["trilvarus_loreweaver_note"] },
+            [201558] = { name = L["malgain_rockknell"], npcid = 201558, questId = { 74531 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 56016760 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 203660, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } } },
+            [193259] = { name = L["blue_terror"], npcid = 193259, questId = { 73870 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 16622798 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200212, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197595, checkId = 69799, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [201557] = { name = L["graniteclaw"], npcid = 201557, questId = { 74532 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 57916842 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200254, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 203658, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197023, checkId = 69223, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } } },
+            [197371] = { name = L["lunker_rares"], npcid = 197371, questId = { 73891 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58813260 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false } }, note = L["lunker_rares_note"] },
+            [193225] = { name = L["notfar_the_unbearable"], npcid = 193225, questId = { 73887 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 20584943 }, bothphases = true, loot = { { droptype = DROPTYPE.TOY, itemID = 200160, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200253, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200254, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197023, checkId = 69223, isKnown = false } }, cave = { coord = { 34023076 } }, note = L["in_small_cave"] },
+            [193201] = { name = L["mucka_the_raker"], npcid = 193201, questId = { 73885 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 58095471 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+        },
+    },
+    [2025] = { -- Parent mapID 1978
+        zonename = "Thaldraszus", -- 
+        scenarioname = "Unknown", -- Change!
+        gatheringname = "Unknown", -- Change!
+        hidden = false,
+        zoneType = DB_ZONE_TYPE_UNTRACKED,
+        currentAssault = 0,
+        zonephaseID = 1708, -- ArtID
+        zoneContributionMapID = 0, -- Change!
+        allianceContributionMapID = 0, -- Change!    
+        hordeContributionMapID = 0, -- Change!       
+        --homeCoord = { 39965257, 10205301 }, -- Alliance is exactly on portal!
+        warfrontControlledByFaction = "",
+        worldmapIcons = {},
+        minimapIcons = {},
+        index = 18,
+        expansion = EXPANSION.DRAGONFLIGHT,
+        rares = {
+            [193664] = { name = L["ancient_protector"], npcid = 193664, questId = { 74055 }, type = RARETYPE.WORLDBOSS, faction = FACTION.ALL, coord = { 59075874 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200299, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200303, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197100, checkId = 69301, isKnown = false } }, note = L["ancient_protector_note"] },
+            [193128] = { name = L["blightpaw_the_depraved"], npcid = 193128, questId = { 74096 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 31097121 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200127, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200266, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200283, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200432, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200178, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196986, checkId = 69186, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196973, checkId = 69173, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196982, checkId = 69182, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197150, checkId = 69351, isKnown = false } }, note = L["blightpaw_the_depraved_note"] },
+            [193220] = { name = L["broodweaver_araznae"], npcid = 193220, questId = { 73987 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 59847057 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200147, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [193658] = { name = L["corrupted_proto-dragon"], npcid = 193658, questId = { 74060 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 44886910 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200166, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200233, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200293, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200313, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196983, checkId = 69183, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197125, checkId = 69326, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false } }, cave = { coord = { 44616780 } }, note = L["corrupted_proto-dragon_note"] },
+            [193663] = { name = L["craggravated_elemental"], npcid = 193663, questId = { 74061 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 45458518 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200298, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200244, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } } },
+            [193234] = { name = L["eldoren_the_reborn"], npcid = 193234, questId = { 73990 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 47675115 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200246, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200683, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false } } },
+            [193125] = { name = L["goremaul_the_gluttonous"], npcid = 193125, questId = { 73878 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53374092 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200436, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false } } },
+            [193126] = { name = L["innumerable_ruination"], npcid = 193126, questId = { 73881 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59128380 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200126, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200202, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200148, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197008, checkId = 69208, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197130, checkId = 69331, isKnown = false } } },
+            [193241] = { name = L["lord_epochbrgl"], npcid = 193241, questId = { 74066 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 62298177 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200185, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200126, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200151, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200202, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200435, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200148, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197008, checkId = 69208, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197130, checkId = 69331, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197022, checkId = 69222, isKnown = false } }, cave = { coord = { 61708120 } }, note = L["lord_epochbrgl_note"] },
+            [193246] = { name = L["matriarch_remalla"], npcid = 193246, questId = { 74013 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 52895903 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200257, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193688] = { name = L["phenran"], npcid = 193688, questId = { 74020 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 59806100 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200146, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200138, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200299, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200303, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200758, isKnown = false }, { droptype = DROPTYPE.PET, itemID = 200263, speciesID = 3310, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197100, checkId = 69301, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197138, checkId = 69339, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197586, checkId = 69790, isKnown = false } } },
+            [193210] = { name = L["phleep"], npcid = 193210, questId = { 74021 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 57218420 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200202, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200126, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200148, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197130, checkId = 69331, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197008, checkId = 69208, isKnown = false } } },
+            [193130] = { name = L["pleasant_alpha"], npcid = 193130, questId = { 73889 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 37967903 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193143] = { name = L["razkvex_the_untamed"], npcid = 193143, questId = { 73892 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50404840 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200165, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200682, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196992, checkId = 69192, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197403, checkId = 69604, isKnown = false } } },
+            [193240] = { name = L["riverwalker_tamopo"], npcid = 193240, questId = { 74024 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 40087014 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200212, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193666] = { name = L["rokmur"], npcid = 193666, questId = { 74025 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 50005180 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200137, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200212, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193176] = { name = L["sandana_the_tempest"], npcid = 193176, questId = { 74029 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 37607780 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200202, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200126, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200306, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200314, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200148, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197008, checkId = 69208, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197130, checkId = 69331, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197372, checkId = 69573, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197606, checkId = 69810, isKnown = false } }, cave = { coord = { 38507640 } } },
+            [193258] = { name = L["tempestrian"], npcid = 193258, questId = { 74035 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 47207895 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200139, isKnown = false } } },
+            [191305] = { name = L["the_great_shellkhan"], npcid = 191305, questId = { 74085 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 38466826 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200999, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, note = L["the_great_shellkhan_note"] },
+            [183984] = { name = L["the_weeping_vilomah"], npcid = 183984, questId = { 74086 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 46267317 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200214, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, cave = { coord = { 47547180 } }, note = L["the_weeping_vilomah_note"] },
+            [193146] = { name = L["treasure-mad_trambladd"], npcid = 193146, questId = { 74036 }, type = RARETYPE.ELITE, faction = FACTION.ALL, coord = { 35027001 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200291, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196994, checkId = 69194, isKnown = false } }, cave = { coord = { 34896938 } } },
+            [193161] = { name = L["woolfang"], npcid = 193161, questId = { 74089 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 47884976 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197111, checkId = 69312, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } }, note = L["woolfang_note"] },
+            [197411] = { name = L["astray_splasher"], npcid = 197411, questId = { 74057 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 57366540 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 200086, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197098, checkId = 69299, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197001, checkId = 69201, isKnown = false } }, note = L["astray_splasher_note"] },
+            [193229] = { name = L["henlare"], npcid = 193229, questId = { 72814 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 55647727 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 0, checkId = 0, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196976, checkId = 69176, isKnown = false } } },
+            [193273] = { name = L["liskron_the_dazzling"], npcid = 193273, questId = { 72842 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36757287 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200131, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200174, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200186, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200193, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200195, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200232, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200442, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200249, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false } } },
+            [193668] = { name = L["lookout_mordren"], npcid = 193668, questId = { 72813 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36798556 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200182, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200133, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200247, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200252, isKnown = false }, { droptype = DROPTYPE.TOY, itemID = 200198, isKnown = false }, { droptype = DROPTYPE.ITEM, itemID = 198048, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197379, checkId = 69580, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197135, checkId = 69336, isKnown = false } } },
+            [201562] = { name = L["shardwing"], npcid = 201562, questId = { 74556 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48421722 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200182, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 203669, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200242, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200241, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197593, checkId = 69797, isKnown = false } } },
+            [201542] = { name = L["tikarr_frostclaw"], npcid = 201542, questId = { 74558 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 61813142 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203667, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196999, checkId = 69199, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197116, checkId = 69317, isKnown = false } } },
+            [201543] = { name = L["avalantus"], npcid = 201543, questId = { 74554 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 53536521 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 200187, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200245, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200135, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 201447, isKnown = false } } },
+            [201545] = { name = L["shapemaster_zalani"], npcid = 201545, questId = { 74553 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 46884248 }, bothphases = true, loot = { { droptype = DROPTYPE.TRANSMOG, itemID = 203668, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200199, isKnown = false }, { droptype = DROPTYPE.TRANSMOG, itemID = 200292, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197383, checkId = 69584, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197602, checkId = 69806, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 196991, checkId = 69191, isKnown = false }, { droptype = DROPTYPE.SCROLL, itemID = 197624, checkId = 69828, isKnown = false } } },
+
+            [179608] = { name = "Test - Thaldraszus", npcid = 179608, questId = { 64263 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 50005000 }, bothphases = true, loot = { { droptype = DROPTYPE.SCROLL, itemID = 197139, checkId = 69340, isKnown = false } } },
+        },
+    },
 }
 WarfrontRareTracker.rareDB = rareDB
 
@@ -901,14 +1190,15 @@ local dbDefaults = {
             showWarfrontMenu = "current",
             autoChangeZone = true,
             autoSaveZone = false,
-            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false },
+            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false, [DROPTYPE.SCROLL] = false },
             sortRaresOn = "drop",
             groupDropSortOn = "type",
             groupTypeSortOn = "drop",
             sortAscending = "true",
             worldbossOnTop = true,
             alwaysShowWorldboss = true,
-            lootTypeOrder = { [1] = "Mount", [2] = "Pet", [3] = "Toy", [4] = "Quest", [5] = "Blueprint", [6] = "Item", [7] = "Gear only", [8] = "Transmog", [9] = "Unknown" }
+            --lootTypeOrder = { [1] = "Mount", [2] = "Pet", [3] = "Toy", [4] = "Quest", [5] = "Blueprint", [6] = "Item", [7] = "Gear only", [8] = "Transmog", [9] = DROPTYPE.SCROLL, [10] = "Unknown" }
+            lootTypeOrder = { [1] = DROPTYPE.MOUNT, [2] = DROPTYPE.PET, [3] = DROPTYPE.TOY, [4] = DROPTYPE.QUEST, [5] = DROPTYPE.BLUEPRINT, [6] = DROPTYPE.ITEM, [7] = DROPTYPE.GEAR_ONLY, [8] = DROPTYPE.TRANSMOG, [9] = DROPTYPE.SCROLL, [10] = DROPTYPE.UNKNOWN }
         },
         masterfilter = {
             hide = { [HIDE_ALREADY_KNOWN] = false, [HIDE_UNKNOWN_LOOT] = false, [HIDE_UNTRACKABLE] = false, [HIDE_GOLIATHS] = false, [HIDE_UNAVAILABLE] = false, [HIDE_GEAR_ONLY] = false, [HIDE_QUEST_ONLY] = false, [HIDE_ITEM_ONLY] = false },
@@ -924,7 +1214,7 @@ local dbDefaults = {
             hideItemOnly = false, -- Loot
             hideTransmogOnly = false, -- Loot
             hideAnimaOnly = false, -- Loot
-            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false },
+            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false, [DROPTYPE.SCROLL] = false },
             worldmapShowOnlyAtPhase = true,
             worldmapShowOnlyAtMaxLevel = false,
             worldmapHandleDefeated = "change",
@@ -992,7 +1282,7 @@ local dbDefaults = {
             hideItemOnly = false,
             hideTransmogOnly = false,
             hideAnimaOnly = false,
-            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false },
+            whitelist = { [DROPTYPE.MOUNT] = false, [DROPTYPE.PET] = false, [DROPTYPE.TOY] = false, [DROPTYPE.BLUEPRINT] = false, [DROPTYPE.QUEST] = false, [DROPTYPE.TRANSMOG] = false, [DROPTYPE.SCROLL] = false },
             alwaysShowWorldboss = true,
         },
         tomtom = {
@@ -1004,8 +1294,8 @@ local dbDefaults = {
         general = {
             enableZoneChangeSound = true,
             enableZoneChangeMessage = true,
-            enableLevelUpSound = true,
-            enableLevelUpChatMessage = true,
+            --enableLevelUpSound = true,
+            --enableLevelUpChatMessage = true,
             disableBackground = false,
         },
         debug = {
@@ -1177,23 +1467,36 @@ local function isNPCUpForPlayerFaction(mapid, npcid)
     end
 end
 
-local function isQuestCompleted(mapid, npcid)
+local function isQuestCompleted(questid)
+    return C_QuestLog.IsQuestFlaggedCompleted(questid)
+end
+
+local function areAllQuestsCompleted(mapid, npcid) -- Rename to isRareKilled(mapid, npcid) ?
+    -- if rareDB[mapid].rares[npcid].questId == nil or rareDB[mapid].rares[npcid].questId[1] <= 0 then return false end
+    -- if rareDB[mapid].expansion == EXPANSION.BFA then -- BfA has Alliance/Horde ID's.
+    --     for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+    --         if C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+    --             return true
+    --         end
+    --     end
+    -- elseif rareDB[mapid].expansion == EXPANSION.SHADOWLANDS then -- Shadowlands has multiple questID's for a few Rare's so we need to iterate to see if all are completed.
+    --     for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+    --         if not C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+    --             return false
+    --         end
+    --     end
+    --     return true
+    -- end
+    -- return false
+
+    -- New
     if rareDB[mapid].rares[npcid].questId == nil or rareDB[mapid].rares[npcid].questId[1] <= 0 then return false end
-    if rareDB[mapid].expansion == EXPANSION.BFA then -- BfA has Alliance/Horde ID's.
-        for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
-            if C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
-                return true
-            end
+    for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+        if not isQuestCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+            return false
         end
-    elseif rareDB[mapid].expansion == EXPANSION.SHADOWLANDS then -- Shadowlands has multiple questID's for a few Rare's so we need to iterate to see if all are completed.
-        for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
-            if not C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
-                return false
-            end
-        end
-        return true
     end
-    return false
+    return true
 end
 
 local function playSound(news)
@@ -1288,7 +1591,7 @@ local function getColoredStatusText(mapid, npcid)
     elseif rare.questId[1] == 0 then
         return colorText("Missing Info", colors.orange)
     else
-        if isQuestCompleted(mapid, npcid) then
+        if areAllQuestsCompleted(mapid, npcid) then
             return colorText("Defeated", WarfrontRareTracker.db.profile.colors.colorizeStatus and WarfrontRareTracker.db.profile.colors.defeated or colors.red)
         end
     end
@@ -1326,25 +1629,68 @@ local function getColoredDropText(mapid, npcid)
     if rareDB[mapid].rares[npcid].loot == nil then
         text =  "nil"
     end
+    
     if #rareDB[mapid].rares[npcid].loot == 0 then
         text =  DROPTYPE.UNKNOWN
-        -- Cropped down as the Iterater works with 1 entry!!
-    -- elseif #rareDB[mapid].rares[npcid].loot == 1 and showDropTextCovenantCheck(mapid, npcid, 1) then
-    --     if WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[1].isKnown then
-    --         text = colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
-    --     elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[1].isKnown then
-    --         text = colorText(rareDB[mapid].rares[npcid].loot[1].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
-    --     else
-    --         text = "NYI" -- rareDB[mapid].rares[npcid].loot[1].droptype
-    --     end
-    -- else
     elseif #rareDB[mapid].rares[npcid].loot > 0 then
         local i
-        for i = 1, #rareDB[mapid].rares[npcid].loot, 1 do
-            --if showDropTextCovenantCheck(mapid, npcid, i) then
+        if rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT then -- rares[npcid].loot < 4 then 
+            -- Abbriviation
+            local loot = {}
+            local known = {}
+
+            for _, drop in pairs(rareDB[mapid].rares[npcid].loot) do
+                local index = drop.droptype
+                -- Just for now TEMP
+                if drop.droptype == DROPTYPE.SCROLL and not drop.isKnown then
+                    drop.isKnown = isQuestCompleted(drop.checkId)
+                end
+                --
+                loot[index] = (loot[index] or 0) + 1
+                if drop.isKnown then
+                    known[index] = (known[index] or 0) + 1
+                end
+            end
+            for i = 1, #rareDB[mapid].rares[npcid].loot, 1 do
+
+                -- Just for now TEMP
+                -- if rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT and rareDB[mapid].rares[npcid].loot[i].droptype == DROPTYPE.SCROLL and not rareDB[mapid].rares[npcid].loot[i].isKnown then
+                --     rareDB[mapid].rares[npcid].loot[i].isKnown = isQuestCompleted(rareDB[mapid].rares[npcid].loot[i].checkId)
+                -- end
+                --
+
+                -- if rareDB[mapid].rares[npcid].loot[i].covenantBound and rareDB[mapid].rares[npcid].loot[i].covenantBound ~= currentPlayerCovenant then
+                --     text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, colors.red)
+                -- elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[i].isKnown then
+                --     table.insert(loot, {dr})
+                --     text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.knownColor)
+                -- elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and not rareDB[mapid].rares[npcid].loot[i].isKnown then
+                --     text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, WarfrontRareTracker.db.profile.colors.unknownColor)
+                -- else
+                --     text = text .. rareDB[mapid].rares[npcid].loot[i].droptype
+                -- end
+            end
+            for key, value in pairs(loot) do
+                if string.len(text) > 1 then
+                    text = text .. ", "
+                end
+                if known[key] then
+                    if known[key] == value then -- All
+                        text = text .. colorText(key .. " (" .. known[key] .. "/" .. value ..")", WarfrontRareTracker.db.profile.colors.knownColor)
+                    else -- Partial
+                        text = text .. colorText(key .. " (" .. known[key] .. "/" .. value ..")", WarfrontRareTracker.db.profile.colors.unknownColor)
+                    end
+                else
+                    text = text .. colorText(key .. " (0/" .. value ..")", WarfrontRareTracker.db.profile.colors.unknownColor)
+                end
+            end
+        else
+            -- Normal
+            for i = 1, #rareDB[mapid].rares[npcid].loot, 1 do
                 if string.len(text) > 1 then
                     text = text .. colorText(", ", colors.yellow)
                 end
+            
                 if rareDB[mapid].rares[npcid].loot[i].covenantBound and rareDB[mapid].rares[npcid].loot[i].covenantBound ~= currentPlayerCovenant then
                     text = text .. colorText(rareDB[mapid].rares[npcid].loot[i].droptype, colors.red)
                 elseif WarfrontRareTracker.db.profile.colors.colorizeDrops and rareDB[mapid].rares[npcid].loot[i].isKnown then
@@ -1354,14 +1700,11 @@ local function getColoredDropText(mapid, npcid)
                 else
                     text = text .. rareDB[mapid].rares[npcid].loot[i].droptype
                 end
-            --else
-                --text = colorText("Covenant Bound!!!", colors.red)
-                --text =  DROPTYPE.UNKNOWN
-            --end
+            end
         end
     else
         text =  DROPTYPE.UNKNOWN
-        DebugPrint(ColorizeText(format("Function getColoredDropText(%d, %d): ", mapid, npcid), colors.yellow) .. "ELSE!!!!!!!!")
+        DebugPrint(colorText(format("Function getColoredDropText(%d, %d): ", mapid, npcid), colors.yellow) .. "ELSE!!!!!!!!")
     end
     if string.len(text) == 0 then
         text = colorText("Covenant Bound", colors.red)
@@ -1656,7 +1999,7 @@ local function showRare(mapid, npcid, mode)
         end
         
         if mode == "worldmap" and not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter then
-            if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
+            if WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "hide" and areAllQuestsCompleted(mapid, npcid) then
                 return false
             elseif WarfrontRareTracker.db.profile.worldmapicons.alwaysShowWorldboss and rareDB[mapid].rares[npcid].type == RARETYPE.WORLDBOSS then
                 return true
@@ -1739,7 +2082,7 @@ local function showRare(mapid, npcid, mode)
                     return false
                 elseif WarfrontRareTracker.db.profile.masterfilter.worldmapShowOnlyAtMaxLevel and not IsPlayerWarfrontLevel() then
                     return false
-                elseif WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "hide" and isQuestCompleted(mapid, npcid) then
+                elseif WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "hide" and areAllQuestsCompleted(mapid, npcid) then
                     return false
                 end
             end
@@ -1906,7 +2249,7 @@ local function scanForKnownItems()
                         if number >= 1 then
                             rare.loot[i].isKnown = true
                         end
-                    elseif rare.loot[i].droptype == DROPTYPE.QUEST or rare.loot[i].droptype == DROPTYPE.BLUEPRINT then
+                    elseif rare.loot[i].droptype == DROPTYPE.QUEST or rare.loot[i].droptype == DROPTYPE.BLUEPRINT or rare.loot[i].droptype == DROPTYPE.SCROLL then
                         if rare.loot[i].checkId ~= nil and rare.loot[i].checkId > 0 and C_QuestLog.IsQuestFlaggedCompleted(rare.loot[i].checkId) then
                             rare.loot[i].isKnown = true
                         end
@@ -1925,6 +2268,8 @@ local function setBrokerIcon(mapid, faction)
     if mapid == nil then mapid = getPlayerSelectedZone() end
     if mapid and rareDB[mapid].expansion == EXPANSION.SHADOWLANDS then
         WarfrontRareTracker.broker.icon = BROKER_ICON_SHADOWLANDS
+    elseif mapid and rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT then
+        WarfrontRareTracker.broker.icon = BROKER_ICON_DRAGONFLIGHT
     elseif mapid and rareDB[mapid].expansion == EXPANSION.BFA then
         if faction == FACTION.ALLIANCE then
             WarfrontRareTracker.broker.icon = BROKER_ICON_ALLIANCE
@@ -2191,13 +2536,14 @@ local function addToTomTom(mapid, npcid)
     end
 end
 
-local function playerLeveledUp(newLevel)
-    if newLevel == PLAYER_WARFRONT_LEVEL and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
-        if WarfrontRareTracker.db.profile.general.enableLevelUpSound then
-            C_Timer.After(5, function() WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise)); playSound("good") end)
-        end
-    end  
-end
+-- REMOVED
+-- local function playerLeveledUp(newLevel)
+--     if newLevel == PLAYER_WARFRONT_LEVEL and WarfrontRareTracker.db.profile.general.enableLevelUpChatMessage then
+--         if WarfrontRareTracker.db.profile.general.enableLevelUpSound then
+--             C_Timer.After(5, function() WarfrontRareTracker:Print(colorText("Good news everyone. You are now egliable to fight enter Warfronts!", colors.turqoise)); playSound("good") end)
+--         end
+--     end  
+-- end
 
 local function sortLootTables()
     for mapid, contents in pairs(rareDB) do
@@ -2327,7 +2673,7 @@ function WarfrontRareTracker:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("NEW_MOUNT_ADDED", "OnEvent")
     self:RegisterEvent("NEW_PET_ADDED", "OnEvent")
-    self:RegisterEvent("PLAYER_LEVEL_UP")
+    -- self:RegisterEvent("PLAYER_LEVEL_UP")
     self:RegisterEvent("QUEST_WATCH_UPDATE")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED", "TRANSMOG_EVENTS")
@@ -2352,7 +2698,7 @@ function WarfrontRareTracker:OnDisable()
     -- Normal Events
     self:UnregisterEvent("NEW_MOUNT_ADDED")
     self:UnregisterEvent("NEW_PET_ADDED")
-    self:UnregisterEvent("PLAYER_LEVEL_UP")
+    -- self:UnregisterEvent("PLAYER_LEVEL_UP")
     self:UnregisterEvent("QUEST_WATCH_UPDATE")
     self:UnregisterEvent("QUEST_ACCEPTED")
     self:UnregisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED")
@@ -2467,10 +2813,11 @@ function WarfrontRareTracker:QUEST_ACCEPTED(_, questID)
     end
 end
 
-function WarfrontRareTracker:PLAYER_LEVEL_UP(event, newLevel, ...)
-    playerLeveledUp(newLevel)
-    --C_Timer.After(10, function(self, newLevel) playerLeveledUp(newLevel) end, newLevel)
-end
+-- REMOVED
+-- function WarfrontRareTracker:PLAYER_LEVEL_UP(event, newLevel, ...)
+--     playerLeveledUp(newLevel)
+--     --C_Timer.After(10, function(self, newLevel) playerLeveledUp(newLevel) end, newLevel)
+-- end
 
 function WarfrontRareTracker:COVENANT_CHOSEN(event, covenantID)
     DebugPrint(colorText("EVENT[COVENANT_CHOSEN] ", colors.yellow) .. colorText(format("Args: event=%s, xx=%s", colorText(tostring(event), colors.yellow), colorText(tostring(covenantID), colors.yellow)), colors.turqoise))
@@ -2545,10 +2892,13 @@ function WarfrontRareTracker:CheckMapChange(previousMapid)
     local previousAutoChangeMapid = autoChangeZone
     if self.db.profile.menu.autoChangeZone then
         if rareDB[currentPlayerMapid] then
-            --printMapChanges(currentParentMapid, mapInfo.name, previousMapid, "NORMAL!")
+            printMapChanges(currentParentMapid, mapInfo.name, previousMapid, "NORMAL!")
             autoChangeZone = currentPlayerMapid
             if self.db.profile.menu.autoSaveZone then
                 self.db.char.selectedZone = currentPlayerMapid
+            end
+            if rareDB[currentPlayerMapid].expansion and rareDB[currentPlayerMapid].expansion == EXPANSION.DRAGONFLIGHT then
+                WarfrontRareTracker:RefreshDragonManuscritps(currentPlayerMapid)
             end
         elseif currentParentMapid > 0 and rareDB[currentParentMapid] then
             --printMapChanges(currentParentMapid, mapInfo.name, previousMapid, "PARENT!!!")
@@ -2567,6 +2917,7 @@ function WarfrontRareTracker:CheckMapChange(previousMapid)
             autoChangeZone = nil
         end
     end
+    
     if self.db.profile.menu.autoChangeZone and autoChangeZone ~= previousAutoChangeMapid then
         -- Something has changed and all needs a refresh. Get the Timed Refresh code from the ON_ZONE_CHANGED Function here!!!
         --DebugPrint("CheckMapChange() has changed, executing CheckWarfrontPhaseChange("..tostring(autoChangeZone)..")", colors.green)
@@ -2628,6 +2979,43 @@ function WarfrontRareTracker:RefreshShadowlandsIcons()
             self:UpdateZoneWorldMapIcons(mapid)
         end
     end
+end
+
+function WarfrontRareTracker:RefreshDragonManuscritps(mapid, npcid, index)
+    if mapid and npcid and index and type(mapid) == "number" and type(npcid) == "number" and type(index) == "number" then
+        rareDB[mapid].rares[npcid].loot[index].isKnown = isQuestCompleted(rareDB[mapid].rares[npcid].loot[index].checkId)
+        --print("WRT - RefreshDragonManuscritps: " .. tostring(loot.isKnown) .. tostring(format("  - mapid: %d, npcid: %d, index: :d", mapid, npcid, index)))
+    -- elseif mapid and type(mapid) == "number" and rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT then
+    --     for mapid, npcid in pairs(rareDB) do
+    --         for index, loot in pairs(rareDB[mapid].rares[npcid].loot) do
+    --             if loot.droptype and loot.droptype == DROPTYPE.SCROLL then
+    --                 loot.isKnown = isQuestCompleted(loot.checkId)
+    --                 print("WRT - RefreshDragonManuscritps: " .. tostring(loot.isKnown))
+    --             end
+    --         end
+    --     end
+    end
+
+    -- for drake, upgrade in pairs(DRAGONSCROLLS) do
+    --     if drake == drakename then
+    --         for upgradename, content in pairs(upgrade) do
+    --             if upgradename == itemname then
+    --                 itemid = content.item
+    --                 questid = content.quest
+    --                 if type(itemid) ~= "number" then
+    --                     print ("DRAGONSCROLLS: ERROR itemid")
+    --                 end
+    --                 if type(questid) ~= "number" then
+    --                     print("DRAGONSCROLLS: ERROR questid")
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
+
+    -- if rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT and rareDB[mapid].rares[npcid].loot[i].droptype == DROPTYPE.SCROLL and not rareDB[mapid].rares[npcid].loot[i].isKnown then
+    --     rareDB[mapid].rares[npcid].loot[i].isKnown = isQuestCompleted()
+    -- end
 end
 
 -----------------
@@ -2965,7 +3353,7 @@ function WarfrontRareTracker:populateSelectionMenu() -- Move up and make local (
     for key , expansion in pairs(EXPANSION) do
         table.insert(MENU_EXPANSION_LIST, expansion)
     end
-    table.sort(MENU_EXPANSION_LIST)
+    --table.sort(MENU_EXPANSION_LIST)
     table.sort(SELECTION_MENU, function(a,b) return a.expansion < b.expansion or a.expansion == b.expansion and a.zonename < b.zonename end)
 end
 
@@ -3008,7 +3396,7 @@ function WarfrontRareTracker:ShowMenuWarfrontSelection(mapid, tooltip)
         end
 
         if selectedWarfrontSelectionMenuExpansion == nil then
-            for key, expansion in pairs(MENU_EXPANSION_LIST) do
+            for _, expansion in pairs(MENU_EXPANSION_LIST) do
                 line = tooltip:AddLine()
                 tooltip:SetCell(line, 1, colorText(expansion, colors.lightcyan), nil, "CENTER", 3)
                 tooltip:SetLineScript(line, "OnMouseUp", function(self, content, button) selectedWarfrontSelectionMenuExpansion = expansion; WarfrontRareTracker:UpdateMenuToolTip(menuTooltip) end, expansion, menuTooltip)
@@ -3700,9 +4088,9 @@ local function getWorldMapIconForRare(mapid, npcid, caveicon)
             return "Interface\\MINIMAP\\Suramar_Door_Icon"
         end
     end
-    if not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "change" and isQuestCompleted(mapid, npcid) then
+    if not WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.worldmapicons.handleDefeated == "change" and areAllQuestsCompleted(mapid, npcid) then
         return "Interface\\Worldmap\\X_Mark_64Grey"
-    elseif WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "change" and isQuestCompleted(mapid, npcid) then
+    elseif WarfrontRareTracker.db.profile.worldmapicons.useMasterfilter and WarfrontRareTracker.db.profile.masterfilter.worldmapHandleDefeated == "change" and areAllQuestsCompleted(mapid, npcid) then
         return "Interface\\Worldmap\\X_Mark_64Grey"
     end
 
@@ -3751,7 +4139,7 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
     end
     if self.db.profile.worldmapicons.useMasterfilter and self.db.profile.masterfilter.worldmapHandleDefeated == "hide" and rareDB[currentPlayerMapid] or not self.db.profile.worldmapicons.useMasterfilter and self.db.profile.worldmapicons.handleDefeated == "hide" and rareDB[currentPlayerMapid] then
         for k, icon in pairs(rareDB[currentPlayerMapid].worldmapIcons) do
-            if isQuestCompleted(currentPlayerMapid, icon.npcid) then
+            if areAllQuestsCompleted(currentPlayerMapid, icon.npcid) then
                 HBDPins:RemoveWorldMapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
                 recyclePin(icon)
                 rareDB[currentPlayerMapid].worldmapIcons[k] = nil
@@ -3759,7 +4147,7 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
         end
         if self.db.profile.minimapIcons.showMinimapIcons then
             for k, icon in pairs(rareDB[currentPlayerMapid].minimapIcons) do
-                if isQuestCompleted(currentPlayerMapid, icon.npcid) then
+                if areAllQuestsCompleted(currentPlayerMapid, icon.npcid) then
                     HBDPins:RemoveMinimapIcon("WarfrontRareTracker"..rareDB[currentPlayerMapid].zonename, icon)
                     recyclePin(icon)
                     rareDB[currentPlayerMapid].minimapIcons[k] = nil
@@ -3768,13 +4156,13 @@ function WarfrontRareTracker:CheckAndUpdateZoneWorldMapIcons()
         end
     elseif self.db.profile.worldmapicons.useMasterfilter and self.db.profile.masterfilter.worldmapHandleDefeated == "change" and rareDB[currentPlayerMapid] or not self.db.profile.worldmapicons.useMasterfilter and self.db.profile.worldmapicons.handleDefeated == "change" and rareDB[currentPlayerMapid] then
         for k, icon in pairs(rareDB[currentPlayerMapid].worldmapIcons) do
-            if isQuestCompleted(currentPlayerMapid, icon.npcid) then
+            if areAllQuestsCompleted(currentPlayerMapid, icon.npcid) then
                 icon.texture:SetTexture(getWorldMapIconForRare(currentPlayerMapid, icon.npcid, icon.cave))
             end
         end
         if self.db.profile.minimapIcons.showMinimapIcons then
             for k, icon in pairs(rareDB[currentPlayerMapid].minimapIcons) do
-                if isQuestCompleted(currentPlayerMapid, icon.npcid) then
+                if areAllQuestsCompleted(currentPlayerMapid, icon.npcid) then
                     icon.texture:SetTexture(getWorldMapIconForRare(currentPlayerMapid, icon.npcid, icon.cave))
                 end
             end
