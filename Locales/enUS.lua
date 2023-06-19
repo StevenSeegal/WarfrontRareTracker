@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("WarfrontRareTracker", "enUS", true
 -- Global
 ---------------------
 L["in_waterfall_cave"] = "In a cave behind the waterfall."
+L["in_water_cave"] = "In a cave under water"
 L["in_small_cave"] = "In small cave"
 L["in_cave"] = "In cave"
 
@@ -756,6 +757,67 @@ L["the_great_shellkhan_note"] = "Collect [Case of Fresh Gleamfish] in The Azure 
 L["the_weeping_vilomah_note"] = "Talk to [Boomhooch the Lost] to summon the rare."
 L["woolfang_note"] = "Pet [Wooly Lamb] to spawn the rare."
 L["astray_splasher_note"] = "Use 5 [Ominous Conch] to summon either a [Gigantic Thresher] or a rare."
+
+-- Forbidden Reach Begin
+-- Rares
+L["tazenrath"] = "Tazenrath"
+L["ketess_the_pillager"] = "Ketess the Pillager"
+L["scytherin"] = "Scytherin"
+L["deathrip"] = "Deathrip"
+L["stormspine"] = "Stormspine"
+
+-- Forbidden Reach
+-- Rares
+L["volcanakk"] = "Volcanakk"
+L["mad-eye_carrey"] = "Mad-Eye Carrey"
+L["duzalgor"] = "Duzalgor"
+L["captain_ookbeard"] = "'Captain' Ookbeard"
+L["warden_entrix"] = "Warden Entrix"
+L["wyrmslayer_angvardi"] = "Wyrmslayer Angvardi"
+L["ishyra"] = "Ishyra"
+L["veltrax"] = "Veltrax"
+L["lady_shazra"] = "Lady Shaz'ra"
+L["gahzraxes"] = "Gahz'raxes"
+L["bonesifter_marwak"] = "Bonesifter Marwak"
+L["vraken_the_hunter"] = "Vraken the Hunter"
+L["grugoth_the_hullcrusher"] = "Grugoth the Hullcrusher"
+L["galakhad"] = "Galakhad"
+L["pyrachniss"] = "Pyrachniss"
+L["reisa_the_drowned"] = "Reisa the Drowned"
+-- Notes
+L["volcanakk_note"] = "Within 'The Siege Creche'."
+L["mad-eye_carrey_note"] = "Is partnered in a group with 'Navigator Bi-Yun' and 'First Mate Ovdah'"
+L["duzalgor_note"] = "Collect a bottle of 'Toxin Antidote' to heal from the poisonous gas within 'The Support Creche'."
+L["warden_entrix_note"] = "Deep within 'The War Creche'"
+L["wyrmslayer_angvardi_note"] = "Is partnered with 'Nidharr'"
+L["gahzraxes_note"] = "In a cave under water"
+L["pyrachniss_note"] = "Deep within 'The War Creche'"
+
+-- Zaralek Cavern
+-- Rares
+L["viridian_king"] = "Viridian King"
+L["brulsef_the_stronk"] = "Brulsef the Stronk"
+L["invohq"] = "Invohq"
+L["aquifon"] = "Aquifon"
+L["magmanesha"] = "Magmanesha"
+L["spinmarrow"] = "Spinmarrow"
+L["kobrok"] = "Kob'rok"
+L["jrumm"] = "Jrumm"
+L["flowfy"] = "Flowfy"
+L["colossian"] = "Colossian"
+L["professor_gastrinax"] = "Professor Gastrinax"
+L["emberdusk"] = "Emberdusk"
+L["underlight_queen"] = "Underlight Queen"
+L["skornak"] = "Skornak"
+L["klakatak"] = "Klakatak"
+L["subterrax"] = "Subterrax"
+L["kaprachu"] = "Kaprachu"
+L["alcanon"] = "Alcanon"
+L["goopal"] = "Goopal"
+L["general_zskorro"] = "General Zskorro"
+L["karokta"] = "Karokta"
+-- Notes
+L["brulsef_the_stronk_note"] = "Loot your rewards from the 'Chest of Massive Gains'.\nCurrent Bug: Don't let him leave the initial position far away, otherwise there will be no chest after defeating him."
 
 -------------------------------------------------------------------------------------
 -- more translations follows after i've implemented some new features I have in mind.

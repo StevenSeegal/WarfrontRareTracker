@@ -667,7 +667,7 @@ configOptions = {
                                     return WarfrontRareTracker.db.profile.menu.sortRaresOn ~= "drop"
                                 end,
                         },
-                        seperator = {
+                        seperator1 = {
                             name = "",
                             type = "description",
                             order = 5,
@@ -687,7 +687,7 @@ configOptions = {
                                     WarfrontRareTracker:SortRares()
                                 end,
                         },
-                        seperator = {
+                        seperator2 = {
                             name = "",
                             type = "description",
                             order = 10,
