@@ -270,7 +270,7 @@ local rareDB = {
             [152795] = { name = "Sandclaw Stoneshell", npcid = 152795, questId = { 56277 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 73504584 }, bothphases = true, note = "Spawns in multiple places at the center and eastern side of the island, inside 'Ruined Temples'.", loot = { { droptype = DROPTYPE.PET, itemID = 169350, petID = 154823, speciesID = 2684, isKnown = false } } }, -- Glittering Diamondshell
             [152548] = { name = "Scale Matriarch Gratinax", npcid = 152548, questId = { 56292 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 36104120 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } }, -- Scalebrood Hydra
             [152545] = { name = "Scale Matriarch Vynara", npcid = 152545, questId = { 56293 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 27293716 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } }, -- Scalebrood Hydra
-            [152553] = { name = "Scale Matriarch Zodia", npcid = 152553, questId = { 56294 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 28774669 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } }, -- Scalebrood Hydra
+            [152542] = { name = "Scale Matriarch Zodia", npcid = 152542, questId = { 56294 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 28774669 }, bothphases = true, loot = { { droptype = DROPTYPE.PET, itemID = 169370, petID = 154843, speciesID = 2704, isKnown = false } } }, -- Scalebrood Hydra
             [150468] = { name = "Vor'koth", npcid = 150468, questId = { 55603 }, type = RARETYPE.RARE, faction = FACTION.ALL, coord = { 48352411 }, bothphases = true, note = "Toss some 'Chum' into the \"Eel Infested Waters\" to have a chance of summoning this Rare.", loot = { { droptype = DROPTYPE.PET, itemID = 169376, petID = 154848, speciesID = 2709, isKnown = false } } }, -- Skittering Eel
         
             -- Toy Drop:
@@ -1239,6 +1239,14 @@ local colors = {
 }
 
 -- Test new filter system
+
+local ITEMBLACKLIST = {}
+for index, name in pairs(DROPTYPE) do
+    ITEMBLACKLIST[name] = false
+end
+WarfrontRareTracker.ITEMBLACKLIST = ITEMBLACKLIST
+
+--OLD
 local HIDE_ALREADY_KNOWN = "AlreadyKnown"
 local HIDE_UNKNOWN_LOOT = "UnknowLoot"
 local HIDE_UNTRACKABLE = "Untrackable"
@@ -1301,7 +1309,7 @@ local dbDefaults = {
             lootTypeOrder = { [1] = DROPTYPE.MOUNT, [2] = DROPTYPE.PET, [3] = DROPTYPE.TOY, [4] = DROPTYPE.QUEST, [5] = DROPTYPE.BLUEPRINT, [6] = DROPTYPE.ITEM, [7] = DROPTYPE.GEAR_ONLY, [8] = DROPTYPE.TRANSMOG, [9] = DROPTYPE.SCROLL, [10] = DROPTYPE.UNKNOWN }
         },
         masterfilter = {
-            hide = { [HIDE_ALREADY_KNOWN] = false, [HIDE_UNKNOWN_LOOT] = false, [HIDE_UNTRACKABLE] = false, [HIDE_GOLIATHS] = false, [HIDE_UNAVAILABLE] = false, [HIDE_GEAR_ONLY] = false, [HIDE_QUEST_ONLY] = false, [HIDE_ITEM_ONLY] = false },
+            hide = itemBlacklist,
             hideAlreadyKnown = false, -- Loot?
             hideUnknowLoot = false, -- Loot
             hideUntrackable = false, -- NPC/Rare Type
@@ -1572,31 +1580,22 @@ local function isQuestCompleted(questid)
 end
 
 local function areAllQuestsCompleted(mapid, npcid) -- Rename to isRareKilled(mapid, npcid) ?
-    -- if rareDB[mapid].rares[npcid].questId == nil or rareDB[mapid].rares[npcid].questId[1] <= 0 then return false end
-    -- if rareDB[mapid].expansion == EXPANSION.BFA then -- BfA has Alliance/Horde ID's.
-    --     for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
-    --         if C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
-    --             return true
-    --         end
-    --     end
-    -- elseif rareDB[mapid].expansion == EXPANSION.SHADOWLANDS then -- Shadowlands has multiple questID's for a few Rare's so we need to iterate to see if all are completed.
-    --     for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
-    --         if not C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
-    --             return false
-    --         end
-    --     end
-    --     return true
-    -- end
-    -- return false
-
-    -- New
     if rareDB[mapid].rares[npcid].questId == nil or rareDB[mapid].rares[npcid].questId[1] <= 0 then return false end
-    for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
-        if not isQuestCompleted(rareDB[mapid].rares[npcid].questId[k]) then
-            return false
+    if rareDB[mapid].expansion == EXPANSION.BFA then -- BfA has Alliance/Horde ID's. 2 ID's where if 1 is met ALL is met!
+        for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+            if C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+                return true
+            end
         end
+    elseif rareDB[mapid].expansion == EXPANSION.SHADOWLANDS or rareDB[mapid].expansion == EXPANSION.DRAGONFLIGHT then -- Shadowlands has multiple questID's for a few Rare's so we need to iterate to see if all are completed.
+        for k, v in pairs(rareDB[mapid].rares[npcid].questId) do
+            if not C_QuestLog.IsQuestFlaggedCompleted(rareDB[mapid].rares[npcid].questId[k]) then
+                return false
+            end
+        end
+        return true
     end
-    return true
+    return false
 end
 
 local function playSound(news)
